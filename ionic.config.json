@@ -1,0 +1,7 @@
+{
+  "name": "tonbeleg",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue"
+}

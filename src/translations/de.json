@@ -1,0 +1,18 @@
+{
+  "general": {
+    "appname": "Random Title"
+  },
+  "auth": {
+    "login": "Anmelden",
+    "login_noun": "Anmeldung",
+    "login_cta": "Bitte melden Sie sich an, um fortzufahren.",
+    "signup": "Registrieren",
+    "signup_noun": "Registrierung",
+    "signup_cta": "Bitte registrieren Sie sich mit E-Mail und Passwort.",
+    "logout": "Abmelden",
+    "email": "E-Mail",
+    "email_place": "alex at musterbeispiel.de",
+    "password": "Passwort",
+    "password_place": "Ihr Passwort"
+  }
+}
