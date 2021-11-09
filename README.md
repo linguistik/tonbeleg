@@ -2,7 +2,7 @@
 Files to change
 - [x] `package.json`, the name of the repo
 - [x] `capacitor.config.ts`, the `appName`
-- [ ] `src/backend/firebase-config.ts`, the Firebase Auth settings
+- [x] `src/backend/firebase-config.ts`, the Firebase Auth settings
 - [x] `.github/workflows/**`, run `firebase init hosting:github` again
 - [x] `vue.config.ts`
 
@@ -50,7 +50,7 @@ yarn serve
 - [x] The project is licensed under [Apache License 2.0](LICENSE).
 
 ### Firebase Backend
-- [ ] SPA Website: [tonbeleg.web.de](https://tonbeleg-9a18f.web.app/)
+- [x] SPA Website: [tonbeleg.web.de](https://tonbeleg-9a18f.web.app/)
 - [x] [Firebase Console](https://console.firebase.google.com/project/tonbeleg-9a18f/)
 - [x] [Cloud Firestore](https://console.firebase.google.com/project/tonbeleg-9a18f/firestore) is the Multi-Region `eur3` consisting of `europe-west1` (Belgium) and `europe-west4` (The Netherlands).
 
