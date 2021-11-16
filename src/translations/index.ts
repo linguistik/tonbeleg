@@ -11,6 +11,7 @@ const defaultLocale = navigator.language || 'en';
 export default createI18n({
   locale: defaultLocale,
   messages: {
+    'de-DE': require('./de.json'),
     'de': require('./de.json'),
     'en': require('./en.json'),
     'en-GB': require('./en.json'),
