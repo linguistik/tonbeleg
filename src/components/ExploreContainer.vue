@@ -40,4 +40,8 @@ export default {
 #container a {
   text-decoration: none;
 }
+
+#ion-icon {
+  color: red;
+}
 </style>
