@@ -1,6 +1,6 @@
 <template>
   <ion-page>
-    <PageHeader v-bind:title="Datenschutz" />
+    <PageHeader v-bind:title="t('general.appname')" />
 
 
     <ion-content :fullscreen="true">
