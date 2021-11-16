@@ -10,12 +10,36 @@
           <ion-title size="large">Datenschutz</ion-title>
         </ion-toolbar>
       </ion-header>
-    
-      <ExploreContainer name="Datenschutz" />
+    <ion-list>
+
+      <ion-item>
+        <ion-label>Namensnennung</ion-label>
+        <ion-toggle slot="start" name="namensnennung" unchecked></ion-toggle>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Weitergabe unter gleichen Bedingungen</ion-label>
+        <ion-toggle slot="start" name="weitergabe" unchecked></ion-toggle>
+      </ion-item>
+      
+      <ion-item>
+        <ion-label>Keine Bearbeitung</ion-label>
+        <ion-toggle slot="start" name="bearbeitung" unchecked></ion-toggle>
+      </ion-item>
+
+    </ion-list>
     </ion-content>
 
   </ion-page>
 </template>
+
+<!-- 
+ion-toggle:
+@ionChange=""
+value
+:checked
+disabled
+-->
 
 
 <script lang="ts">
@@ -24,10 +48,9 @@ import { useI18n } from 'vue-i18n';
 import PageHeader from '@/components/layout/PageHeader.vue';
 
 import { 
-  IonPage, IonHeader, IonToolbar, IonTitle, IonContent
+  IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonLabel, IonItem,IonToggle,
 } from '@ionic/vue';
 
-import ExploreContainer from '@/components/ExploreContainer.vue';
 
 
 export default defineComponent({
@@ -35,8 +58,8 @@ export default defineComponent({
 
   components: { 
     PageHeader, 
-    IonHeader, IonToolbar, IonTitle, IonContent, IonPage,
-    ExploreContainer
+    IonHeader, IonToolbar, IonTitle, IonContent, IonPage, IonList, IonLabel, IonItem,IonToggle,
+    
   },
 
   setup(){
@@ -47,3 +70,8 @@ export default defineComponent({
   }
 })
 </script>
+<style scoped>
+#ion-label{
+  --color: red
+}
+</style>
