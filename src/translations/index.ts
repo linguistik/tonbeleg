@@ -12,6 +12,7 @@ export default createI18n({
   locale: defaultLocale,
   messages: {
     'de': require('./de.json'),
+    'de-DE': require('./de.json'),
     'en': require('./en.json'),
     'en-GB': require('./en.json'),
     'en-US': require('./en.json'),
