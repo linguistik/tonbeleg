@@ -37,7 +37,23 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: 'tab3',
         component: () => import('@/views/Tab3.vue'),
-      }
+      },
+      {
+        path: 'tabsettings',
+        component: () => import('@/views/TabSettings.vue'),
+      },
+      {
+        path: 'tabpersonaldata',
+        component: () => import('@/views/TabPersonalData.vue'),
+      },
+      {
+        path: 'tabdataprotection',
+        component: () => import('@/views/TabDataProtection.vue'),
+      },
+      {
+        path: 'tabimprint',
+        component: () => import('@/views/TabImprint.vue'),
+      },
     ]
   }
 ]

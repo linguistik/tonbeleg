@@ -2,58 +2,45 @@
 
   <ion-menu side="start" menu-id="sidemenu" content-id="sidemenu-content">
     <ion-header>
-      <ion-toolbar color="primary">
+      <ion-toolbar color="primary" @click="close()">
         <ion-title>Side Menu</ion-title>
       </ion-toolbar>
     </ion-header>
 
     <ion-content>
       <ion-list>
-        <ion-list-header>
+        <ion-list-header @click="close()">
           Sub Header
         </ion-list-header>
 
         <ion-menu-toggle auto-hide="false">
-        <ion-item button @click="toPage('/tabs/tab3')">
-          <ion-icon :icon="mail" slot="start"></ion-icon>
-          <ion-label>Inbox</ion-label>
+        <ion-item button @click="toPage('/tabs/tabsettings')">
+          <ion-icon :icon="settingsOutline" slot="start"></ion-icon>
+          <ion-label>Einstellungen</ion-label>
         </ion-item>
         </ion-menu-toggle>
 
         <ion-menu-toggle auto-hide="false">
-        <ion-item button @click="toPage('/tabs/tab3')">
-          <ion-icon :icon="paperPlane" slot="start"></ion-icon>
-          <ion-label>Outbox</ion-label>
+        <ion-item button @click="toPage('/tabs/tabpersonaldata')">
+          <ion-icon :icon="personOutline" slot="start"></ion-icon>
+          <ion-label>Persönliche Daten</ion-label>
         </ion-item>
         </ion-menu-toggle>
 
         <ion-menu-toggle auto-hide="false">
-        <ion-item button @click="toPage('/tabs/tab3')">
-          <ion-icon :icon="heart" slot="start"></ion-icon>
-          <ion-label>Favorites</ion-label>
+        <ion-item button @click="toPage('/tabs/tabdataprotection')">
+          <ion-icon :icon="documentLockOutline" slot="start"></ion-icon>
+          <ion-label>Datenschutz</ion-label>
         </ion-item>
         </ion-menu-toggle>
 
         <ion-menu-toggle auto-hide="false">
-        <ion-item button @click="toPage('/tabs/tab3')">
-          <ion-icon :icon="archive" slot="start"></ion-icon>
-          <ion-label>Archived</ion-label>
+        <ion-item button @click="toPage('/tabs/tabimprint')">
+          <ion-icon :icon="bookOutline" slot="start"></ion-icon>
+          <ion-label>Impressum</ion-label>
         </ion-item>
         </ion-menu-toggle>
 
-        <ion-menu-toggle auto-hide="false">
-        <ion-item button @click="toPage('/tabs/tab3')">
-          <ion-icon :icon="trash" slot="start"></ion-icon>
-          <ion-label>Trash</ion-label>
-        </ion-item>
-        </ion-menu-toggle>
-
-        <ion-menu-toggle auto-hide="false">
-        <ion-item button @click="toPage('/tabs/tab3')">
-          <ion-icon :icon="warning" slot="start"></ion-icon>
-          <ion-label>Spam</ion-label>
-        </ion-item>
-        </ion-menu-toggle>
 
       </ion-list>
     </ion-content>
@@ -74,7 +61,7 @@ import {
   IonMenuToggle, IonItem, IonIcon, IonLabel
 } from '@ionic/vue';
 
-import { mail, paperPlane, heart, archive, trash, warning } from 'ionicons/icons';
+import { settingsOutline, personOutline, documentLockOutline, bookOutline } from 'ionicons/icons';
 
 
 export default defineComponent({
@@ -91,9 +78,13 @@ export default defineComponent({
   setup() {
 
     const toPage = async(path: string) => {
-      console.log("Hello")
+      console.log("from sidemenu move to ", path )
       menuController.close('sidemenu');
       router.push(path);
+    }
+
+    const close = ()=>{
+      menuController.close('sidemenu');
     }
 
     const openSidemenu = async() => {
@@ -106,8 +97,9 @@ export default defineComponent({
     return {
       openSidemenu,
       toPage,
+      close,
       // icons
-      mail, paperPlane, heart, archive, trash, warning
+      settingsOutline, personOutline, documentLockOutline, bookOutline
     }
   }
 });

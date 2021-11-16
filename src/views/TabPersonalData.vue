@@ -2,15 +2,18 @@
   <ion-page>
     <PageHeader v-bind:title="t('general.appname')" />
 
+
     <ion-content :fullscreen="true">
+      
       <ion-header collapse="condense">
         <ion-toolbar>
-          <ion-title size="large">Tab 1</ion-title>
+          <ion-title size="large">Persönliche Daten</ion-title>
         </ion-toolbar>
       </ion-header>
-      
-      <ExploreContainer name="Tab 1 page" />
+    
+      <ExploreContainer name="Personal Data" />
     </ion-content>
+
   </ion-page>
 </template>
 
@@ -42,5 +45,5 @@ export default defineComponent({
 
     return { t }
   }
-});
+})
 </script>
