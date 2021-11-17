@@ -13,22 +13,66 @@
     <ion-list>
 
       <ion-item>
-        <ion-label text-wrap>Namensnennung</ion-label>
-        <ion-toggle slot="start" name="namensnennung" unchecked></ion-toggle>
+        <ion-label text-wrap>
+          <h2>
+            Namensnennung
+          </h2>
+          <p>
+            Wenn du dir die Namensnennung wünschst, aktiviere diese Einstellung. 
+            Dann passieren großartige Dinge.
+            Bla
+            Bla 
+          </p>
+        </ion-label>
+        <ion-toggle 
+        slot="start" 
+        name="namensnennung" 
+        unchecked
+        @IonChange="somethingChanged()"></ion-toggle>
       </ion-item>
-
       <ion-item>
-        <ion-label text-wrap>Weitergabe unter gleichen Bedingungen</ion-label>
+        <ion-label text-wrap>
+          <h2>
+            Weitergabe unter gleichen Bedingungen
+          </h2>
+          <p>
+            Wenn du dir die Weitergabe unter gleichen Bedingungen wünschst, aktiviere diese Einstellung. 
+            Dann passieren großartige Dinge.
+            Bla
+            Bla 
+          </p>
+        </ion-label>
         <ion-toggle slot="start" name="weitergabe" unchecked></ion-toggle>
       </ion-item>
       
       <ion-item>
-        <ion-label text-wrap>Keine Bearbeitung</ion-label>
+        
+        <ion-label text-wrap>
+          <h2>
+            Keine Bearbeitung
+          </h2>
+          <p>
+            Wenn du dir wünschst, dass deine Daten nicht bearbeitet werden, dann aktiviere diese Einstellung. 
+            Dann passieren großartige Dinge.
+            Bla
+            Bla 
+          </p>
+        </ion-label>
         <ion-toggle slot="start" name="bearbeitung" unchecked></ion-toggle>
       </ion-item>
 
     </ion-list>
-    ABC
+          <div id="container">
+        <ion-label text-wrap>
+          <h2>
+            Deine Lizenz
+          </h2>
+          <p>
+            Durch die obigen Angaben werden deine Daten unter der folgenden Lizenz gespeichert:
+            {{lizenz}}
+          </p>
+        </ion-label>
+        </div>
     </ion-content>
 
   </ion-page>
@@ -56,6 +100,8 @@ import {
 
 export default defineComponent({
   name: 'TabDataProtection',
+  //lizenz: 'Deine Mega geile Lizenz',
+
 
   components: { 
     PageHeader, 
@@ -67,7 +113,30 @@ export default defineComponent({
     // multi-lingual support
     const { t } = useI18n();
 
-    return { t }
+    let lizenz = 'Deine Mega geile Lizenz'
+
+    lizenz = 'Deine Mega geile Lizenz2'
+
+    let i =0;
+    const somethingChanged = ()=>{
+      lizenz = lizenz + i;
+      i=i+1;
+      console.log(lizenz);
+    }
+
+    return { t, lizenz,somethingChanged }
   }
 })
 </script>
+
+<style scoped>
+#container p{
+  font-size: 16px;
+  line-height: 22px;
+  padding: 10px;
+}
+#container h2{
+  font-size: 24px;
+  text-align:center;
+}
+</style>

@@ -51,5 +51,6 @@ export default defineComponent({
 #container p{
   font-size: 16px;
   line-height: 22px;
+  padding: 10px;
 }
 </style>
