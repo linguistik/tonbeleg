@@ -10,8 +10,9 @@
           <ion-title size="large">Impressum</ion-title>
         </ion-toolbar>
       </ion-header>
-    
-      <ExploreContainer name="Impressum" />
+  <div id="container"><p>
+    Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+    </p></div>
     </ion-content>
 
   </ion-page>
@@ -27,7 +28,6 @@ import {
   IonPage, IonHeader, IonToolbar, IonTitle, IonContent
 } from '@ionic/vue';
 
-import ExploreContainer from '@/components/ExploreContainer.vue';
 
 
 export default defineComponent({
@@ -36,7 +36,7 @@ export default defineComponent({
   components: { 
     PageHeader, 
     IonHeader, IonToolbar, IonTitle, IonContent, IonPage,
-    ExploreContainer
+    
   },
 
   setup(){
@@ -47,3 +47,9 @@ export default defineComponent({
   }
 })
 </script>
+<style scoped>
+#container p{
+  font-size: 16px;
+  line-height: 22px;
+}
+</style>

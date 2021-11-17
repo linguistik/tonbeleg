@@ -13,21 +13,22 @@
     <ion-list>
 
       <ion-item>
-        <ion-label>Namensnennung</ion-label>
+        <ion-label text-wrap>Namensnennung</ion-label>
         <ion-toggle slot="start" name="namensnennung" unchecked></ion-toggle>
       </ion-item>
 
       <ion-item>
-        <ion-label>Weitergabe unter gleichen Bedingungen</ion-label>
+        <ion-label text-wrap>Weitergabe unter gleichen Bedingungen</ion-label>
         <ion-toggle slot="start" name="weitergabe" unchecked></ion-toggle>
       </ion-item>
       
       <ion-item>
-        <ion-label>Keine Bearbeitung</ion-label>
+        <ion-label text-wrap>Keine Bearbeitung</ion-label>
         <ion-toggle slot="start" name="bearbeitung" unchecked></ion-toggle>
       </ion-item>
 
     </ion-list>
+    ABC
     </ion-content>
 
   </ion-page>
@@ -54,7 +55,7 @@ import {
 
 
 export default defineComponent({
-  name: 'Tab1',
+  name: 'TabDataProtection',
 
   components: { 
     PageHeader, 
@@ -70,8 +71,3 @@ export default defineComponent({
   }
 })
 </script>
-<style scoped>
-#ion-label{
-  --color: red
-}
-</style>
