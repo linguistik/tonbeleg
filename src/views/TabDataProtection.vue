@@ -69,7 +69,7 @@
           </h2>
           <p>
             Durch die obigen Angaben werden deine Daten unter der folgenden Lizenz gespeichert:
-            {{lizenz}}
+            {{licensePTR}}
           </p>
         </ion-label>
         </div>
@@ -88,7 +88,7 @@ disabled
 
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import PageHeader from '@/components/layout/PageHeader.vue';
 
@@ -100,7 +100,6 @@ import {
 
 export default defineComponent({
   name: 'TabDataProtection',
-  //lizenz: 'Deine Mega geile Lizenz',
 
 
   components: { 
@@ -108,23 +107,20 @@ export default defineComponent({
     IonHeader, IonToolbar, IonTitle, IonContent, IonPage, IonList, IonLabel, IonItem,IonToggle,
     
   },
-
   setup(){
     // multi-lingual support
     const { t } = useI18n();
 
-    let lizenz = 'Deine Mega geile Lizenz'
-
-    lizenz = 'Deine Mega geile Lizenz2'
+    const licensePTR = ref('Deine Mega geile Lizenz');
 
     let i =0;
     const somethingChanged = ()=>{
-      lizenz = lizenz + i;
+      licensePTR.value = licensePTR.value + i;
       i=i+1;
-      console.log(lizenz);
+      console.log(licensePTR.value);
     }
 
-    return { t, lizenz,somethingChanged }
+    return { t,somethingChanged, licensePTR }
   }
 })
 </script>
