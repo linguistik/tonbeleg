@@ -4,8 +4,8 @@
       <ion-router-outlet></ion-router-outlet>
       <ion-tab-bar slot="bottom">
 
-        <ion-tab-button tab="tab1" href="/tabs/tab1">
-          <ion-icon :icon="triangle" />
+        <ion-tab-button tab="saved" href="/tabs/saved">
+          <ion-icon :icon="save" />
           <ion-label>Gespeichert</ion-label>
         </ion-tab-button>
           
@@ -14,8 +14,8 @@
           <ion-label>Aufnehmen</ion-label>
         </ion-tab-button>
         
-        <ion-tab-button tab="tab3" href="/tabs/tab3">
-          <ion-icon :icon="square" />
+        <ion-tab-button tab="account" href="/tabs/account">
+          <ion-icon :icon="personCircle" />
           <ion-label>Account</ion-label>
         </ion-tab-button>
 
@@ -30,7 +30,7 @@ import {
   IonTabBar, IonTabButton, IonTabs, IonLabel, IonIcon, IonPage, IonRouterOutlet 
 } from '@ionic/vue';
 
-import { ellipse, square, triangle } from 'ionicons/icons';
+import { personCircle, save, ellipse } from 'ionicons/icons';
 
 
 export default {
@@ -43,8 +43,8 @@ export default {
   setup() {
     return {
       ellipse, 
-      square, 
-      triangle,
+      personCircle, 
+      save,
     }
   }
 }

@@ -5,12 +5,12 @@
     <ion-content :fullscreen="true">
       <ion-header collapse="condense">
         <ion-toolbar>
-          <ion-title size="large">Tab 3</ion-title>
+          <ion-title size="large">Record</ion-title>
         </ion-toolbar>
       </ion-header>
       <!--  Hier ist der Button in der Mitte  -->
+      <ExploreContainer name="Aufnehmen" />
       <ion-fab vertical="center" horizontal="center" slot="fixed">
-          Aufnahme starten
         <ion-fab-button v-if="!recordingStatus" color="success" v-on:click="startRecordingTrigger()">
           <ion-icon :name="caretForwardOutline"></ion-icon>
         </ion-fab-button>
@@ -35,6 +35,7 @@ import {
   IonFab, IonFabButton, IonIcon,
 } from '@ionic/vue';
 
+import ExploreContainer from '@/components/ExploreContainer.vue'
 
 import { 
   VoiceRecorder, 
@@ -56,7 +57,7 @@ export default defineComponent({
   components: { 
     PageHeader, 
     IonHeader, IonToolbar, IonTitle, IonContent, IonPage,
-    IonFab, IonFabButton, IonIcon,
+    IonFab, IonFabButton, IonIcon, ExploreContainer
   },
 
   setup(){

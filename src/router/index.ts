@@ -7,7 +7,7 @@ import Tabs from '@/views/Tabs.vue'
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
-    redirect: '/tabs/tab1'
+    redirect: '/login'
   },
   {
     path: '/login',
@@ -23,11 +23,11 @@ const routes: Array<RouteRecordRaw> = [
     children: [
       {
         path: '',
-        redirect: '/tabs/tab1'
+        redirect: '/tabs/record'
       },
       {
-        path: 'tab1',
-        component: () => import('@/views/Tab1.vue'),
+        path: 'saved',
+        component: () => import('@/views/TabSaved.vue'),
         meta: { requiresAuth: true }
       },
       {
@@ -35,8 +35,8 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('@/views/TabRecord.vue'),
       },
       {
-        path: 'tab3',
-        component: () => import('@/views/Tab3.vue'),
+        path: 'account',
+        component: () => import('@/views/TabAccount.vue'),
       },
       {
         path: 'tabsettings',
