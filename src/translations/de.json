@@ -14,5 +14,9 @@
     "email_place": "alex at musterbeispiel.de",
     "password": "Passwort",
     "password_place": "Ihr Passwort"
+  },
+  "record": {
+    "record_noun": "Aufnahme",
+    "record":"aufnehmen"
   }
 }

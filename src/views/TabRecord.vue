@@ -5,11 +5,11 @@
     <ion-content :fullscreen="true">
       <ion-header collapse="condense">
         <ion-toolbar>
-          <ion-title size="large">Record</ion-title>
+          <ion-title size="large">{{ t('record.record_noun') }}</ion-title>
         </ion-toolbar>
       </ion-header>
       <!--  Hier ist der Button in der Mitte  -->
-      <ExploreContainer name="Aufnehmen" />
+      <ExploreContainer name="Aufnahme" />
       <ion-fab vertical="center" horizontal="center" slot="fixed">
         <ion-fab-button v-if="!recordingStatus" color="success" v-on:click="startRecordingTrigger()">
           <ion-icon :name="caretForwardOutline"></ion-icon>
