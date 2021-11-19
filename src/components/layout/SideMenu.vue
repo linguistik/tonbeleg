@@ -3,7 +3,7 @@
   <ion-menu side="start" menu-id="sidemenu" content-id="sidemenu-content">
     <ion-header>
       <ion-toolbar color="primary" @click="close()">
-        <ion-title>Side Menu</ion-title>
+        <ion-title>Menu</ion-title>
       </ion-toolbar>
     </ion-header>
 

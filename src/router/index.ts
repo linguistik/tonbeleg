@@ -31,8 +31,8 @@ const routes: Array<RouteRecordRaw> = [
         meta: { requiresAuth: true }
       },
       {
-        path: 'tab2',
-        component: () => import('@/views/Tab2.vue'),
+        path: 'record',
+        component: () => import('@/views/TabRecord.vue'),
       },
       {
         path: 'tab3',
