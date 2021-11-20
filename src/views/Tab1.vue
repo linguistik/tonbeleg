@@ -34,7 +34,7 @@ export default defineComponent({
   name: 'Tab1',
 
   components: { 
-    PageHeader, 
+    PageHeader,
     IonHeader, IonToolbar, IonTitle, IonContent, IonPage,
     ExploreContainer
   },
