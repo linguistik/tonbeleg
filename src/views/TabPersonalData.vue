@@ -102,6 +102,9 @@ import {
 } from '@ionic/vue';
 
 
+import firebase from '@/backend/firebase-config';
+
+
 
 export default defineComponent({
   name: 'Tab1',
@@ -109,11 +112,6 @@ export default defineComponent({
   components: { 
     PageHeader, 
     IonHeader, IonToolbar, IonTitle, IonContent, IonPage, IonList, IonItem, IonListHeader, IonLabel, IonInput, IonButton
-  },
-  data(){
-    return {
-      //age: ''
-    }
   },
 
   setup(){
@@ -124,9 +122,13 @@ export default defineComponent({
 
     const ageType = ref('number');
     const safe = ()=>{
-      console.log(age.value);
-      age.value ='text';
-      console.log(age.value);
+      const user = firebase.auth().currentUser;
+      if(user !=null){
+        console.log(user.email);
+      }
+        //const store = firebase.firestore();
+        const ref = firebase.database();
+        //console.log(ref);
     }
 
     return { t, safe, age,ageType }
