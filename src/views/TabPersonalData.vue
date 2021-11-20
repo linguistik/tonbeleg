@@ -24,7 +24,9 @@
             Alter
           </ion-label>
         <ion-input
-        type="number"></ion-input>
+        v-model:type="ageType"
+        v-model="age"
+        ></ion-input>
         </ion-item>
 
         <ion-item>
@@ -79,6 +81,10 @@
         type="number"></ion-input>
         </ion-item>
 
+        <ion-item>
+          <ion-button @click="safe()">Speichern</ion-button>
+        </ion-item>
+
       </ion-list>
     </ion-content>
 
@@ -87,12 +93,12 @@
 
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import PageHeader from '@/components/layout/PageHeader.vue';
 
 import { 
-  IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonListHeader, IonLabel, IonInput
+  IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonListHeader, IonLabel, IonInput,IonButton
 } from '@ionic/vue';
 
 
@@ -102,14 +108,28 @@ export default defineComponent({
 
   components: { 
     PageHeader, 
-    IonHeader, IonToolbar, IonTitle, IonContent, IonPage, IonList, IonItem, IonListHeader, IonLabel, IonInput
+    IonHeader, IonToolbar, IonTitle, IonContent, IonPage, IonList, IonItem, IonListHeader, IonLabel, IonInput, IonButton
+  },
+  data(){
+    return {
+      //age: ''
+    }
   },
 
   setup(){
     // multi-lingual support
     const { t } = useI18n();
 
-    return { t }
+    const age=ref('');
+
+    const ageType = ref('number');
+    const safe = ()=>{
+      console.log(age.value);
+      age.value ='text';
+      console.log(age.value);
+    }
+
+    return { t, safe, age,ageType }
   }
 })
 </script>
