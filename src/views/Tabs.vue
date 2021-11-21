@@ -6,12 +6,12 @@
 
         <ion-tab-button tab="saved" href="/tabs/saved">
           <ion-icon :icon="save" />
-          <ion-label>Gespeichert</ion-label>
+          <ion-label>{{t('general.saved') }}</ion-label>
         </ion-tab-button>
           
         <ion-tab-button tab="record" href="/tabs/record">
           <ion-icon :icon="ellipse" />
-          <ion-label>Aufnehmen</ion-label>
+          <ion-label>{{t('general.record')}}</ion-label>
         </ion-tab-button>
         
         <ion-tab-button tab="account" href="/tabs/account">
@@ -31,6 +31,7 @@ import {
 } from '@ionic/vue';
 
 import { personCircle, save, ellipse } from 'ionicons/icons';
+import { useI18n } from 'vue-i18n';
 
 
 export default {
@@ -41,7 +42,10 @@ export default {
   },
 
   setup() {
+    // multi-lingual support
+    const { t } = useI18n();
     return {
+      t,
       ellipse, 
       personCircle, 
       save,

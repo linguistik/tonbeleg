@@ -1,6 +1,8 @@
 {
   "general": {
-    "appname": "DatenspendeApp"
+    "appname": "DatenspendeApp",
+    "saved": "Gepeichert",
+    "record": "Aufnehmen"
   },
   "auth": {
     "login": "Anmelden",

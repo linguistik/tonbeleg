@@ -1,6 +1,8 @@
 {
   "general": {
-    "appname": "DatenspendeApp"
+    "appname": "DatenspendeApp",
+    "saved": "Saved",
+    "record": "Record"
   },
   "auth": {
     "login": "Login",
@@ -14,5 +16,9 @@
     "email_place": "avery at doe.com",
     "password": "Password",
     "password_place": "Your Password"
+  },
+  "record": {
+    "record_noun": "Record",
+    "record":"record"
   }
 }
