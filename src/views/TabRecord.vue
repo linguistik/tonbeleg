@@ -50,6 +50,9 @@ import {
 } from 'ionicons/icons';
 
 
+import firebase from '@/backend/firebase-config';
+import { Filesystem, Directory, Encoding, WriteFileResult, ReaddirResult, FilesystemDirectory } from '@capacitor/filesystem';
+
 export default defineComponent({
 
   components: { 
@@ -102,16 +105,46 @@ export default defineComponent({
     }
 
     const stopRecordingTrigger = async () => {
-      await VoiceRecorder.stopRecording()
-        .then((result: RecordingData) => {
-          recordingStatus.value = false
-          console.log(result.value)
-        })
-        .catch(error => {
+      try{
+        const recordingData = await VoiceRecorder.stopRecording()
+        recordingStatus.value = false
+        console.log(recordingData.value)
+
+        //create folder for the specific user and safe to Directory.Data if it does not exist already
+        const currentUser = firebase.auth().currentUser;
+        if(currentUser==null)
+          return;
+        const userUID = currentUser.uid;
+        //create timestamp
+        const timestamp = Date.now();
+        //write file using timestamp
+        await Filesystem.writeFile({
+          path:userUID+'/'+timestamp,
+          data: recordingData.value.recordDataBase64,
+          directory: Directory.Data,
+          recursive: true
+        });
+
+        //const audio = new Audio(recordingData.value.recordDataBase64);
+        
+        //then(async(result: RecordingData) => {
+         /* await Filesystem.writeFile({
+            path: 'test1',
+            data: result.value.recordDataBase64
+          }).then((writeFileResult: WriteFileResult)=>{console.log(writeFileResult)});*/
+          /*await Filesystem.deleteFile({path: 'test1'});
+          await Filesystem.readdir({
+            path: "",
+            //directory: Directory.ExternalStorage
+          }).then((readDirResult: ReaddirResult)=>{console.log(readDirResult.files)});
+
+          await Filesystem.getUri({path:'',directory: Directory.Data}).then(res=>{console.log(res.uri)});*/
+        }
+        catch (error){
           recordingStatus.value = false
           // "RECORDING_HAS_NOT_STARTED" or "FAILED_TO_FETCH_RECORDING"
           console.log(error)
-        });
+        }
     }
 
     // VoiceRecorder.pauseRecording
