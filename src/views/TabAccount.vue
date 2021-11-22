@@ -28,7 +28,7 @@ import ExploreContainer from '@/components/ExploreContainer.vue';
 
 
 export default defineComponent({
-  name: 'Tab3',
+  name: 'TabAccount',
 
   components: { 
     PageHeader, 

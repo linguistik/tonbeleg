@@ -31,7 +31,6 @@ import {
 
 
 export default defineComponent({
-  name: 'Tab1',
 
   components: { 
     PageHeader, 

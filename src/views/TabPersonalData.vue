@@ -107,12 +107,13 @@ import firebase from '@/backend/firebase-config';
 
 
 export default defineComponent({
-  name: 'Tab1',
 
   components: { 
     PageHeader, 
     IonHeader, IonToolbar, IonTitle, IonContent, IonPage, IonList, IonItem, IonListHeader, IonLabel, IonInput, IonButton
   },
+
+//TODO upload data
 
   setup(){
     // multi-lingual support
@@ -124,10 +125,10 @@ export default defineComponent({
     const safe = ()=>{
       const user = firebase.auth().currentUser;
       if(user !=null){
-        console.log(user.email);
+        console.log(user.uid);
       }
         //const store = firebase.firestore();
-        const ref = firebase.database();
+        //const ref = firebase.database();
         //console.log(ref);
     }
 

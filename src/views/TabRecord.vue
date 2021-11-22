@@ -9,13 +9,6 @@
         </ion-toolbar>
       </ion-header>
       <!--  Hier ist der Button in der Mitte  -->
-      <ion-item>
-        <ion-header>
-          <h1 allign="center">
-            {{ t('record.record_noun') }}
-          </h1>
-        </ion-header>
-      </ion-item>
       <ion-fab vertical="center" horizontal="center" slot="fixed">
         <ion-fab-button v-if="!recordingStatus" color="success" v-on:click="startRecordingTrigger()">
           <ion-icon :name="caretForwardOutline"></ion-icon>
@@ -58,7 +51,6 @@ import {
 
 
 export default defineComponent({
-  name: 'Tab3',
 
   components: { 
     PageHeader, 

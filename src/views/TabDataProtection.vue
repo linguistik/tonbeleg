@@ -124,7 +124,6 @@ import {
 
 
 export default defineComponent({
-  name: 'TabDataProtection',
 
 
   components: { 
@@ -140,6 +139,8 @@ export default defineComponent({
 // TODO:
 // load these values from the server! and change the toggles
 //
+
+//TODO upload data
 
   const licensePTR = ref('CC0 1.0');
 
