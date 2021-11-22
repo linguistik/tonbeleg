@@ -1,6 +1,8 @@
 {
   "general": {
-    "appname": "Random Title"
+    "appname": "DatenspendeApp",
+    "saved": "Gepeichert",
+    "record": "Aufnehmen"
   },
   "auth": {
     "login": "Anmelden",
@@ -14,5 +16,9 @@
     "email_place": "alex at musterbeispiel.de",
     "password": "Passwort",
     "password_place": "Ihr Passwort"
+  },
+  "record": {
+    "record_noun": "Aufnahme",
+    "record":"aufnehmen"
   }
 }

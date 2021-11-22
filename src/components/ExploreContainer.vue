@@ -1,7 +1,7 @@
 <template>
   <div id="container">
     <strong>{{ name }}</strong>
-    <p>Explore <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
+    <p>Explore </p>
   </div>
 </template>
 
@@ -18,7 +18,7 @@ export default {
 <style scoped>
 #container {
   text-align: center;
-  position: absolute;
+  position: relative;
   left: 0;
   right: 0;
   top: 50%;

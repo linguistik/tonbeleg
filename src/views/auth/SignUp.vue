@@ -84,7 +84,7 @@ export default defineComponent({
         const username = await firebase.auth().createUserWithEmailAndPassword(
           email.value, password.value);
         if(debugVerbose.value){console.log(username);}
-        router.push("/tabs/tab1");
+        router.push("/tabs/record");
       }catch(err){
         errorMessage.value = err.message;
         if(debugVerbose.value){console.log(err);}
