@@ -30,7 +30,7 @@ import ExploreContainer from '@/components/ExploreContainer.vue';
 export default defineComponent({
 
   components: { 
-    PageHeader, 
+    PageHeader,
     IonHeader, IonToolbar, IonTitle, IonContent, IonPage,
     ExploreContainer
   },

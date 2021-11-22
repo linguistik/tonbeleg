@@ -26,10 +26,17 @@
               <ion-input v-model="password" type="password"></ion-input>
             </ion-item>
             <ion-button expand="block" color="primary" class="ion-margin-top" type="submit">
-              {{ t('auth.signup') }}
+              Anmelden
             </ion-button>
           </form>
         </ion-card-content>
+
+        <ion-card-content>
+          <form @submit.prevent="onRegister">
+            <ion-button expand="block" color="primary" class="ion-margin-top" type="submit">
+              Registrieren
+            </ion-button>
+        </form></ion-card-content>
 
         <ion-card-content>
           <form @submit.prevent="onGoogleLogin">
@@ -110,6 +117,9 @@ export default defineComponent({
         if(debugVerbose.value){console.log(err);}
       }
     }
+    const onRegister = async () => {
+      router.push("/signup")
+    }
 
     return { 
       t, 
@@ -117,16 +127,10 @@ export default defineComponent({
       password, 
       errorMessage, 
       onEmailLogin, 
-      onGoogleLogin 
+      onGoogleLogin,
+      onRegister
     }
   }
 });
 </script>
 
-
-<style scoped>
-#google-button {
-  color: white;
-  background: #4285F4;
-}
-</style>
