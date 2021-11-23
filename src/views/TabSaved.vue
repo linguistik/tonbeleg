@@ -11,9 +11,8 @@
       <ion-list
       v-if="recordingFolders.length!=0">
         <ol>
-          <ion-item v-for="item in recordingFolders" v-bind:key="item">
-            {{ item }}
-          </ion-item>
+          <Recording v-for="item in recordingFolders" v-bind:key="item" v-bind:folder="item">
+          </Recording>
         </ol>
       </ion-list>
   <div id="container" v-else>
@@ -36,7 +35,7 @@ import {
   IonToolbar,
   IonTitle,
   IonContent,
-  IonItem,
+  
   IonList,
 } from "@ionic/vue";
 
@@ -49,6 +48,7 @@ import {
 } from "@capacitor/filesystem";
 
 import firebase from "@/backend/firebase-config";
+import Recording from "@/components/Recording.vue";
 
 export default defineComponent({
   components: {
@@ -58,8 +58,9 @@ export default defineComponent({
     IonTitle,
     IonContent,
     IonPage,
-    IonItem,
+    
     IonList,
+    Recording,
   },
 
   setup() {

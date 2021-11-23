@@ -18,6 +18,11 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('@/views/auth/SignUp.vue')
   },
   {
+    path: '/edit/:folderName',
+    component: () => import('@/views/editing/EditMainView.vue'),
+    props: true
+  },
+  {
     path: '/tabs/',
     component: Tabs,
     children: [
