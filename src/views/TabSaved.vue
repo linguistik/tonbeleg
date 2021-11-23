@@ -5,41 +5,107 @@
     <ion-content :fullscreen="true">
       <ion-header collapse="condense">
         <ion-toolbar>
-          <ion-title size="large">Tab 1</ion-title>
+          <ion-title size="large">Gespeichertes</ion-title>
         </ion-toolbar>
       </ion-header>
-      
-      <ExploreContainer name="Gespeicherte Dateien" />
+      <ion-list
+      v-if="recordingFolders.length!=0">
+        <ol>
+          <ion-item v-for="item in recordingFolders" v-bind:key="item">
+            {{ item }}
+          </ion-item>
+        </ol>
+      </ion-list>
+  <div id="container" v-else>
+    <p>Du hast auf diesem Gerät noch keine gespeicherten Aufnahmen </p>
+  </div>
+
     </ion-content>
   </ion-page>
 </template>
 
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import { useI18n } from 'vue-i18n';
-import PageHeader from '@/components/layout/PageHeader.vue';
+import { defineComponent, ref } from "vue";
+import { useI18n } from "vue-i18n";
+import PageHeader from "@/components/layout/PageHeader.vue";
 
-import { 
-  IonPage, IonHeader, IonToolbar, IonTitle, IonContent
-} from '@ionic/vue';
+import {
+  IonPage,
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonContent,
+  IonItem,
+  IonList,
+} from "@ionic/vue";
 
-import ExploreContainer from '@/components/ExploreContainer.vue';
+import {
+  Filesystem,
+  Directory,
+  //Encoding,
+  //WriteFileResult,
+  //ReaddirResult,
+} from "@capacitor/filesystem";
 
+import firebase from "@/backend/firebase-config";
 
 export default defineComponent({
-
-  components: { 
+  components: {
     PageHeader,
-    IonHeader, IonToolbar, IonTitle, IonContent, IonPage,
-    ExploreContainer
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonContent,
+    IonPage,
+    IonItem,
+    IonList,
   },
 
-  setup(){
+  setup() {
     // multi-lingual support
     const { t } = useI18n();
 
-    return { t }
-  }
+    //get userUID
+    const currentUser = firebase.auth().currentUser;
+    if (currentUser == null) return;
+    const userUID = currentUser.uid;
+
+    const recordingFolders = ref(['']);
+    const getRecordingFolders = async () => {
+      recordingFolders.value.pop();
+      const readdir = await Filesystem.readdir({
+        path: "/" + userUID,
+        directory: Directory.Data,
+      });
+      console.log(readdir);
+      for(const folder of readdir.files){
+        recordingFolders.value.push(folder);
+      }
+    };
+    getRecordingFolders();
+    //recordingFolders.value = getRecordingFolders();
+    console.log(recordingFolders.value.length);
+    return { t, recordingFolders };
+  },
 });
 </script>
+
+<style scoped>
+#container {
+  text-align: center;
+  position: relative;
+  left: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+
+#container p {
+  font-size: 16px;
+  line-height: 22px;
+  color: #8c8c8c;
+  margin: 0;
+}
+</style>

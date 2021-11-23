@@ -49,7 +49,7 @@ import {
 import {
   VoiceRecorder,
   GenericResponse,
-  RecordingData,
+  //RecordingData,
   // VoiceRecorderPlugin,
   // CurrentRecordingStatus
 } from "capacitor-voice-recorder";
@@ -60,12 +60,11 @@ import firebase from "@/backend/firebase-config";
 import {
   Filesystem,
   Directory,
-  Encoding,
-  WriteFileResult,
-  ReaddirResult,
-  FilesystemDirectory,
+  //Encoding,
+  //WriteFileResult,
+  //ReaddirResult,
 } from "@capacitor/filesystem";
-import { CapacitorException } from "@capacitor/core";
+//import { CapacitorException } from "@capacitor/core";
 
 export default defineComponent({
   components: {
@@ -85,7 +84,7 @@ export default defineComponent({
     const { t } = useI18n();
 
     //https://expertcodeblog.wordpress.com/2018/07/05/typescript-sleep-a-thread/
-    const delay = (ms: number)=>{return new Promise(resolve =>setTimeout(resolve,ms));};
+    //const delay = (ms: number)=>{return new Promise(resolve =>setTimeout(resolve,ms));};
 
 
     // Alles von hier: https://github.com/tchvu3/capacitor-voice-recorder#usage
