@@ -1,4 +1,7 @@
 # DELETE THIS LATER
+
+[![Join the chat at https://gitter.im/linguistik123/tonbeleg](https://badges.gitter.im/linguistik123/tonbeleg.svg)](https://gitter.im/linguistik123/tonbeleg?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Files to change
 - [x] `package.json`, the name of the repo
 - [x] `capacitor.config.ts`, the `appName`
