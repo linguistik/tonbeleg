@@ -73,6 +73,9 @@ export default defineComponent({
     const userUID = currentUser.uid;
 
     const recordingFolders = ref(['']);
+
+    //TODO dynamically load new data
+    //
     const getRecordingFolders = async () => {
       recordingFolders.value.pop();
       const readdir = await Filesystem.readdir({
@@ -84,6 +87,7 @@ export default defineComponent({
         recordingFolders.value.push(folder);
       }
     };
+
     getRecordingFolders();
     //recordingFolders.value = getRecordingFolders();
     console.log(recordingFolders.value.length);

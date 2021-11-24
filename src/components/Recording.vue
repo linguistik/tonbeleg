@@ -7,6 +7,7 @@
         <h5>
           Aufgenommen am:
           {{ getRecordingDate(folder) }}
+        <br>
         </h5>
       </ion-label>
       <ion-button @click="edit(folder)"> Bearbeiten </ion-button>
@@ -61,10 +62,12 @@ export default {
 
     const getRecordingDate = (folder: string) => {
       const date = new Date(parseInt(folder));
+      console.log(parseInt(folder));
+      console.log(date.getMonth());
       return (
         date.getDate() +
         "." +
-        date.getMonth() +
+        (date.getMonth()+1) +
         "." +
         date.getFullYear() +
         ", " +
@@ -72,6 +75,10 @@ export default {
         ":" +
         date.getMinutes()
       );
+      //
+      //Why do months start at 0?
+      //TODO
+      //
     };
 
     const edit = (folder: string)=>{
