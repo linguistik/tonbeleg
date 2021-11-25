@@ -10,21 +10,54 @@
       </ion-header>
       <!--  Hier ist der Button in der Mitte  -->
       <ion-fab vertical="center" horizontal="center" slot="fixed">
+
+
         <ion-fab-button
-          v-if="!recordingStatus"
+          v-if="recordingStatus == recordingStatusEnums.NOT_RECORDING "
           color="success"
           v-on:click="startRecordingTrigger()"
         >
           <ion-icon :icon="caretForwardOutline"></ion-icon>
         </ion-fab-button>
+
         <ion-fab-button
-          v-else
+            v-else-if="recordingStatus == recordingStatusEnums.DOING_SMT "
+            color="medium-shade"
+        >
+          <ion-icon :icon="caretForwardOutline"></ion-icon>
+        </ion-fab-button>
+
+        <ion-fab-button
+            v-else
           color="danger"
           v-on:click="stopRecordingTrigger()"
         >
           <ion-icon :icon="stopSharp"></ion-icon>
         </ion-fab-button>
+
+        <!--  Pause and Resume  -->
+        <ion-fab-button
+            v-if="recordingStatus == recordingStatusEnums.IS_RECORDING "
+            color="primary-contrast"
+            v-on:click="pauseRecordingTrigger()"
+        >
+          <ion-icon :icon="playSkipForwardOutline"></ion-icon>
+        </ion-fab-button>
+
+        <ion-fab-button
+            v-if="recordingStatus == recordingStatusEnums.RECORDING_PAUSED "
+            color="primary-contrast"
+            v-on:click="continueRecordingTrigger()"
+        >
+          <ion-icon :icon="playOutline"></ion-icon>
+        </ion-fab-button>
       </ion-fab>
+
+
+
+
+
+
     </ion-content>
   </ion-page>
 </template>
@@ -54,7 +87,7 @@ import {
   // CurrentRecordingStatus
 } from "capacitor-voice-recorder";
 
-import { caretForwardOutline, stopSharp } from "ionicons/icons";
+import { caretForwardOutline, stopSharp, playSkipForwardOutline, playOutline } from "ionicons/icons";
 
 import firebase from "@/backend/firebase-config";
 import {
@@ -112,36 +145,100 @@ export default defineComponent({
       console.log(error);
     }
 
-    // Start & Stop Recoding
-    const recordingStatus = ref(false); // Für Button
 
+    const recordingStatusEnums = {
+      NOT_RECORDING:0,
+      IS_RECORDING:1,
+      RECORDING_PAUSED:3,
+      DOING_SMT:4,
+    }
+    // Start & Stop Recoding
+    const recordingStatus =ref( recordingStatusEnums.NOT_RECORDING);
+
+    const pauseRecordingTrigger = async () => {
+      await VoiceRecorder.pauseRecording().then((result: GenericResponse) => {
+        recordingStatus.value= recordingStatusEnums.RECORDING_PAUSED;
+        console.log(recordingStatus);
+
+      }).catch((error) => {
+        recordingStatus.value = recordingStatusEnums.NOT_RECORDING;
+        // "MISSING_PERMISSION", "ALREADY_RECORDING", "MICROPHONE_BEING_USED", "DEVICE_CANNOT_VOICE_RECORD", or "FAILED_TO_RECORD"
+        console.log(error);
+      });
+    }
+
+
+    const continueRecordingTrigger = async () => {
+      await VoiceRecorder.resumeRecording().then((result: GenericResponse) => {
+        recordingStatus.value= recordingStatusEnums.IS_RECORDING;
+       console.log(recordingStatus);
+
+    }).catch((error) => {
+      recordingStatus.value = recordingStatusEnums.NOT_RECORDING;
+      // "MISSING_PERMISSION", "ALREADY_RECORDING", "MICROPHONE_BEING_USED", "DEVICE_CANNOT_VOICE_RECORD", or "FAILED_TO_RECORD"
+      console.log(error);
+    });
+
+    }
     const startRecordingTrigger = async () => {
+      recordingStatus.value=recordingStatusEnums.DOING_SMT;
       await VoiceRecorder.startRecording()
         .then((result: GenericResponse) => {
-          recordingStatus.value = true;
+
+          console.log(recordingStatus);
           console.log(result.value);
         })
         .catch((error) => {
-          recordingStatus.value = false;
+          recordingStatus.value = recordingStatusEnums.NOT_RECORDING;
           // "MISSING_PERMISSION", "ALREADY_RECORDING", "MICROPHONE_BEING_USED", "DEVICE_CANNOT_VOICE_RECORD", or "FAILED_TO_RECORD"
           console.log(error);
         });
-    };
+      recordingStatus.value= recordingStatusEnums.IS_RECORDING;
+    };/*
+    const pauseRecordingTrigger = async () => {
+      try{
+      await VoiceRecorder.pauseRecording()
+          .then((result: GenericResponse) => console.log(result.value))
+          .catch(error => console.log(error))
+
+      }
+      catch(error){
+        console.log(error);
+        recordingStatus.value=false;
+
+      }
+
+    }*/
+
+
+
+
+
 
     const stopRecordingTrigger = async () => {
+      recordingStatus.value=recordingStatusEnums.DOING_SMT;
       let recordingData;
+      console.log(recordingStatus);
       try {
         recordingData = await VoiceRecorder.stopRecording();
-        recordingStatus.value = false;
+        recordingStatus.value = recordingStatusEnums.NOT_RECORDING;
         console.log(recordingData.value);
       } catch (error) {
-        recordingStatus.value = false;
+        recordingStatus.value = recordingStatusEnums.NOT_RECORDING;
         // "RECORDING_HAS_NOT_STARTED" or "FAILED_TO_FETCH_RECORDING"
         console.log(error);
 
         //TODO error handling
         return;
       }
+
+
+
+
+
+
+
+
       //get userUID
       const currentUser = firebase.auth().currentUser;
       if (currentUser == null) return;
@@ -208,8 +305,13 @@ export default defineComponent({
       recordingStatus,
       startRecordingTrigger,
       stopRecordingTrigger,
+      continueRecordingTrigger,
+      pauseRecordingTrigger,
       caretForwardOutline,
       stopSharp,
+      recordingStatusEnums,
+      playSkipForwardOutline,
+      playOutline
     };
   },
 });

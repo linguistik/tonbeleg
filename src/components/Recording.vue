@@ -2,7 +2,7 @@
   <ion-item v-if="isOpen">
       <ion-label>
         <strong>
-        {{ folder }}
+        {{ getDisplayName(folder) }}
         </strong>
         <h5>
           Aufgenommen am:
@@ -80,7 +80,26 @@ export default {
       //TODO
       //
     };
-
+    const getDisplayName = (folder: string) => {
+      const date = new Date(parseInt(folder));
+      console.log(parseInt(folder));
+      console.log(date.getMonth());
+      return (
+          date.getDate() +
+          "." +
+          (date.getMonth()+1) +
+          "." +
+          date.getFullYear() +
+          "_" +
+          date.getHours() +
+          ":" +
+          date.getMinutes()
+      );
+      //
+      //Why do months start at 0?
+      //TODO
+      //
+    };
     const edit = (folder: string)=>{
       //router.options.
       //router.push("/edit?folderName=abc");
@@ -100,6 +119,7 @@ export default {
       open,
       getRecordingDate,
       edit,
+      getDisplayName,
       upload
     };
   },
