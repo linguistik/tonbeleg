@@ -5,7 +5,7 @@
     <ion-content :fullscreen="true">
       <ion-header collapse="condense">
         <ion-toolbar>
-          <ion-title size="large">{{ t("record.record_noun") }}</ion-title>
+          <ion-title size="large">Aufnehmen</ion-title>
         </ion-toolbar>
       </ion-header>
       <!--  Hier ist der Button in der Mitte  -->
@@ -15,14 +15,14 @@
           color="success"
           v-on:click="startRecordingTrigger()"
         >
-          <ion-icon :name="caretForwardOutline"></ion-icon>
+          <ion-icon :icon="caretForwardOutline"></ion-icon>
         </ion-fab-button>
         <ion-fab-button
           v-else
           color="danger"
           v-on:click="stopRecordingTrigger()"
         >
-          <ion-icon :name="stopSharp"></ion-icon>
+          <ion-icon :icon="stopSharp"></ion-icon>
         </ion-fab-button>
       </ion-fab>
     </ion-content>
@@ -86,29 +86,31 @@ export default defineComponent({
     //https://expertcodeblog.wordpress.com/2018/07/05/typescript-sleep-a-thread/
     //const delay = (ms: number)=>{return new Promise(resolve =>setTimeout(resolve,ms));};
 
-
     // Alles von hier: https://github.com/tchvu3/capacitor-voice-recorder#usage
+    try {
+      // Überprüfe ob ein Mic existiert.
+      // z.B. Zeige eine Nachricht in der App an, dass ein Mic angeschlossen werden muss.
+      VoiceRecorder.canDeviceVoiceRecord().then((result: GenericResponse) => {
+        console.log(`Gibt es ein Mic? ${result.value}`);
+      }).catch((error)=>{console.log(error)});//Do remove the .catch block. The test won't like that
 
-    // Überprüfe ob ein Mic existiert.
-    // z.B. Zeige eine Nachricht in der App an, dass ein Mic angeschlossen werden muss.
-    VoiceRecorder.canDeviceVoiceRecord().then((result: GenericResponse) => {
-      console.log(`Gibt es ein Mic? ${result.value}`);
-    });
+      // Der Browser fragt den Benutzer ob das Mikrofon aktiviert werden darf.
+      // Das ist so ein kleines PopUp-Fenster im Browser.
+      VoiceRecorder.requestAudioRecordingPermission().then(
+        (result: GenericResponse) => {
+          console.log(`Ist das Mic eingeschaltet? ${result.value}`);
+        }
+      ).catch((error)=>{console.log(error)});//Do remove the .catch block. The test won't like that
 
-    // Der Browser fragt den Benutzer ob das Mikrofon aktiviert werden darf.
-    // Das ist so ein kleines PopUp-Fenster im Browser.
-    VoiceRecorder.requestAudioRecordingPermission().then(
-      (result: GenericResponse) => {
-        console.log(`Ist das Mic eingeschaltet? ${result.value}`);
-      }
-    );
-
-    //
-    VoiceRecorder.hasAudioRecordingPermission().then(
-      (result: GenericResponse) => {
-        console.log(`Darf die App aufzeichnen? ${result.value}`);
-      }
-    );
+      //
+      VoiceRecorder.hasAudioRecordingPermission().then(
+        (result: GenericResponse) => {
+          console.log(`Darf die App aufzeichnen? ${result.value}`);
+        }
+      ).catch((error)=>{console.log(error)});//Do remove the .catch block. The test won't like that
+    } catch (error) {
+      console.log(error);
+    }
 
     // Start & Stop Recoding
     const recordingStatus = ref(false); // Für Button
@@ -175,7 +177,9 @@ export default defineComponent({
         return;
       }
 
-      console.log("write to:"+ "/" + userUID + "/" + timestamp + "/" + "0.raw");
+      console.log(
+        "write to:" + "/" + userUID + "/" + timestamp + "/" + "0.raw"
+      );
 
       //write file
       try {
@@ -188,16 +192,9 @@ export default defineComponent({
         console.log(error);
         //TODO exception handling
       }
-    
-      //await delay(3000);
-      console.log("read folder:"+ "/" + userUID + "/" + timestamp + "/");
 
-      const readdir = await Filesystem.readdir({
-        path: "/" + userUID,
-        directory: Directory.Data
-      });
-      console.log("path:" + userUID + "/" + timestamp);
-      console.log(readdir.files);
+      //await delay(3000);
+      console.log("read folder:" + "/" + userUID + "/" + timestamp + "/");
     };
 
     // VoiceRecorder.pauseRecording
@@ -205,8 +202,6 @@ export default defineComponent({
     // VoiceRecorder.resumeRecording
 
     // Abspielen: https://github.com/tchvu3/capacitor-voice-recorder#playback
-
-
 
     return {
       t,
