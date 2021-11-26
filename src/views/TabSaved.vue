@@ -23,6 +23,10 @@
   </ion-page>
 </template>
 
+<!--
+If u are trying to fix a bug that occured on a test,
+read example.spec.ts first
+-->
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
@@ -51,6 +55,7 @@ import firebase from "@/backend/firebase-config";
 import Recording from "@/components/Recording.vue";
 
 export default defineComponent({
+  name: "TabSaved",
   components: {
     PageHeader,
     IonHeader,
@@ -95,7 +100,6 @@ export default defineComponent({
   },
 });
 </script>
-
 <style scoped>
 #container {
   text-align: center;
@@ -113,4 +117,5 @@ export default defineComponent({
   color: #8c8c8c;
   margin: 0;
 }
+
 </style>

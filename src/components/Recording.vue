@@ -109,7 +109,26 @@ export default {
       //TODO
       //
     };
-
+    const getDisplayName = (folder: string) => {
+      const date = new Date(parseInt(folder));
+      console.log(parseInt(folder));
+      console.log(date.getMonth());
+      return (
+          date.getDate() +
+          "." +
+          (date.getMonth()+1) +
+          "." +
+          date.getFullYear() +
+          "_" +
+          date.getHours() +
+          ":" +
+          date.getMinutes()
+      );
+      //
+      //Why do months start at 0?
+      //TODO
+      //
+    };
     const edit = (folder: string)=>{
       //router.options.
       //router.push("/edit?folderName=abc");
@@ -163,6 +182,7 @@ export default {
       upload,
       loeschen,
       rename,
+
     };
   },
 };
