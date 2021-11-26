@@ -1,49 +1,69 @@
+<!--<template>
+  <ion-item>
+    <ion-label>
+      <strong>
+        {{ folder }}
+      </strong>
+      <h5>
+        Aufgenommen am:
+        {{ getRecordingDate(folder) }}
+        <br>
+      </h5>
+    </ion-label>
+    <ion-icon :icon="arrowUp" @click="upload()"></ion-icon>
+    <ion-icon :icon="trash" @click="loeschen(folder)"></ion-icon>
+    <ion-icon :icon="pencil" @click="rename(folder)"></ion-icon>
+  </ion-item>
+
+</template>-->
 <template>
   <ion-item v-if="isOpen">
-      <ion-label>
-        <strong>
+    <ion-label>
+      <strong>
         {{ folder }}
-        </strong>
-        <h5>
-          Aufgenommen am:
-          {{ getRecordingDate(folder) }}
+      </strong>
+      <h5>
+        Aufgenommen am:
+        {{ getRecordingDate(folder) }}
         <br>
-        </h5>
-      </ion-label>
-      <ion-button @click="edit(folder)"> Bearbeiten </ion-button>
-      <ion-button @click="upload()"> Zum Hochladen markieren </ion-button>
-      <ion-icon :icon="chevronDownOutline" @click="open()"></ion-icon>
+      </h5>
+    </ion-label>
+    <ion-icon :icon="arrowUp" @click="upload()"></ion-icon>
+    <ion-icon :icon="trash" @click="loeschen(folder)"></ion-icon>
+    <ion-icon :icon="pencil" @click="rename(folder)"></ion-icon>
+    <ion-icon :icon="chevronDownOutline" @click="open()"></ion-icon>
   </ion-item>
 
   <ion-item v-else>
-    <ion-label text-wrap> 
-        <strong>
+    <ion-label text-wrap>
+      <strong>
         {{ folder }}
-        </strong> </ion-label>
+      </strong> </ion-label>
     <ion-icon  :icon="chevronBackOutline" @click="open()"></ion-icon>
   </ion-item>
 </template>
 
 
-
 <script lang="ts">
-import { ref } from "vue";
+import {ref} from "vue";
 
-import { useI18n } from "vue-i18n";
+import {useI18n} from "vue-i18n";
 
-import { chevronDownOutline, chevronBackOutline } from "ionicons/icons";
+import {arrowUp, pencil, trash, chevronDownOutline, chevronBackOutline} from "ionicons/icons";
 
-import { IonItem, IonIcon, IonLabel,  IonButton } from "@ionic/vue";
+import {IonIcon, IonItem, IonLabel} from "@ionic/vue";
+
 
 import router from '@/router';
+import {Directory, Filesystem} from "@capacitor/filesystem";
+import firebase from "@/backend/firebase-config";
+
 export default {
   name: "Recording",
   components: {
     IonItem,
     IonIcon,
     IonLabel,
-    
-    IonButton,
   },
 
   props: {
@@ -60,21 +80,30 @@ export default {
       isOpen.value = !isOpen.value;
     };
 
+    const currentUser = firebase.auth().currentUser;
+    if (currentUser == null) return;
+    const UserUID = currentUser.uid;
+
     const getRecordingDate = (folder: string) => {
       const date = new Date(parseInt(folder));
       console.log(parseInt(folder));
       console.log(date.getMonth());
       return (
-        date.getDate() +
-        "." +
-        (date.getMonth()+1) +
-        "." +
-        date.getFullYear() +
-        ", " +
-        date.getHours() +
-        ":" +
-        date.getMinutes()
+          date.getDate() +
+          "." +
+          (date.getMonth()+1) +
+          "." +
+          date.getFullYear() +
+          ", " +
+          date.getHours() +
+          ":" +
+          date.getMinutes()
+
       );
+      /*Filesystem.stat({
+        path: UserUID + "/" + folder,
+        directory: Directory.Data,
+      });*/
       //
       //Why do months start at 0?
       //TODO
@@ -88,19 +117,52 @@ export default {
     }
 
     const upload = ()=>{
+      //TODO
+      console.log("updload this thing");
+    }
+
+    const rename =(folder: string)=>{
+      //TODO
+
+      Filesystem.rename({
+        from: UserUID + "/" + folder,
+        to: UserUID + "/" + "bambus",
+        directory:Directory.Data,
+        toDirectory:Directory.Data,
+      });
+      console.log("rename data");
+    }
+    const loeschen = async (folder: string)=>{
+      //TODO
+      try{
+        await Filesystem.rmdir({
+          path: "/" + UserUID +  "/" + folder,
+          directory: Directory.Data,
+          recursive: true,
+        })
+        console.log("successfully deleted");
+      }
+      catch(error){
+        console.log(error);
         //TODO
-        console.log("updload this thing");
+      }
+      console.log("delete this thing");
     }
 
     return {
       t,
+      trash,
+      arrowUp,
+      pencil,
       chevronDownOutline,
       chevronBackOutline,
       isOpen,
       open,
       getRecordingDate,
       edit,
-      upload
+      upload,
+      loeschen,
+      rename,
     };
   },
 };
@@ -112,7 +174,7 @@ ion-icon {
   top: 0;
 }
 ion-item {
- /* --min-height: 100px;*/
+  /* --min-height: 100px;*/
 }
 ion-contenc {
   --scroll-x: false;
