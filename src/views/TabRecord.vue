@@ -9,6 +9,7 @@
         </ion-toolbar>
       </ion-header>
       <!--  Hier ist der Button in der Mitte  -->
+
       <ion-fab vertical="center" horizontal="center" slot="fixed">
 
 
@@ -52,17 +53,8 @@
           <ion-icon :icon="playOutline"></ion-icon>
         </ion-fab-button>
         <!--  Timer  -->
-        <p>Zeit: {{timerString}}</p>
       </ion-fab>
-
-
-
-
-
-
-
-
-
+      <div id="uhr"><p>Zeit: {{timerString}}</p></div>
     </ion-content>
   </ion-page>
 </template>
@@ -318,3 +310,14 @@ export default defineComponent({
   },
 });
 </script>
+
+<style scoped>
+#uhr{
+  position: absolute;
+  /*nicht die beste lösung elemente können überlappen*/
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+</style>
