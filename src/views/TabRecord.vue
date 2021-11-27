@@ -41,7 +41,7 @@
             color="primary-contrast"
             v-on:click="pauseRecordingTrigger()"
         >
-          <ion-icon :icon="playSkipForwardOutline"></ion-icon>
+          <ion-icon :icon="pauseOutline"></ion-icon>
         </ion-fab-button>
 
         <ion-fab-button
@@ -51,7 +51,12 @@
         >
           <ion-icon :icon="playOutline"></ion-icon>
         </ion-fab-button>
+        <!--  Timer  -->
+        <p>Zeit: {{timerString}}</p>
       </ion-fab>
+
+
+
 
 
 
@@ -67,6 +72,7 @@
 import { defineComponent, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import PageHeader from "@/components/layout/PageHeader.vue";
+
 
 import {
   IonPage,
@@ -87,7 +93,7 @@ import {
   // CurrentRecordingStatus
 } from "capacitor-voice-recorder";
 
-import { caretForwardOutline, stopSharp, playSkipForwardOutline, playOutline } from "ionicons/icons";
+import { caretForwardOutline, stopSharp, playSkipForwardOutline, playOutline, pauseOutline } from "ionicons/icons";
 
 import firebase from "@/backend/firebase-config";
 import {
@@ -110,12 +116,16 @@ export default defineComponent({
     IonFab,
     IonFabButton,
     IonIcon,
+
   },
 
   setup() {
     // multi-lingual support
     const { t } = useI18n();
+    //const timer =ref( 0);
 
+    const timer = ref(new Date(0))
+    const timerString=ref(timer.value.toISOString().substr(11, 8));
     //https://expertcodeblog.wordpress.com/2018/07/05/typescript-sleep-a-thread/
     //const delay = (ms: number)=>{return new Promise(resolve =>setTimeout(resolve,ms));};
 
@@ -144,7 +154,6 @@ export default defineComponent({
     } catch (error) {
       console.log(error);
     }
-
 
     const recordingStatusEnums = {
       NOT_RECORDING:0,
@@ -181,6 +190,7 @@ export default defineComponent({
 
     }
     const startRecordingTrigger = async () => {
+      timer.value.setSeconds(0);
       recordingStatus.value=recordingStatusEnums.DOING_SMT;
       await VoiceRecorder.startRecording()
         .then((result: GenericResponse) => {
@@ -194,28 +204,11 @@ export default defineComponent({
           console.log(error);
         });
       recordingStatus.value= recordingStatusEnums.IS_RECORDING;
-    };/*
-    const pauseRecordingTrigger = async () => {
-      try{
-      await VoiceRecorder.pauseRecording()
-          .then((result: GenericResponse) => console.log(result.value))
-          .catch(error => console.log(error))
-
-      }
-      catch(error){
-        console.log(error);
-        recordingStatus.value=false;
-
-      }
-
-    }*/
-
-
-
-
+    };
 
 
     const stopRecordingTrigger = async () => {
+
       recordingStatus.value=recordingStatusEnums.DOING_SMT;
       let recordingData;
       console.log(recordingStatus);
@@ -231,11 +224,6 @@ export default defineComponent({
         //TODO error handling
         return;
       }
-
-
-
-
-
 
 
 
@@ -294,9 +282,21 @@ export default defineComponent({
       console.log("read folder:" + "/" + userUID + "/" + timestamp + "/");
     };
 
-    // VoiceRecorder.pauseRecording
 
-    // VoiceRecorder.resumeRecording
+    //Timer
+
+    const timerHandler = async () => {
+      if(recordingStatus.value==recordingStatusEnums.IS_RECORDING) {
+        timer.value.setSeconds(timer.value.getSeconds()+1)
+        timerString.value=timer.value.toISOString().substr(11, 8);
+        console.log(timer.value);
+      }
+    }
+
+    setInterval(() => {
+      timerHandler(); // Now the "this" still references the component
+    }, 1000);
+
 
     // Abspielen: https://github.com/tchvu3/capacitor-voice-recorder#playback
 
@@ -311,7 +311,9 @@ export default defineComponent({
       stopSharp,
       recordingStatusEnums,
       playSkipForwardOutline,
-      playOutline
+      playOutline,
+      timerString,
+      pauseOutline
     };
   },
 });
