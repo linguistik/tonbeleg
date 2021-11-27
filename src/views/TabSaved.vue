@@ -8,10 +8,13 @@
           <ion-title size="large">Gespeichertes</ion-title>
         </ion-toolbar>
       </ion-header>
+      <ion-button v-on:click="refresh()">
+        refresh
+      </ion-button>
       <ion-list
       v-if="recordingFolders.length!=0">
         <ol>
-          <Recording v-for="item in recordingFolders" v-bind:key="item" v-bind:folder="item">
+          <Recording v-for="item in recordingFolders" v-bind:key="item" v-bind:folder="item" @confirmed="refreshAfterTimeout">
           </Recording>
         </ol>
       </ion-list>
@@ -19,7 +22,12 @@
     <p>Du hast auf diesem Gerät noch keine gespeicherten Aufnahmen </p>
   </div>
 
+
+
     </ion-content>
+
+
+
   </ion-page>
 </template>
 
@@ -29,7 +37,7 @@ read example.spec.ts first
 -->
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import {defineComponent, ref,} from "vue";
 import { useI18n } from "vue-i18n";
 import PageHeader from "@/components/layout/PageHeader.vue";
 
@@ -39,7 +47,7 @@ import {
   IonToolbar,
   IonTitle,
   IonContent,
-  
+  IonButton,
   IonList,
 } from "@ionic/vue";
 
@@ -63,11 +71,19 @@ export default defineComponent({
     IonTitle,
     IonContent,
     IonPage,
-    
+    IonButton,
     IonList,
     Recording,
   },
 
+/*
+      methods: {
+        setMessage() {
+          console.log("jaaaaaaaaaaaaa");
+          refresh();
+        },
+      },
+*/
   setup() {
     // multi-lingual support
     const { t } = useI18n();
@@ -78,7 +94,7 @@ export default defineComponent({
     const userUID = currentUser.uid;
 
     const recordingFolders = ref(['']);
-
+    
     //TODO dynamically load new data
     //
     const getRecordingFolders = async () => {
@@ -87,6 +103,8 @@ export default defineComponent({
         path: "/" + userUID,
         directory: Directory.Data,
       });
+
+
       console.log(readdir);
       for(const folder of readdir.files){
         recordingFolders.value.push(folder);
@@ -94,11 +112,41 @@ export default defineComponent({
     };
 
     getRecordingFolders();
+
+    const test1 = async () => {
+      console.log("passt")
+    }
+
+    const refresh = async () => {
+      recordingFolders.value=[''];
+      await getRecordingFolders();
+    }
+
+
+    const refreshAfterTimeout = async () => {
+      window.setTimeout(refresh,100);
+
+    }
+
+
+
+/*
+    setInterval(() => {
+      refresh(); // Now the "this" still references the component
+    }, 1000);
+*/
     //recordingFolders.value = getRecordingFolders();
     console.log(recordingFolders.value.length);
-    return { t, recordingFolders };
+    return { t, recordingFolders, refreshAfterTimeout, refresh, test1, IonButton };
+
+
   },
-});
+
+
+}
+
+
+);
 </script>
 <style scoped>
 #container {
