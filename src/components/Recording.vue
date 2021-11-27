@@ -29,7 +29,7 @@
       </h5>
     </ion-label>
     <ion-icon :icon="arrowUp" @click="upload()"></ion-icon>
-    <ion-icon :icon="trash" @click="loeschen(folder); refreshOnMainPage()"  ></ion-icon>
+    <ion-icon :icon="trash" @click="loeschen(folder)"  ></ion-icon>
     <ion-icon :icon="pencil" @click="rename(folder)"></ion-icon>
     <ion-icon :icon="chevronDownOutline" @click="open()"></ion-icon>
   </ion-item>
@@ -72,7 +72,7 @@ export default {
     folder: String,
   },
 
-
+/*
   methods: {
     refreshOnMainPage: function () {
       (this as any).$emit('confirmed');
@@ -80,11 +80,11 @@ export default {
     }
   },
 
-
+*/
 
 
   //const folder = this.folder;
-  setup() {
+  setup(props: any, context: any) {
     // multi-lingual support
 
     const {t} = useI18n();
@@ -154,7 +154,7 @@ export default {
         //TODO
       }
       console.log("delete this thing");
-
+      context.emit('refreshEmit');
     }
 
 

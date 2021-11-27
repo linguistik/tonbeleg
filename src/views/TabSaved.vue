@@ -14,7 +14,7 @@
       <ion-list
       v-if="recordingFolders.length!=0">
         <ol>
-          <Recording v-for="item in recordingFolders" v-bind:key="item" v-bind:folder="item" @confirmed="refreshAfterTimeout">
+          <Recording v-for="item in recordingFolders" v-bind:key="item" v-bind:folder="item" @refreshEmit="refreshAfterTimeout">
           </Recording>
         </ol>
       </ion-list>
