@@ -52,7 +52,7 @@ import {useI18n} from "vue-i18n";
 import {arrowUp, pencil, trash, chevronDownOutline, chevronBackOutline} from "ionicons/icons";
 
 import {IonIcon, IonItem, IonLabel} from "@ionic/vue";
-
+import {alertController} from "@ionic/vue";
 
 import router from '@/router';
 import {Directory, Filesystem} from "@capacitor/filesystem";
@@ -109,26 +109,7 @@ export default {
       //TODO
       //
     };
-    const getDisplayName = (folder: string) => {
-      const date = new Date(parseInt(folder));
-      console.log(parseInt(folder));
-      console.log(date.getMonth());
-      return (
-          date.getDate() +
-          "." +
-          (date.getMonth()+1) +
-          "." +
-          date.getFullYear() +
-          "_" +
-          date.getHours() +
-          ":" +
-          date.getMinutes()
-      );
-      //
-      //Why do months start at 0?
-      //TODO
-      //
-    };
+
     const edit = (folder: string)=>{
       //router.options.
       //router.push("/edit?folderName=abc");
@@ -138,6 +119,22 @@ export default {
     const upload = ()=>{
       //TODO
       console.log("updload this thing");
+    }
+
+    const folderloeschen = async (folder: string) =>{
+      try{
+        await Filesystem.rmdir({
+          path: "/" + UserUID +  "/" + folder,
+          directory: Directory.Data,
+          recursive: true,
+        })
+        console.log("successfully deleted");
+      }
+      catch(error){
+        console.log(error);
+        //TODO
+      }
+      console.log("delete this thing");
     }
 
     const rename =(folder: string)=>{
@@ -153,19 +150,21 @@ export default {
     }
     const loeschen = async (folder: string)=>{
       //TODO
-      try{
-        await Filesystem.rmdir({
-          path: "/" + UserUID +  "/" + folder,
-          directory: Directory.Data,
-          recursive: true,
-        })
-        console.log("successfully deleted");
-      }
-      catch(error){
-        console.log(error);
-        //TODO
-      }
-      console.log("delete this thing");
+      const alert = await alertController.create({
+        message: 'Do you really want to delete this file?',
+        buttons: [{
+          text:'Cancel',
+          handler: blah =>{
+            console.log('confirm Cancel', blah);
+          },
+        }, {
+          text: 'OK',
+          handler: () =>{
+            folderloeschen(folder);
+          },
+        }],
+      });
+      await alert.present();
     }
 
     return {
