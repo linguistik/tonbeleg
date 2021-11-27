@@ -73,7 +73,6 @@ export default {
   setup() {
     // multi-lingual support
     const { t } = useI18n();
-
     const isOpen = ref(false);
 
     const open = () => {
@@ -137,17 +136,55 @@ export default {
       console.log("delete this thing");
     }
 
-    const rename =(folder: string)=>{
-      //TODO
-
+    const actualRename = (folder: string, name: string) => {
       Filesystem.rename({
         from: UserUID + "/" + folder,
-        to: UserUID + "/" + "bambus",
+        to: name,
         directory:Directory.Data,
         toDirectory:Directory.Data,
       });
-      console.log("rename data");
+      console.log("rename sucessfull");
     }
+
+    const rename = async (folder: string)=> {
+      //TODO
+      const alert = await alertController.create({
+        message: 'Choose a name',
+        inputs: [
+          {
+            name:'textFeld',
+            id: 'textFeld',
+            type: 'text',
+            attributes: {
+              required: true,
+              minlength: 1,
+              maxlength: 20,
+              inputMode: 'text',
+            },
+            handler: () => {
+              console.log('texteingabe erfolgt');
+            }
+          }
+        ],
+        buttons:[{
+          text: 'cancel',
+          handler: ()=>{
+            console.log('confirm cancel');
+          },
+        },
+          {
+          text: 'OK',
+            handler: data =>{
+                const x = data.textFeld;
+                console.log(x);
+                actualRename(folder, x);
+            }
+        }
+        ]
+      });
+      await alert.present();
+    }
+
     const loeschen = async (folder: string)=>{
       //TODO
       const alert = await alertController.create({
