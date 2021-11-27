@@ -29,7 +29,7 @@
       </h5>
     </ion-label>
     <ion-icon :icon="arrowUp" @click="upload()"></ion-icon>
-    <ion-icon :icon="trash" @click="loeschen(folder)"></ion-icon>
+    <ion-icon :icon="trash" @click="loeschen(folder); refreshOnMainPage()"  ></ion-icon>
     <ion-icon :icon="pencil" @click="rename(folder)"></ion-icon>
     <ion-icon :icon="chevronDownOutline" @click="open()"></ion-icon>
   </ion-item>
@@ -51,7 +51,7 @@ import {useI18n} from "vue-i18n";
 
 import {arrowUp, pencil, trash, chevronDownOutline, chevronBackOutline} from "ionicons/icons";
 
-import {IonIcon, IonItem, IonLabel} from "@ionic/vue";
+import {IonIcon, IonItem, IonLabel, } from "@ionic/vue";
 
 
 import router from '@/router';
@@ -69,10 +69,22 @@ export default {
   props: {
     folder: String,
   },
+
+
+  methods: {
+    refreshOnMainPage: function () {
+      (this as any).$emit('confirmed');
+
+    }
+  },
+
+
+
+
   //const folder = this.folder;
   setup() {
     // multi-lingual support
-    const { t } = useI18n();
+    const {t} = useI18n();
 
     const isOpen = ref(false);
 
@@ -84,6 +96,8 @@ export default {
     if (currentUser == null) return;
     const UserUID = currentUser.uid;
 
+
+
     const getRecordingDate = (folder: string) => {
       const date = new Date(parseInt(folder));
       console.log(parseInt(folder));
@@ -91,7 +105,7 @@ export default {
       return (
           date.getDate() +
           "." +
-          (date.getMonth()+1) +
+          (date.getMonth() + 1) +
           "." +
           date.getFullYear() +
           ", " +
@@ -100,6 +114,8 @@ export default {
           date.getMinutes()
 
       );
+
+
       /*Filesystem.stat({
         path: UserUID + "/" + folder,
         directory: Directory.Data,
@@ -109,64 +125,47 @@ export default {
       //TODO
       //
     };
-    const getDisplayName = (folder: string) => {
-      const date = new Date(parseInt(folder));
-      console.log(parseInt(folder));
-      console.log(date.getMonth());
-      return (
-          date.getDate() +
-          "." +
-          (date.getMonth()+1) +
-          "." +
-          date.getFullYear() +
-          "_" +
-          date.getHours() +
-          ":" +
-          date.getMinutes()
-      );
-      //
-      //Why do months start at 0?
-      //TODO
-      //
-    };
-    const edit = (folder: string)=>{
+
+
+    const edit = (folder: string) => {
       //router.options.
       //router.push("/edit?folderName=abc");
       router.push("/edit/" + folder);
     }
 
-    const upload = ()=>{
+    const upload = () => {
       //TODO
       console.log("updload this thing");
     }
 
-    const rename =(folder: string)=>{
+    const rename = (folder: string) => {
       //TODO
 
       Filesystem.rename({
         from: UserUID + "/" + folder,
         to: UserUID + "/" + "bambus",
-        directory:Directory.Data,
-        toDirectory:Directory.Data,
+        directory: Directory.Data,
+        toDirectory: Directory.Data,
       });
       console.log("rename data");
     }
-    const loeschen = async (folder: string)=>{
+    const loeschen = async (folder: string) => {
       //TODO
-      try{
+      try {
         await Filesystem.rmdir({
-          path: "/" + UserUID +  "/" + folder,
+          path: "/" + UserUID + "/" + folder,
           directory: Directory.Data,
           recursive: true,
         })
         console.log("successfully deleted");
-      }
-      catch(error){
+      } catch (error) {
         console.log(error);
         //TODO
       }
       console.log("delete this thing");
+
     }
+
 
     return {
       t,
@@ -182,10 +181,13 @@ export default {
       upload,
       loeschen,
       rename,
-
     };
+
   },
+
+
 };
+
 </script>
 <style scoped>
 ion-icon {
