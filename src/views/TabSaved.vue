@@ -12,9 +12,10 @@
         refresh
       </ion-button>
       <ion-list
+      lines="full"
       v-if="recordingFolders.length!=0">
         <ol>
-          <Recording v-for="item in recordingFolders" v-bind:key="item" v-bind:folder="item" @refreshEmit="refreshAfterTimeout">
+          <Recording v-for="item in recordingFolders" v-bind:key="item" v-bind:folder="item" @refreshEmit="refreshAfterTimeout()">
           </Recording>
         </ol>
       </ion-list>
@@ -76,14 +77,6 @@ export default defineComponent({
     Recording,
   },
 
-/*
-      methods: {
-        setMessage() {
-          console.log("jaaaaaaaaaaaaa");
-          refresh();
-        },
-      },
-*/
   setup() {
     // multi-lingual support
     const { t } = useI18n();
@@ -113,9 +106,6 @@ export default defineComponent({
 
     getRecordingFolders();
 
-    const test1 = async () => {
-      console.log("passt")
-    }
 
     const refresh = async () => {
       recordingFolders.value=[''];
@@ -125,20 +115,13 @@ export default defineComponent({
 
     const refreshAfterTimeout = async () => {
       window.setTimeout(refresh,100);
-
     }
 
 
-
-/*
-    setInterval(() => {
-      refresh(); // Now the "this" still references the component
-    }, 1000);
-*/
-    //recordingFolders.value = getRecordingFolders();
-    console.log(recordingFolders.value.length);
-    return { t, recordingFolders, refreshAfterTimeout, refresh, test1, IonButton };
-
+    return { t, 
+    recordingFolders, 
+    refreshAfterTimeout, 
+    refresh};
 
   },
 
