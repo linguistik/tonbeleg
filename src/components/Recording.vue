@@ -1,21 +1,3 @@
-<!--<template>
-  <ion-item>
-    <ion-label>
-      <strong>
-        {{ folder }}
-      </strong>
-      <h5>
-        Aufgenommen am:
-        {{ getRecordingDate(folder) }}
-        <br>
-      </h5>
-    </ion-label>
-    <ion-icon :icon="arrowUp" @click="upload()"></ion-icon>
-    <ion-icon :icon="trash" @click="loeschen(folder)"></ion-icon>
-    <ion-icon :icon="pencil" @click="rename(folder)"></ion-icon>
-  </ion-item>
-
-</template>-->
 <template>
   <ion-item v-if="isOpen">
     <ion-label>
@@ -29,9 +11,9 @@
       </h5>
     </ion-label>
     <ion-icon :icon="arrowUp" @click="upload()"></ion-icon>
-    <ion-icon :icon="trash" @click="loeschen(folder)"  ></ion-icon>
+    <ion-icon :icon="trash" @click="delteRecording(folder)"  ></ion-icon>
     <ion-icon :icon="pencil" @click="rename(folder)"></ion-icon>
-    <ion-icon :icon="chevronDownOutline" @click="open()"></ion-icon>
+    <ion-icon :icon="chevronDownOutline" @click="toggleOpen()"></ion-icon>
   </ion-item>
 
   <ion-item v-else>
@@ -39,7 +21,7 @@
       <strong>
         {{ folder }}
       </strong> </ion-label>
-    <ion-icon  :icon="chevronBackOutline" @click="open()"></ion-icon>
+    <ion-icon  :icon="chevronBackOutline" @click="toggleOpen()"></ion-icon>
   </ion-item>
 </template>
 
@@ -72,18 +54,6 @@ export default {
     folder: String,
   },
 
-/*
-  methods: {
-    refreshOnMainPage: function () {
-      (this as any).$emit('confirmed');
-
-    }
-  },
-
-*/
-
-
-  //const folder = this.folder;
   setup(props: any, context: any) {
     // multi-lingual support
 
@@ -91,7 +61,7 @@ export default {
 
     const isOpen = ref(false);
 
-    const open = () => {
+    const toggleOpen = () => {
       isOpen.value = !isOpen.value;
     };
 
@@ -103,35 +73,40 @@ export default {
 
     const getRecordingDate = (folder: string) => {
       const date = new Date(parseInt(folder));
-      console.log(parseInt(folder));
-      console.log(date.getMonth());
+      let day = date.getDate().toString();
+      let month = (date.getMonth() + 1).toString();
+      const year = date.getFullYear().toString();
+      let hours = date.getHours().toString();
+      let minutes = date.getMinutes().toString();
+
+      if(minutes.length==1){
+        minutes ="0" + minutes; 
+      }
+      if(hours.length==1){
+        hours = "0" + hours;
+      }
+      if(month.length==1){
+        month = "0" + month;
+      }
+      if(day.length==1){
+        day = "0" + day;
+      }
+
       return (
-          date.getDate() +
+          day +
           "." +
-          (date.getMonth() + 1) +
+          month +
           "." +
-          date.getFullYear() +
+          year +
           ", " +
-          date.getHours() +
+          hours +
           ":" +
-          date.getMinutes()
+          minutes
 
       );
-
-
-      /*Filesystem.stat({
-        path: UserUID + "/" + folder,
-        directory: Directory.Data,
-      });*/
-      //
-      //Why do months start at 0?
-      //TODO
-      //
-    };
+    };//method: getRecordingDate
 
     const edit = (folder: string)=>{
-      //router.options.
-      //router.push("/edit?folderName=abc");
       router.push("/edit/" + folder);
     }
 
@@ -141,7 +116,7 @@ export default {
     }
 
 
-    const folderloeschen = async (folder: string) =>{
+    const deleteFolder = async (folder: string) =>{
       try{
         await Filesystem.rmdir({
           path: "/" + UserUID + "/" + folder,
@@ -155,10 +130,11 @@ export default {
       }
       console.log("delete this thing");
       context.emit('refreshEmit');
-    }
+    }//method: deleteFolder
 
 
     const actualRename = (folder: string, name: string) => {
+      //TODO change that to the outsourced file
       Filesystem.rename({
         from: UserUID + "/" + folder,
         to: name,
@@ -166,7 +142,7 @@ export default {
         toDirectory:Directory.Data,
       });
       console.log("rename sucessfull");
-    }
+    }//method: actualRename
 
     const rename = async (folder: string)=> {
       //TODO
@@ -174,8 +150,8 @@ export default {
         message: 'Choose a name',
         inputs: [
           {
-            name:'textFeld',
-            id: 'textFeld',
+            name:'textField',
+            id: 'textField',
             type: 'text',
             attributes: {
               required: true,
@@ -184,10 +160,10 @@ export default {
               inputMode: 'text',
             },
             handler: () => {
-              console.log('texteingabe erfolgt');
+              console.log('texteingabe erfolgt');//is this handler really necessary?
             }
           }
-        ],
+        ],//inputs
         buttons:[{
           text: 'cancel',
           handler: ()=>{
@@ -196,35 +172,35 @@ export default {
         },
           {
           text: 'OK',
-            handler: data =>{
-                const x = data.textFeld;
+            handler: (data) =>{
+                const x = data.textField;
                 console.log(x);
                 actualRename(folder, x);
             }
         }
-        ]
-      });
+        ]//buttons
+      });//create alert
       await alert.present();
-    }
+    }//method rename
 
-    const loeschen = async (folder: string)=>{
-      //TODO
+    const delteRecording = async (folder: string)=>{
+      //TODO delete entry in outsourced
       const alert = await alertController.create({
         message: 'Do you really want to delete this file?',
         buttons: [{
           text:'Cancel',
-          handler: blah =>{
-            console.log('confirm Cancel', blah);
+          handler: () =>{
+            console.log('confirm Cancel');
           },
         }, {
           text: 'OK',
           handler: () =>{
-            folderloeschen(folder);
+            deleteFolder(folder);
           },
         }],
       });
       await alert.present();
-    }
+    }//method: deleteRecording
 
 
     return {
@@ -235,18 +211,18 @@ export default {
       chevronDownOutline,
       chevronBackOutline,
       isOpen,
-      open,
+      toggleOpen,
       getRecordingDate,
       edit,
       upload,
-      loeschen,
+      delteRecording,
       rename,
-    };
+    };//return
 
-  },
+  },//setup
 
 
-};
+};//export default
 
 </script>
 <style scoped>
