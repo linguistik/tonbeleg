@@ -105,6 +105,9 @@ import {
 } from "@capacitor/filesystem";
 //import { CapacitorException } from "@capacitor/core";
 
+import {insertRecordingEntry} from "@/scripts/RecordingStorage";
+import RecordingData from "@/scripts/RecordingData";
+
 export default defineComponent({
   components: {
     PageHeader,
@@ -165,7 +168,7 @@ export default defineComponent({
     const recordingStatus =ref( recordingStatusEnums.NOT_RECORDING);
 
     const pauseRecordingTrigger = async () => {
-      await VoiceRecorder.pauseRecording().then((result: GenericResponse) => {
+      await VoiceRecorder.pauseRecording().then(() => {
         recordingStatus.value= recordingStatusEnums.RECORDING_PAUSED;
         console.log(recordingStatus);
 
@@ -178,7 +181,7 @@ export default defineComponent({
 
 
     const continueRecordingTrigger = async () => {
-      await VoiceRecorder.resumeRecording().then((result: GenericResponse) => {
+      await VoiceRecorder.resumeRecording().then(() => {
         recordingStatus.value= recordingStatusEnums.IS_RECORDING;
        console.log(recordingStatus);
 
@@ -278,9 +281,10 @@ export default defineComponent({
         //TODO exception handling
       }
 
-      //await delay(3000);
-      console.log("read folder:" + "/" + userUID + "/" + timestamp + "/");
-    };
+      //create Entry in RecordingStorage
+      insertRecordingEntry(new RecordingData(timestamp,timestamp.toString(),["0.raw"],timer.value.getSeconds()));
+
+    };//method: stopRecordingTrigger
 
 
     //Timer
