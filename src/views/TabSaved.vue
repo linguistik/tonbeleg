@@ -8,7 +8,7 @@
           <ion-title size="large">Gespeichertes</ion-title>
         </ion-toolbar>
       </ion-header>
-      <ion-button v-on:click="refresh()">
+      <ion-button v-on:click="safeRecordings();loadRecordings();refresh()">
         refresh
       </ion-button>
       <ion-list
@@ -38,7 +38,7 @@ read example.spec.ts first
 -->
 
 <script lang="ts">
-import {defineComponent, ref,} from "vue";
+import {defineComponent, ref, Ref} from "vue";
 import { useI18n } from "vue-i18n";
 import PageHeader from "@/components/layout/PageHeader.vue";
 
@@ -63,6 +63,9 @@ import {
 import firebase from "@/backend/firebase-config";
 import Recording from "@/components/Recording.vue";
 
+import {loadRecordings, safeRecordings} from "@/scripts/RecordingStorage";
+import RecordingData from "@/scripts/RecordingData";
+
 export default defineComponent({
   name: "TabSaved",
   components: {
@@ -81,17 +84,18 @@ export default defineComponent({
     // multi-lingual support
     const { t } = useI18n();
 
+    loadRecordings();
+
     //get userUID
     const currentUser = firebase.auth().currentUser;
     if (currentUser == null) return;
     const userUID = currentUser.uid;
 
-    const recordingFolders = ref(['']);
+    const recordingFolders: Ref<string[]> = ref([]);
     
     //TODO dynamically load new data
     //
     const getRecordingFolders = async () => {
-      recordingFolders.value.pop();
       const readdir = await Filesystem.readdir({
         path: "/" + userUID,
         directory: Directory.Data,
@@ -108,7 +112,6 @@ export default defineComponent({
 
 
     const refresh = async () => {
-      recordingFolders.value=[''];
       await getRecordingFolders();
     }
 
@@ -121,7 +124,10 @@ export default defineComponent({
     return { t, 
     recordingFolders, 
     refreshAfterTimeout, 
-    refresh};
+    refresh,
+    safeRecordings,
+    loadRecordings,
+    };
 
   },
 

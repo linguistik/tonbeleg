@@ -105,6 +105,9 @@ import {
 } from "@capacitor/filesystem";
 //import { CapacitorException } from "@capacitor/core";
 
+import {insertRecordingEntry} from "@/scripts/RecordingStorage";
+import RecordingData from "@/scripts/RecordingData";
+
 export default defineComponent({
   components: {
     PageHeader,
@@ -277,6 +280,11 @@ export default defineComponent({
         console.log(error);
         //TODO exception handling
       }
+
+      //create Entry in RecordingStorage
+      insertRecordingEntry(new RecordingData(timestamp,timestamp.toString(),["0.raw"],0));
+
+
 
       //await delay(3000);
       console.log("read folder:" + "/" + userUID + "/" + timestamp + "/");
