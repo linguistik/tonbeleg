@@ -1,3 +1,4 @@
+import { getRecordingEntry } from "./RecordingStorage";
 
 
 export default class RecordingData{
@@ -12,4 +13,9 @@ export default class RecordingData{
         this.parts = parts;
         this.length = length;
     }
+}
+
+export function renameRecordingData(data: RecordingData, newName: string){
+    const actualData = getRecordingEntry(data.timestamp);
+    actualData.name = newName;
 }

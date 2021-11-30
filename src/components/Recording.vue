@@ -2,24 +2,24 @@
   <ion-item v-if="isOpen">
     <ion-label>
       <strong>
-        {{ folder }}
+        {{ recording.name }}
       </strong>
       <h5>
         Aufgenommen am:
-        {{ getRecordingDate(folder) }}
+        {{ getRecordingDate() }}
         <br>
       </h5>
     </ion-label>
     <ion-icon :icon="arrowUp" @click="upload()"></ion-icon>
-    <ion-icon :icon="trash" @click="delteRecording(folder)"  ></ion-icon>
-    <ion-icon :icon="pencil" @click="rename(folder)"></ion-icon>
+    <ion-icon :icon="trash" @click="delteRecording()"  ></ion-icon>
+    <ion-icon :icon="pencil" @click="rename()"></ion-icon>
     <ion-icon :icon="chevronDownOutline" @click="toggleOpen()"></ion-icon>
   </ion-item>
 
   <ion-item v-else>
     <ion-label text-wrap>
       <strong>
-        {{ folder }}
+        {{ recording.name }}
       </strong> </ion-label>
     <ion-icon  :icon="chevronBackOutline" @click="toggleOpen()"></ion-icon>
   </ion-item>
@@ -42,6 +42,9 @@ import router from '@/router';
 import {Directory, Filesystem} from "@capacitor/filesystem";
 import firebase from "@/backend/firebase-config";
 
+import RecordingData from "@/scripts/RecordingData";
+import {renameRecordingData} from "@/scripts/RecordingData";
+
 export default {
   name: "Recording",
   components: {
@@ -51,7 +54,7 @@ export default {
   },
 
   props: {
-    folder: String,
+    recording: RecordingData,
   },
 
   setup(props: any, context: any) {
@@ -71,8 +74,8 @@ export default {
 
 
 
-    const getRecordingDate = (folder: string) => {
-      const date = new Date(parseInt(folder));
+    const getRecordingDate = () => {
+      const date = new Date(parseInt(props.recording.timestamp));
       let day = date.getDate().toString();
       let month = (date.getMonth() + 1).toString();
       const year = date.getFullYear().toString();
@@ -133,18 +136,11 @@ export default {
     }//method: deleteFolder
 
 
-    const actualRename = (folder: string, name: string) => {
-      //TODO change that to the outsourced file
-      Filesystem.rename({
-        from: UserUID + "/" + folder,
-        to: name,
-        directory:Directory.Data,
-        toDirectory:Directory.Data,
-      });
-      console.log("rename sucessfull");
+    const actualRename = (name: string) => {
+      renameRecordingData(props.recording, name);
     }//method: actualRename
 
-    const rename = async (folder: string)=> {
+    const rename = async ()=> {
       //TODO
       const alert = await alertController.create({
         message: 'Choose a name',
@@ -160,7 +156,7 @@ export default {
               inputMode: 'text',
             },
             handler: () => {
-              console.log('texteingabe erfolgt');//is this handler really necessary?
+              console.log('texteingabe erfolgt');//is this handler really necessary? For some reason it is^^
             }
           }
         ],//inputs
@@ -175,7 +171,7 @@ export default {
             handler: (data) =>{
                 const x = data.textField;
                 console.log(x);
-                actualRename(folder, x);
+                actualRename(x);
             }
         }
         ]//buttons

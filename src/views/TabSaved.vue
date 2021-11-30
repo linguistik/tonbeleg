@@ -13,9 +13,9 @@
       </ion-button>
       <ion-list
       lines="full"
-      v-if="recordingFolders.length!=0">
+      v-if="recordingsRef.length!=0">
         <ol>
-          <Recording v-for="item in recordingFolders" v-bind:key="item" v-bind:folder="item" @refreshEmit="refreshAfterTimeout()">
+          <Recording v-for="item in recordingsRef" v-bind:key="item" v-bind:recording="item" @refreshEmit="refreshAfterTimeout()">
           </Recording>
         </ol>
       </ion-list>
@@ -63,7 +63,7 @@ import {
 import firebase from "@/backend/firebase-config";
 import Recording from "@/components/Recording.vue";
 
-import {loadRecordings, safeRecordings} from "@/scripts/RecordingStorage";
+import {loadRecordings, safeRecordings, recordings, getRecordings } from "@/scripts/RecordingStorage";
 import RecordingData from "@/scripts/RecordingData";
 
 export default defineComponent({
@@ -91,7 +91,7 @@ export default defineComponent({
     if (currentUser == null) return;
     const userUID = currentUser.uid;
 
-    const recordingFolders: Ref<string[]> = ref([]);
+    const recordingsRef: Ref<RecordingData[]> = ref([]);
     
     //TODO dynamically load new data
     //
@@ -104,8 +104,9 @@ export default defineComponent({
 
       console.log(readdir);
       for(const folder of readdir.files){
-        recordingFolders.value.push(folder);
+        //recordingFolders.value.push(folder);
       }
+      recordingsRef.value =  getRecordings();
     };
 
     getRecordingFolders();
@@ -122,7 +123,7 @@ export default defineComponent({
 
 
     return { t, 
-    recordingFolders, 
+    recordingsRef, 
     refreshAfterTimeout, 
     refresh,
     safeRecordings,

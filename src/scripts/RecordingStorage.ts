@@ -6,7 +6,7 @@ import { parseStringStyle } from "@vue/shared";
 
 //const r = new RecordingData(1,"a", ["a","b"],22);
 
-let recordings: RecordingData[] = [];
+export let recordings: RecordingData[] = [];
 
 export function safeRecordings() {//call this function on closing or on every change
     const dataString = JSON.stringify(recordings);
@@ -59,6 +59,15 @@ export function getRecordings(): RecordingData[] {
 
 export function insertRecordingEntry(recording: RecordingData) {
     recordings.push(recording);
+}
+
+export function getRecordingEntry(timestamp: number): RecordingData{
+    for(const recording of recordings){
+        if(recording.timestamp ==timestamp)
+            return recording;
+    }
+    console.log("\n\nFATAL ERROR: could not find recording with timestamp: " + timestamp + "\n\n");
+    return new RecordingData(0,"ERROR", [],0);
 }
 
 export function removeRecordingEntry(recording: RecordingData) {
