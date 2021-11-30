@@ -43,7 +43,7 @@ import {Directory, Filesystem} from "@capacitor/filesystem";
 import firebase from "@/backend/firebase-config";
 
 import RecordingData from "@/scripts/RecordingData";
-import {renameRecordingData} from "@/scripts/RecordingData";
+import {removeRecordingEntry, setRecordingEntryName} from "@/scripts/RecordingStorage";
 
 export default {
   name: "Recording",
@@ -109,8 +109,8 @@ export default {
       );
     };//method: getRecordingDate
 
-    const edit = (folder: string)=>{
-      router.push("/edit/" + folder);
+    const edit = ()=>{
+      router.push("/edit/" + props.recording.timestamp);
     }
 
     const upload = () => {
@@ -119,25 +119,15 @@ export default {
     }
 
 
-    const deleteFolder = async (folder: string) =>{
-      try{
-        await Filesystem.rmdir({
-          path: "/" + UserUID + "/" + folder,
-          directory: Directory.Data,
-          recursive: true,
-        })
-        console.log("successfully deleted");
-      } catch (error) {
-        console.log(error);
-        //TODO
-      }
-      console.log("delete this thing");
+    const actualDelete = async () =>{
+      removeRecordingEntry(props.recording);
       context.emit('refreshEmit');
     }//method: deleteFolder
 
 
-    const actualRename = (name: string) => {
-      renameRecordingData(props.recording, name);
+    const actualRename = (name: string) => {//props.recording is just a copy of the real object
+      setRecordingEntryName(props.recording.timestamp, name);
+      context.emit('refreshEmit');
     }//method: actualRename
 
     const rename = async ()=> {
@@ -191,7 +181,7 @@ export default {
         }, {
           text: 'OK',
           handler: () =>{
-            deleteFolder(folder);
+            actualDelete();
           },
         }],
       });

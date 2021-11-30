@@ -168,7 +168,7 @@ export default defineComponent({
     const recordingStatus =ref( recordingStatusEnums.NOT_RECORDING);
 
     const pauseRecordingTrigger = async () => {
-      await VoiceRecorder.pauseRecording().then((result: GenericResponse) => {
+      await VoiceRecorder.pauseRecording().then(() => {
         recordingStatus.value= recordingStatusEnums.RECORDING_PAUSED;
         console.log(recordingStatus);
 
@@ -181,7 +181,7 @@ export default defineComponent({
 
 
     const continueRecordingTrigger = async () => {
-      await VoiceRecorder.resumeRecording().then((result: GenericResponse) => {
+      await VoiceRecorder.resumeRecording().then(() => {
         recordingStatus.value= recordingStatusEnums.IS_RECORDING;
        console.log(recordingStatus);
 
@@ -282,13 +282,9 @@ export default defineComponent({
       }
 
       //create Entry in RecordingStorage
-      insertRecordingEntry(new RecordingData(timestamp,timestamp.toString(),["0.raw"],0));
+      insertRecordingEntry(new RecordingData(timestamp,timestamp.toString(),["0.raw"],timer.value.getSeconds()));
 
-
-
-      //await delay(3000);
-      console.log("read folder:" + "/" + userUID + "/" + timestamp + "/");
-    };
+    };//method: stopRecordingTrigger
 
 
     //Timer

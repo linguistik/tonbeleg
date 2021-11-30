@@ -2,7 +2,6 @@ import RecordingData from "./RecordingData"
 
 import firebase from "@/backend/firebase-config";
 import { Directory, Encoding, Filesystem } from "@capacitor/filesystem";
-import { parseStringStyle } from "@vue/shared";
 
 //const r = new RecordingData(1,"a", ["a","b"],22);
 
@@ -46,12 +45,12 @@ export async function loadRecordings() {
         console.log("readData:",readFileResult.data);
         recordings = JSON.parse(readFileResult.data);
 
-    }catch(error){//TODO ignore error when file does not exist already, this happens on first login
-        //if(error.message == "File does not exist."){/**/}
+    }catch(error){//ignore error when file does not exist already, this happens on first login
+        if(error.message == "File does not exist."){/**/}
         console.log("reading error: ", error);
     }
     console.log(recordings);
-    document.addEventListener('beforeunload', safeRecordings);
+    //document.addEventListener('beforeunload', safeRecordings);//does not work
 }
 export function getRecordings(): RecordingData[] {
     return recordings;
@@ -59,6 +58,7 @@ export function getRecordings(): RecordingData[] {
 
 export function insertRecordingEntry(recording: RecordingData) {
     recordings.push(recording);
+    safeRecordings();
 }
 
 export function getRecordingEntry(timestamp: number): RecordingData{
@@ -70,10 +70,31 @@ export function getRecordingEntry(timestamp: number): RecordingData{
     return new RecordingData(0,"ERROR", [],0);
 }
 
+export function setRecordingEntryName(timestamp: number, newName: string){
+    const data = getRecordingEntry(timestamp);
+    data.name = newName;
+    safeRecordings();
+}
+
 export function removeRecordingEntry(recording: RecordingData) {
-    const index = recordings.indexOf(recording, 0);
+    const index = recordings.indexOf(getRecordingEntry(recording.timestamp), 0);
     if(index<0){
         console.log("\n\nERROR on deleting. Element could not be found\n\n");
-        recordings.splice(index,1);
+        return;
     }
+    recordings.splice(index,1);
+    //delete actual folder
+
+    const currentUser = firebase.auth().currentUser;
+    if (currentUser == null) {
+        return;
+    }
+
+    const userUID = currentUser.uid;
+    Filesystem.rmdir({
+        path: userUID + "/" + recording.timestamp,
+        directory: Directory.Data,
+        recursive: true
+    })
+    safeRecordings();
 }

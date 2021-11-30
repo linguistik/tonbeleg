@@ -1,5 +1,5 @@
 <template>
-  <ion-page>
+  <ion-page :key="updateKey">
     <PageHeader v-bind:title="t('general.appname')" />
 
     <ion-content :fullscreen="true">
@@ -8,7 +8,7 @@
           <ion-title size="large">Gespeichertes</ion-title>
         </ion-toolbar>
       </ion-header>
-      <ion-button v-on:click="safeRecordings();loadRecordings();refresh()">
+      <ion-button v-on:click="safeRecordings();">
         refresh
       </ion-button>
       <ion-list
@@ -51,19 +51,18 @@ import {
   IonButton,
   IonList,
 } from "@ionic/vue";
-
+/*
 import {
   Filesystem,
   Directory,
   //Encoding,
   //WriteFileResult,
   //ReaddirResult,
-} from "@capacitor/filesystem";
+} from "@capacitor/filesystem";*/
 
-import firebase from "@/backend/firebase-config";
 import Recording from "@/components/Recording.vue";
 
-import {loadRecordings, safeRecordings, recordings, getRecordings } from "@/scripts/RecordingStorage";
+import {loadRecordings, safeRecordings, getRecordings } from "@/scripts/RecordingStorage";
 import RecordingData from "@/scripts/RecordingData";
 
 export default defineComponent({
@@ -84,36 +83,20 @@ export default defineComponent({
     // multi-lingual support
     const { t } = useI18n();
 
-    loadRecordings();
-
-    //get userUID
-    const currentUser = firebase.auth().currentUser;
-    if (currentUser == null) return;
-    const userUID = currentUser.uid;
-
     const recordingsRef: Ref<RecordingData[]> = ref([]);
-    
-    //TODO dynamically load new data
-    //
-    const getRecordingFolders = async () => {
-      const readdir = await Filesystem.readdir({
-        path: "/" + userUID,
-        directory: Directory.Data,
-      });
+    const initialize = async () => {
+      await loadRecordings().then(()=>{recordingsRef.value =  getRecordings();});
+    }
+    initialize();
 
-
-      console.log(readdir);
-      for(const folder of readdir.files){
-        //recordingFolders.value.push(folder);
-      }
-      recordingsRef.value =  getRecordings();
-    };
-
-    getRecordingFolders();
-
+    const updateKey = ref(0);
+    const forceUpdate = ()=>{
+      updateKey.value += 1;
+    }
 
     const refresh = async () => {
-      await getRecordingFolders();
+      recordingsRef.value = getRecordings(); 
+      forceUpdate();
     }
 
 
@@ -122,12 +105,14 @@ export default defineComponent({
     }
 
 
+
     return { t, 
     recordingsRef, 
     refreshAfterTimeout, 
     refresh,
     safeRecordings,
     loadRecordings,
+    updateKey
     };
 
   },
