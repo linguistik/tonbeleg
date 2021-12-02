@@ -9,7 +9,7 @@
         </ion-toolbar>
       </ion-header>
       <!--  Hier ist der Button in der Mitte  -->
-      <ion-fab vertical="center" horizontal="center" slot="fixed">
+      <ion-fab vertical="center" horizontal="center" slot="fixed" >
 
 
         <ion-fab-button
@@ -51,13 +51,11 @@
         >
           <ion-icon :icon="playOutline"></ion-icon>
         </ion-fab-button>
+      </ion-fab>
+<div id="text">
         <!--  Timer  -->
         <p>Zeit: {{timerString}}</p>
-      </ion-fab>
-
-
-
-
+</div>
 
 
 
@@ -322,3 +320,18 @@ export default defineComponent({
   },
 });
 </script>
+<style scoped>
+ion-fab-button{
+  margin-bottom:20px;
+  padding:0px;
+  height:80px;
+  width: 80px;
+}
+p{
+  font-size:x-large;
+  text-align: center;
+  position: relative;
+  margin-top: 60px;
+
+}
+</style>
