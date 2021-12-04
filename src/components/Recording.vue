@@ -13,6 +13,7 @@
     <ion-icon :icon="arrowUp" @click="upload()"></ion-icon>
     <ion-icon :icon="trash" @click="delteRecording()"  ></ion-icon>
     <ion-icon :icon="pencil" @click="rename()"></ion-icon>
+    <ion-icon :icon="cut" @click="edit()"></ion-icon>
     <ion-icon :icon="chevronDownOutline" @click="toggleOpen()"></ion-icon>
   </ion-item>
 
@@ -31,7 +32,7 @@ import {ref} from "vue";
 
 import {useI18n} from "vue-i18n";
 
-import {arrowUp, pencil, trash, chevronDownOutline, chevronBackOutline} from "ionicons/icons";
+import {arrowUp, pencil, trash, chevronDownOutline, chevronBackOutline, cut} from "ionicons/icons";
 
 
 import {IonIcon, IonItem, IonLabel} from "@ionic/vue";
@@ -194,6 +195,7 @@ export default {
       trash,
       arrowUp,
       pencil,
+      cut,
       chevronDownOutline,
       chevronBackOutline,
       isOpen,
