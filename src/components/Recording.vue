@@ -1,45 +1,28 @@
-<!--<template>
-  <ion-item>
-    <ion-label>
-      <strong>
-        {{ folder }}
-      </strong>
-      <h5>
-        Aufgenommen am:
-        {{ getRecordingDate(folder) }}
-        <br>
-      </h5>
-    </ion-label>
-    <ion-icon :icon="arrowUp" @click="upload()"></ion-icon>
-    <ion-icon :icon="trash" @click="loeschen(folder)"></ion-icon>
-    <ion-icon :icon="pencil" @click="rename(folder)"></ion-icon>
-  </ion-item>
-
-</template>-->
 <template>
   <ion-item v-if="isOpen">
     <ion-label>
       <strong>
-        {{ folder }}
+        {{ recording.name }}
       </strong>
       <h5>
         Aufgenommen am:
-        {{ getRecordingDate(folder) }}
+        {{ getRecordingDate() }}
         <br>
       </h5>
     </ion-label>
     <ion-icon :icon="arrowUp" @click="upload()"></ion-icon>
-    <ion-icon :icon="trash" @click="loeschen(folder)"  ></ion-icon>
-    <ion-icon :icon="pencil" @click="rename(folder)"></ion-icon>
-    <ion-icon :icon="chevronDownOutline" @click="open()"></ion-icon>
+    <ion-icon :icon="trash" @click="delteRecording()"  ></ion-icon>
+    <ion-icon :icon="pencil" @click="rename()"></ion-icon>
+    <ion-icon :icon="cut" @click="edit()"></ion-icon>
+    <ion-icon :icon="chevronDownOutline" @click="toggleOpen()"></ion-icon>
   </ion-item>
 
   <ion-item v-else>
     <ion-label text-wrap>
       <strong>
-        {{ folder }}
+        {{ recording.name }}
       </strong> </ion-label>
-    <ion-icon  :icon="chevronBackOutline" @click="open()"></ion-icon>
+    <ion-icon  :icon="chevronBackOutline" @click="toggleOpen()"></ion-icon>
   </ion-item>
 </template>
 
@@ -49,7 +32,7 @@ import {ref} from "vue";
 
 import {useI18n} from "vue-i18n";
 
-import {arrowUp, pencil, trash, chevronDownOutline, chevronBackOutline} from "ionicons/icons";
+import {arrowUp, pencil, trash, chevronDownOutline, chevronBackOutline, cut} from "ionicons/icons";
 
 
 import {IonIcon, IonItem, IonLabel} from "@ionic/vue";
@@ -60,6 +43,9 @@ import router from '@/router';
 import {Directory, Filesystem} from "@capacitor/filesystem";
 import firebase from "@/backend/firebase-config";
 
+import RecordingData from "@/scripts/RecordingData";
+import {removeRecordingEntry, setRecordingEntryName} from "@/scripts/RecordingStorage";
+
 export default {
   name: "Recording",
   components: {
@@ -69,21 +55,9 @@ export default {
   },
 
   props: {
-    folder: String,
+    recording: RecordingData,
   },
 
-/*
-  methods: {
-    refreshOnMainPage: function () {
-      (this as any).$emit('confirmed');
-
-    }
-  },
-
-*/
-
-
-  //const folder = this.folder;
   setup(props: any, context: any) {
     // multi-lingual support
 
@@ -91,7 +65,7 @@ export default {
 
     const isOpen = ref(false);
 
-    const open = () => {
+    const toggleOpen = () => {
       isOpen.value = !isOpen.value;
     };
 
@@ -101,38 +75,43 @@ export default {
 
 
 
-    const getRecordingDate = (folder: string) => {
-      const date = new Date(parseInt(folder));
-      console.log(parseInt(folder));
-      console.log(date.getMonth());
+    const getRecordingDate = () => {
+      const date = new Date(parseInt(props.recording.timestamp));
+      let day = date.getDate().toString();
+      let month = (date.getMonth() + 1).toString();
+      const year = date.getFullYear().toString();
+      let hours = date.getHours().toString();
+      let minutes = date.getMinutes().toString();
+
+      if(minutes.length==1){
+        minutes ="0" + minutes; 
+      }
+      if(hours.length==1){
+        hours = "0" + hours;
+      }
+      if(month.length==1){
+        month = "0" + month;
+      }
+      if(day.length==1){
+        day = "0" + day;
+      }
+
       return (
-          date.getDate() +
+          day +
           "." +
-          (date.getMonth() + 1) +
+          month +
           "." +
-          date.getFullYear() +
+          year +
           ", " +
-          date.getHours() +
+          hours +
           ":" +
-          date.getMinutes()
+          minutes
 
       );
+    };//method: getRecordingDate
 
-
-      /*Filesystem.stat({
-        path: UserUID + "/" + folder,
-        directory: Directory.Data,
-      });*/
-      //
-      //Why do months start at 0?
-      //TODO
-      //
-    };
-
-    const edit = (folder: string)=>{
-      //router.options.
-      //router.push("/edit?folderName=abc");
-      router.push("/edit/" + folder);
+    const edit = ()=>{
+      router.push("/edit/" + props.recording.timestamp);
     }
 
     const upload = () => {
@@ -141,41 +120,25 @@ export default {
     }
 
 
-    const folderloeschen = async (folder: string) =>{
-      try{
-        await Filesystem.rmdir({
-          path: "/" + UserUID + "/" + folder,
-          directory: Directory.Data,
-          recursive: true,
-        })
-        console.log("successfully deleted");
-      } catch (error) {
-        console.log(error);
-        //TODO
-      }
-      console.log("delete this thing");
+    const actualDelete = async () =>{
+      removeRecordingEntry(props.recording);
       context.emit('refreshEmit');
-    }
+    }//method: deleteFolder
 
 
-    const actualRename = (folder: string, name: string) => {
-      Filesystem.rename({
-        from: UserUID + "/" + folder,
-        to: name,
-        directory:Directory.Data,
-        toDirectory:Directory.Data,
-      });
-      console.log("rename sucessfull");
-    }
+    const actualRename = (name: string) => {//props.recording is just a copy of the real object
+      setRecordingEntryName(props.recording.timestamp, name);
+      context.emit('refreshEmit');
+    }//method: actualRename
 
-    const rename = async (folder: string)=> {
+    const rename = async ()=> {
       //TODO
       const alert = await alertController.create({
         message: 'Choose a name',
         inputs: [
           {
-            name:'textFeld',
-            id: 'textFeld',
+            name:'textField',
+            id: 'textField',
             type: 'text',
             attributes: {
               required: true,
@@ -184,10 +147,10 @@ export default {
               inputMode: 'text',
             },
             handler: () => {
-              console.log('texteingabe erfolgt');
+              console.log('texteingabe erfolgt');//is this handler really necessary? For some reason it is^^
             }
           }
-        ],
+        ],//inputs
         buttons:[{
           text: 'cancel',
           handler: ()=>{
@@ -196,35 +159,35 @@ export default {
         },
           {
           text: 'OK',
-            handler: data =>{
-                const x = data.textFeld;
+            handler: (data) =>{
+                const x = data.textField;
                 console.log(x);
-                actualRename(folder, x);
+                actualRename(x);
             }
         }
-        ]
-      });
+        ]//buttons
+      });//create alert
       await alert.present();
-    }
+    }//method rename
 
-    const loeschen = async (folder: string)=>{
-      //TODO
+    const delteRecording = async (folder: string)=>{
+      //TODO delete entry in outsourced
       const alert = await alertController.create({
         message: 'Do you really want to delete this file?',
         buttons: [{
           text:'Cancel',
-          handler: blah =>{
-            console.log('confirm Cancel', blah);
+          handler: () =>{
+            console.log('confirm Cancel');
           },
         }, {
           text: 'OK',
           handler: () =>{
-            folderloeschen(folder);
+            actualDelete();
           },
         }],
       });
       await alert.present();
-    }
+    }//method: deleteRecording
 
 
     return {
@@ -232,21 +195,22 @@ export default {
       trash,
       arrowUp,
       pencil,
+      cut,
       chevronDownOutline,
       chevronBackOutline,
       isOpen,
-      open,
+      toggleOpen,
       getRecordingDate,
       edit,
       upload,
-      loeschen,
+      delteRecording,
       rename,
-    };
+    };//return
 
-  },
+  },//setup
 
 
-};
+};//export default
 
 </script>
 <style scoped>

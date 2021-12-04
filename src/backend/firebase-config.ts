@@ -1,7 +1,7 @@
 /** Firebase */
 import firebase from 'firebase/app';
 import '@firebase/auth';
-import 'firebase/analytics';
+//import 'firebase/analytics';
 
 // For Firebase JS SDK v7.20.0 and later
 const firebaseConfig = {
@@ -16,7 +16,7 @@ const firebaseConfig = {
 
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
-firebase.analytics();
+//firebase.analytics();
 
 // load it by: `import firebase from '@/components/auth/firebase';`
 export default firebase;

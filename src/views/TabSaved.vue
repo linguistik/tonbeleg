@@ -1,5 +1,5 @@
 <template>
-  <ion-page>
+  <ion-page :key="updateKey">
     <PageHeader v-bind:title="t('general.appname')" />
 
     <ion-content :fullscreen="true">
@@ -8,13 +8,14 @@
           <ion-title size="large">Gespeichertes</ion-title>
         </ion-toolbar>
       </ion-header>
-      <ion-button v-on:click="refresh()">
+      <ion-button v-on:click="safeRecordings();">
         refresh
       </ion-button>
       <ion-list
-      v-if="recordingFolders.length!=0">
+      lines="full"
+      v-if="recordingsRef.length!=0">
         <ol>
-          <Recording v-for="item in recordingFolders" v-bind:key="item" v-bind:folder="item" @refreshEmit="refreshAfterTimeout">
+          <Recording v-for="item in recordingsRef" v-bind:key="item" v-bind:recording="item" @refreshEmit="refreshAfterTimeout()">
           </Recording>
         </ol>
       </ion-list>
@@ -37,7 +38,7 @@ read example.spec.ts first
 -->
 
 <script lang="ts">
-import {defineComponent, ref,} from "vue";
+import {defineComponent, ref, Ref} from "vue";
 import { useI18n } from "vue-i18n";
 import PageHeader from "@/components/layout/PageHeader.vue";
 
@@ -50,17 +51,19 @@ import {
   IonButton,
   IonList,
 } from "@ionic/vue";
-
+/*
 import {
   Filesystem,
   Directory,
   //Encoding,
   //WriteFileResult,
   //ReaddirResult,
-} from "@capacitor/filesystem";
+} from "@capacitor/filesystem";*/
 
-import firebase from "@/backend/firebase-config";
 import Recording from "@/components/Recording.vue";
+
+import {loadRecordings, safeRecordings, getRecordings } from "@/scripts/RecordingStorage";
+import RecordingData from "@/scripts/RecordingData";
 
 export default defineComponent({
   name: "TabSaved",
@@ -76,69 +79,41 @@ export default defineComponent({
     Recording,
   },
 
-/*
-      methods: {
-        setMessage() {
-          console.log("jaaaaaaaaaaaaa");
-          refresh();
-        },
-      },
-*/
   setup() {
     // multi-lingual support
     const { t } = useI18n();
 
-    //get userUID
-    const currentUser = firebase.auth().currentUser;
-    if (currentUser == null) return;
-    const userUID = currentUser.uid;
+    const recordingsRef: Ref<RecordingData[]> = ref([]);
+    const initialize = async () => {
+      await loadRecordings().then(()=>{recordingsRef.value =  getRecordings();});
+    }
+    initialize();
 
-    const recordingFolders = ref(['']);
-    
-    //TODO dynamically load new data
-    //
-    const getRecordingFolders = async () => {
-      recordingFolders.value.pop();
-      const readdir = await Filesystem.readdir({
-        path: "/" + userUID,
-        directory: Directory.Data,
-      });
-
-
-      console.log(readdir);
-      for(const folder of readdir.files){
-        recordingFolders.value.push(folder);
-      }
-    };
-
-    getRecordingFolders();
-
-    const test1 = async () => {
-      console.log("passt")
+    const updateKey = ref(0);
+    const forceUpdate = ()=>{
+      updateKey.value += 1;
     }
 
     const refresh = async () => {
-      recordingFolders.value=[''];
-      await getRecordingFolders();
+      recordingsRef.value = getRecordings(); 
+      forceUpdate();
     }
 
 
     const refreshAfterTimeout = async () => {
       window.setTimeout(refresh,100);
-
     }
 
 
 
-/*
-    setInterval(() => {
-      refresh(); // Now the "this" still references the component
-    }, 1000);
-*/
-    //recordingFolders.value = getRecordingFolders();
-    console.log(recordingFolders.value.length);
-    return { t, recordingFolders, refreshAfterTimeout, refresh, test1, IonButton };
-
+    return { t, 
+    recordingsRef, 
+    refreshAfterTimeout, 
+    refresh,
+    safeRecordings,
+    loadRecordings,
+    updateKey
+    };
 
   },
 

@@ -9,8 +9,7 @@
         </ion-toolbar>
       </ion-header>
       <!--  Hier ist der Button in der Mitte  -->
-
-      <ion-fab vertical="center" horizontal="center" slot="fixed">
+      <ion-fab vertical="center" horizontal="center" slot="fixed" >
 
 
         <ion-fab-button
@@ -52,9 +51,16 @@
         >
           <ion-icon :icon="playOutline"></ion-icon>
         </ion-fab-button>
-        <!--  Timer  -->
       </ion-fab>
-      <div id="uhr"><p>Zeit: {{timerString}}</p></div>
+<div id="text">
+        <!--  Timer  -->
+        <p>Zeit: {{timerString}}</p>
+</div>
+
+
+
+
+
     </ion-content>
   </ion-page>
 </template>
@@ -96,6 +102,9 @@ import {
   //ReaddirResult,
 } from "@capacitor/filesystem";
 //import { CapacitorException } from "@capacitor/core";
+
+import {insertRecordingEntry} from "@/scripts/RecordingStorage";
+import RecordingData from "@/scripts/RecordingData";
 
 export default defineComponent({
   components: {
@@ -157,7 +166,7 @@ export default defineComponent({
     const recordingStatus =ref( recordingStatusEnums.NOT_RECORDING);
 
     const pauseRecordingTrigger = async () => {
-      await VoiceRecorder.pauseRecording().then((result: GenericResponse) => {
+      await VoiceRecorder.pauseRecording().then(() => {
         recordingStatus.value= recordingStatusEnums.RECORDING_PAUSED;
         console.log(recordingStatus);
 
@@ -170,7 +179,7 @@ export default defineComponent({
 
 
     const continueRecordingTrigger = async () => {
-      await VoiceRecorder.resumeRecording().then((result: GenericResponse) => {
+      await VoiceRecorder.resumeRecording().then(() => {
         recordingStatus.value= recordingStatusEnums.IS_RECORDING;
        console.log(recordingStatus);
 
@@ -270,9 +279,10 @@ export default defineComponent({
         //TODO exception handling
       }
 
-      //await delay(3000);
-      console.log("read folder:" + "/" + userUID + "/" + timestamp + "/");
-    };
+      //create Entry in RecordingStorage
+      insertRecordingEntry(new RecordingData(timestamp,timestamp.toString(),["0.raw"],timer.value.getSeconds()));
+
+    };//method: stopRecordingTrigger
 
 
     //Timer
@@ -310,14 +320,18 @@ export default defineComponent({
   },
 });
 </script>
-
 <style scoped>
-#uhr{
-  position: absolute;
-  /*nicht die beste lösung elemente können überlappen*/
-  top: 40%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+ion-fab-button{
+  margin-bottom:20px;
+  padding:0px;
+  height:80px;
+  width: 80px;
+}
+p{
+  font-size:x-large;
   text-align: center;
+  position: relative;
+  margin-top: 60px;
+
 }
 </style>
