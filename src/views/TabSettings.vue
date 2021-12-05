@@ -16,9 +16,6 @@
 
     <ion-item>
       <ion-label text-wrap>
-        <h2>
-
-        </h2>
         <p>
           Tonbelege nur im Wlan hochladen.
         </p>
@@ -28,9 +25,17 @@
           name = "RecordingWifi"
           v-bind:checked="wifiOnlyActivated"
           @IonChange="optionChanged($event)"
-          v-bind:disabled="wifiOnlyDeactivated"
       ></ion-toggle>
     </ion-item>
+
+    <ion-item>
+      <ion-label text-wrap>
+        <p> Account löschen</p>
+      </ion-label>
+      <ion-button @click="deleteAcc()"></ion-button>
+    </ion-item>
+
+
 
   </ion-page>
 </template>
@@ -41,14 +46,15 @@ import { defineComponent } from 'vue';
 import { useI18n } from 'vue-i18n';
 import PageHeader from '@/components/layout/PageHeader.vue';
 import {ref} from "vue";
-import { 
-  IonPage, IonHeader, IonToolbar, IonTitle, IonContent
+import {
+  IonPage, IonHeader, IonToolbar, IonTitle, IonContent, alertController
 } from '@ionic/vue';
 
 import ExploreContainer from '@/components/ExploreContainer.vue';
-
+import firebase from "@/backend/firebase-config";
 import 'firebase/firestore';
 import { setWifi, getWifi} from "@/scripts/UserSettingsStorage";
+import {removeAllRecordingEntry} from "@/scripts/RecordingStorage"
 export default defineComponent({
 
   components: { 
@@ -68,9 +74,47 @@ export default defineComponent({
       setWifi(wifiOnlyActivated.value);
     }
 
+    const deleteAccInDatabase = () =>{
+      //TODO
+      const currentUser = firebase.auth().currentUser;
+      if (currentUser == null) {
+        console.log("\n\nFATAL ERROR: no user logged in, so user data cannot be safed\n\n");
+        return;
+      }
+
+      //currentUser.delete();
+    }
+
+
+    const yesDeleteAcc = () =>{
+      removeAllRecordingEntry(); //ich glaube es ist wichtig dass das zuerst passiert
+      deleteAccInDatabase();
+    }
+
+
+
+    const deleteAcc = async () =>{
+      const alert = await alertController.create({
+        message: 'Do you really want to delete this account along with all the local recordings permanently?',
+        buttons: [{
+          text:'Cancel',
+          handler: () =>{
+            console.log('confirm Cancel');
+          },
+        }, {
+          text: 'OK',
+          handler: () =>{
+            yesDeleteAcc();
+          },
+        }],
+      });
+      await alert.present();
+    }
+
     return { t,
     optionChanged,
       wifiOnlyActivated,
+      deleteAcc,
     }
   }
 })

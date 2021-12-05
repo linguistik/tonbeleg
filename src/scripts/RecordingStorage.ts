@@ -101,9 +101,27 @@ export function removeRecordingEntry(recording: RecordingData) {
         return;
     }
 
+
+
     const userUID = currentUser.uid;
     Filesystem.rmdir({
         path: userUID + "/" + recording.timestamp,
+        directory: Directory.Data,
+        recursive: true
+    })
+    safeRecordings();
+}
+
+export function removeAllRecordingEntry() {
+    recordings.splice(0,);
+    //delete actual folder
+    const currentUser = firebase.auth().currentUser;
+    if (currentUser == null) {
+        return;
+    }
+    const userUID = currentUser.uid;
+    Filesystem.rmdir({
+        path: userUID,
         directory: Directory.Data,
         recursive: true
     })
