@@ -8,7 +8,8 @@ export default class RecordingData{
     dialect: string;
     zipCode: number;
     license: string;
-    constructor(age: number,job: string, firstLanguage: string, secondLanguage: string, dialect: string, zipCode: number, license: string){
+    wifi: boolean;
+    constructor(age: number,job: string, firstLanguage: string, secondLanguage: string, dialect: string, zipCode: number, license: string, wifi: boolean){
         this.age = age;
         this.job = job;
         this.firstLanguage = firstLanguage;
@@ -16,5 +17,6 @@ export default class RecordingData{
         this.dialect = dialect;
         this.zipCode = zipCode;
         this.license = license;
+        this.wifi = wifi;
     }
 }
