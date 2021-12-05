@@ -121,6 +121,9 @@ import {
   IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonLabel, IonItem,IonToggle,
 } from '@ionic/vue';
 
+import firebase from "@/backend/firebase-config";
+//mport 'firebase/firestore';
+import '@firebase/firestore'
 
 
 export default defineComponent({
@@ -216,11 +219,46 @@ export default defineComponent({
 
     }
 
+
+
+    const uploadLicense = ()=>{
+
+    const db = firebase.firestore();
+      const currentUser = firebase.auth().currentUser;
+      if (currentUser == null) return;
+      const userUID = currentUser.uid;
+
+
+      console.log("Start uploading");
+
+      
+      db.collection("users").doc(userUID).set({
+        license: licensePTR.value
+      },{merge: true});
+      console.log("wrote to database");
+    }
+
+
+    const downloadLicense = () =>{
+    const db = firebase.firestore();
+      const currentUser = firebase.auth().currentUser;
+      if (currentUser == null) return;
+      const userUID = currentUser.uid;
+
+      db.collection("users").doc(userUID).get().then((doc)=>{
+        console.log(doc.get('license'));
+        licensePTR.value = doc.get('license');
+      });
+    }
+
     const optionChanged = (event: any)=>{
       options.set(event.target.name, event.target.checked);
       evaluateLicenseAndDeactivations();
+
+      uploadLicense();
     }
 
+      downloadLicense();
 
 
     return { t, licensePTR, optionChanged, 
