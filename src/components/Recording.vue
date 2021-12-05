@@ -10,12 +10,12 @@
         <br>
       </h5>
     </ion-label>
+    <ion-icon Left-icon :icon="playing ? pause : play" @click="playRec()"></ion-icon>
     <ion-icon :color= "selectedForUpload ? 'success' : 'medium' " :icon="arrowUp" @click="upload()" ></ion-icon>
     <ion-icon :icon="trash" @click="delteRecording()"  ></ion-icon>
     <ion-icon :icon="pencil" @click="rename()"></ion-icon>
     <ion-icon :icon="cut" @click="edit()"></ion-icon>
     <ion-icon :icon="chevronDownOutline" @click="toggleOpen()"></ion-icon>
-    <ion-icon :icon="playing ? pause : play" @click="playRec()"></ion-icon>
   </ion-item>
 
   <ion-item v-else>
@@ -45,7 +45,7 @@ import {Directory, Filesystem} from "@capacitor/filesystem";
 import firebase from "@/backend/firebase-config";
 
 import RecordingData from "@/scripts/RecordingData";
-import {removeRecordingEntry, setRecordingEntryName} from "@/scripts/RecordingStorage";
+import {removeRecordingEntry, setRecordingEntryName, setRecordingEntryUploadBoolean, getRecordingEntryUploadBoolean} from "@/scripts/RecordingStorage";
 
 export default {
   name: "Recording",
@@ -67,7 +67,7 @@ export default {
     const isOpen = ref(false);
 
     const playing = ref(false);
-    const selectedForUpload = ref(false);
+    const selectedForUpload = ref(props.recording.upload);
 
     const toggleOpen = () => {
       isOpen.value = !isOpen.value;
@@ -119,8 +119,9 @@ export default {
 
     const upload = () => {
       //TODO
+      setRecordingEntryUploadBoolean(props.recording.timestamp, !props.recording.upload);
       selectedForUpload.value = !selectedForUpload.value;
-      console.log("updload this thing", selectedForUpload);
+      console.log("upload this thing", props.recording.upload);
     }
 
     const playRec = async () =>{
@@ -223,6 +224,7 @@ export default {
       playRec,
       playing,
       selectedForUpload,
+      getRecordingEntryUploadBoolean,
     };//return
 
   },//setup

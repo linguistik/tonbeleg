@@ -67,13 +67,24 @@ export function getRecordingEntry(timestamp: number): RecordingData{
             return recording;
     }
     console.log("\n\nFATAL ERROR: could not find recording with timestamp: " + timestamp + "\n\n");
-    return new RecordingData(0,"ERROR", [],0);
+    return new RecordingData(0,"ERROR", [],0, false);
 }
 
 export function setRecordingEntryName(timestamp: number, newName: string){
     const data = getRecordingEntry(timestamp);
     data.name = newName;
     safeRecordings();
+}
+
+export function setRecordingEntryUploadBoolean(timestamp: number, uploadBoolean: boolean){
+    const data = getRecordingEntry(timestamp);
+    data.upload = uploadBoolean;
+    safeRecordings();
+}
+
+export function getRecordingEntryUploadBoolean(timestamp: number): boolean{
+    const data = getRecordingEntry(timestamp);
+    return data.upload;
 }
 
 export function removeRecordingEntry(recording: RecordingData) {

@@ -280,7 +280,7 @@ export default defineComponent({
       }
 
       //create Entry in RecordingStorage
-      insertRecordingEntry(new RecordingData(timestamp,timestamp.toString(),["0.raw"],timer.value.getSeconds()));
+      insertRecordingEntry(new RecordingData(timestamp,timestamp.toString(),["0.raw"],timer.value.getSeconds(), false));
 
     };//method: stopRecordingTrigger
 
