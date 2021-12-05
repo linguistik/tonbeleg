@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from '@ionic/vue-router';
 import { RouteRecordRaw, RouteLocationNormalized, NavigationGuardNext } from 'vue-router';
 import firebase from '@/backend/firebase-config';
 import Tabs from '@/views/Tabs.vue'
+import 'firebase/firestore';
 
 
 const routes: Array<RouteRecordRaw> = [

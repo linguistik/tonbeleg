@@ -104,7 +104,7 @@ import {
 
 import firebase from '@/backend/firebase-config';
 
-
+import 'firebase/firestore';
 
 export default defineComponent({
 
