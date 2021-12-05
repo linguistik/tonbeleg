@@ -24,7 +24,7 @@
         <ion-toggle 
         slot="start"
         name = "isMentioningActivated"
-        unchecked
+        v-bind:checked="isMentioningActivated"
         @IonChange="optionChanged($event)"
         v-bind:disabled="isMentioningActivatedDeactivated"
         ></ion-toggle>
@@ -42,7 +42,7 @@
         <ion-toggle 
         slot="start" 
         name = "isComerciallyUseAllowed"
-        checked
+        v-bind:checked="isComerciallyUseAllowed"
         @IonChange="optionChanged($event)"
         v-bind:disabled="isComerciallyUseAllowedDeactivated"
         ></ion-toggle>
@@ -61,7 +61,7 @@
         slot="start" 
         name="isRemixingAllowed"
         @IonChange="optionChanged($event)"
-         checked
+         v-bind:checked="isRemixingAllowed"
         v-bind:disabled="isRemixingAllowedDeactivated"
          ></ion-toggle>
       </ion-item>
@@ -79,7 +79,7 @@
         <ion-toggle 
         slot="start" 
         name="isSharingAllowed"
-        checked
+        v-bind:checked="isSharingAllowed"
         @IonChange="optionChanged($event)"
         v-bind:disabled="isSharingAllowedDeactivated"
         ></ion-toggle>
@@ -121,6 +121,9 @@ import {
   IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonLabel, IonItem,IonToggle,
 } from '@ionic/vue';
 
+import firebase from "@/backend/firebase-config";
+//mport 'firebase/firestore';
+import '@firebase/firestore'
 
 
 export default defineComponent({
@@ -151,17 +154,16 @@ export default defineComponent({
     ["isSharingAllowed", true],
   ]);
 
+//since the checked property is one way bounded, these are only used for initialisation
+  const isMentioningActivated = ref(false);
+  const isComerciallyUseAllowed = ref(true);
+  const isRemixingAllowed = ref(true);
+  const isSharingAllowed = ref(true);
+
   const isMentioningActivatedDeactivated = ref(false);
   const isComerciallyUseAllowedDeactivated = ref(true);
   const isRemixingAllowedDeactivated = ref(true);
   const isSharingAllowedDeactivated = ref(true);
-  
-  /*const disabler  = ref(new Map<string, boolean>([
-    ["isMentioningActivated", false],
-    ["isComerciallyUseAllowed", true],
-    ["isRemixingAllowed", true],
-    ["isSharingRestricted", true],
-  ]));*/
 
 
     //7 different licenses
@@ -216,15 +218,84 @@ export default defineComponent({
 
     }
 
-    const optionChanged = (event: any)=>{
-      options.set(event.target.name, event.target.checked);
-      evaluateLicenseAndDeactivations();
+
+
+    const uploadLicense = ()=>{
+
+    const db = firebase.firestore();
+      const currentUser = firebase.auth().currentUser;
+      if (currentUser == null) return;
+      const userUID = currentUser.uid;
+
+
+      console.log("Start uploading");
+
+      
+      db.collection("users").doc(userUID).set({
+        license: licensePTR.value
+      },{merge: true});
+      console.log("wrote to database");
     }
 
 
+    const downloadLicense = () =>{
+    const db = firebase.firestore();
+      const currentUser = firebase.auth().currentUser;
+      if (currentUser == null) return;
+      const userUID = currentUser.uid;
+
+/*  const options = new Map<string, boolean>([
+    ["isMentioningActivated", false],
+    ["isComerciallyUseAllowed", true],
+    ["isRemixingAllowed", true],
+    ["isSharingAllowed", true],
+  ]);
+
+  */
+      db.collection("users").doc(userUID).get().then((doc)=>{
+        console.log(doc.get('license'));
+        const license = doc.get('license');
+        if(license == "CC0 1.0"){
+          return;//leave everything default
+        }
+        options.set("isMentioningActivated", true);
+        isMentioningActivated.value = true;
+        if(license.includes("NC")){
+          options.set("isComerciallyUseAllowed", false);
+          isComerciallyUseAllowed.value = false;
+        }
+        if(license.includes("SA")){
+          options.set("isSharingAllowed", false);
+          isSharingAllowed.value = false;
+        }
+        if(license.includes("ND")){
+          options.set("isRemixingAllowed", false);
+          isRemixingAllowed.value = false;
+        }
+        evaluateLicenseAndDeactivations();
+      });
+    }
+
+    const optionChanged = (event: any)=>{
+      options.set(event.target.name, event.target.checked);
+      evaluateLicenseAndDeactivations();
+
+      uploadLicense();
+    }
+
+      downloadLicense();
+
 
     return { t, licensePTR, optionChanged, 
-    isSharingAllowedDeactivated,isRemixingAllowedDeactivated,isComerciallyUseAllowedDeactivated,isMentioningActivatedDeactivated
+    isSharingAllowedDeactivated,
+    isRemixingAllowedDeactivated,
+    isComerciallyUseAllowedDeactivated,
+    isMentioningActivatedDeactivated,
+
+    isMentioningActivated,
+    isComerciallyUseAllowed,
+    isRemixingAllowed,
+    isSharingAllowed
     }
   }
 })
