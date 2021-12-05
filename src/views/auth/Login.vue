@@ -46,9 +46,6 @@
           </form>
         </ion-card-content>
 
-        <ion-card-content v-if="errorMsg" class="error-message">
-          {{ errorMessage }}
-        </ion-card-content>
 
       </ion-card>
     </ion-content>
@@ -95,11 +92,14 @@ export default defineComponent({
     const errorMessage = ref("");
 
     const onEmailLogin = async () => {
+      console.log(firebase.auth().currentUser);
       try{
-        const username = await firebase.auth().signInWithEmailAndPassword(
-          email.value, password.value);
-        if(debugVerbose.value){console.log(username);}
+        firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(()=>{
+        return firebase.auth().signInWithEmailAndPassword(email.value, password.value);
+        });
+        //if(debugVerbose.value){console.log(username);}
         router.push("/tabs/record");
+
       }catch(err){
         errorMessage.value = err.message;
         if(debugVerbose.value){console.log(err);}
@@ -108,9 +108,13 @@ export default defineComponent({
 
     const onGoogleLogin = async () => {
       try{
+        await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION).then(()=>{
         const provider = new firebase.auth.GoogleAuthProvider();
-        const username = await firebase.auth().signInWithPopup(provider);
-        if(debugVerbose.value){console.log(username);}
+        return firebase.auth().signInWithPopup(provider);
+        }).catch((error)=>{
+          console.log(error)
+        });
+        //if(debugVerbose.value){console.log(username);}
         router.push("/tabs/record");
       }catch(err){
         errorMessage.value = err.message;
