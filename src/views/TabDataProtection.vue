@@ -154,6 +154,7 @@ export default defineComponent({
     ["isSharingAllowed", true],
   ]);
 
+//since the checked property is one way bounded, these are only used for initialisation
   const isMentioningActivated = ref(false);
   const isComerciallyUseAllowed = ref(true);
   const isRemixingAllowed = ref(true);
