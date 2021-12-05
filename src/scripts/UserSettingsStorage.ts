@@ -5,7 +5,7 @@ import { Directory, Encoding, Filesystem } from "@capacitor/filesystem";
 
 //const r = new RecordingData(1,"a", ["a","b"],22);
 
-export let userSettings: UserSettings = new UserSettings(0,"","","","",0);
+export let userSettings: UserSettings = new UserSettings(0,"","","","",0, "");
 
 export async function safeUserSettings() {//call this function on closing or on every change
     const dataString = JSON.stringify(userSettings);
@@ -83,7 +83,10 @@ export function setZipCode(newZipCode: number){
     userSettings.zipCode=newZipCode;
     safeUserSettings();
 }
-
+export function setLicense(newLicense: string){
+    userSettings.license=newLicense;
+    safeUserSettings();
+}
 
 
 
@@ -108,4 +111,8 @@ export function getDialect(): string{
 
 export function getZipCode(): number{
     return userSettings.zipCode;
+}
+
+export function getLicense(): string{
+    return userSettings.license;
 }

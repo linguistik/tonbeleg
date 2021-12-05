@@ -124,7 +124,15 @@ import {
 import firebase from "@/backend/firebase-config";
 //mport 'firebase/firestore';
 import '@firebase/firestore'
-
+import {
+  getAge,
+  getLicense,
+  loadUserSettings,
+  setAge, setDialect,
+  setFirstLanguage,
+  setJob,
+  setLicense, setSecondLanguage, setZipCode
+} from "@/scripts/UserSettingsStorage";
 
 export default defineComponent({
 
@@ -219,6 +227,34 @@ export default defineComponent({
     }
 
 
+    const evaluateButtonSettingsFromLicense = ()=>{
+      /*
+      if(licensePTR.value=="CC0 1.0")
+
+      */
+
+      if(licensePTR.value == "CC0 1.0"){
+        return;//leave everything default
+      }
+      options.set("isMentioningActivated", true);
+      isMentioningActivated.value = true;
+      if(licensePTR.value.includes("NC")){
+        options.set("isComerciallyUseAllowed", false);
+        isComerciallyUseAllowed.value = false;
+      }
+      if(licensePTR.value.includes("SA")){
+        options.set("isSharingAllowed", false);
+        isSharingAllowed.value = false;
+      }
+      if(licensePTR.value.includes("ND")){
+        options.set("isRemixingAllowed", false);
+        isRemixingAllowed.value = false;
+      }
+      evaluateLicenseAndDeactivations();
+
+
+    }
+
 
     const uploadLicense = ()=>{
 
@@ -238,7 +274,7 @@ export default defineComponent({
     }
 
 
-    const downloadLicense = () =>{
+    const downloadLicense = () =>{ //nicht mehr benötigt eigentlich im moment, kann aber vielleicht noch sinnvoll werden
     const db = firebase.firestore();
       const currentUser = firebase.auth().currentUser;
       if (currentUser == null) return;
@@ -276,14 +312,36 @@ export default defineComponent({
       });
     }
 
+
+
+    const loadLocalData = async () =>{
+      const user = firebase.auth().currentUser;
+      if (user == null) return;
+      await loadUserSettings();
+      licensePTR.value=getLicense();
+      evaluateButtonSettingsFromLicense();
+
+    }
+
+    const saveLocalData = async () =>{
+      const user = firebase.auth().currentUser;
+      if (user == null) return;
+      setLicense(licensePTR.value);
+
+    }
+
     const optionChanged = (event: any)=>{
       options.set(event.target.name, event.target.checked);
       evaluateLicenseAndDeactivations();
-
+      setLicense(licensePTR.value);
+      saveLocalData();
       uploadLicense();
     }
 
-      downloadLicense();
+
+    loadLocalData();
+    uploadLicense();//überschreibt datenbank
+
 
 
     return { t, licensePTR, optionChanged, 
@@ -291,7 +349,6 @@ export default defineComponent({
     isRemixingAllowedDeactivated,
     isComerciallyUseAllowedDeactivated,
     isMentioningActivatedDeactivated,
-
     isMentioningActivated,
     isComerciallyUseAllowed,
     isRemixingAllowed,
