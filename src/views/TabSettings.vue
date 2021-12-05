@@ -28,7 +28,6 @@
           name = "RecordingWifi"
           v-bind:checked="wifiOnlyActivated"
           @IonChange="optionChanged($event)"
-          v-bind:disabled="wifiOnlyDeactivated"
       ></ion-toggle>
     </ion-item>
 
@@ -42,7 +41,7 @@ import { useI18n } from 'vue-i18n';
 import PageHeader from '@/components/layout/PageHeader.vue';
 import {ref} from "vue";
 import { 
-  IonPage, IonHeader, IonToolbar, IonTitle, IonContent
+  IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonToggle, IonLabel
 } from '@ionic/vue';
 
 import ExploreContainer from '@/components/ExploreContainer.vue';
@@ -54,7 +53,7 @@ export default defineComponent({
   components: { 
     PageHeader, 
     IonHeader, IonToolbar, IonTitle, IonContent, IonPage,
-    ExploreContainer
+    ExploreContainer, IonItem, IonToggle, IonLabel
   },
 
   setup(){
