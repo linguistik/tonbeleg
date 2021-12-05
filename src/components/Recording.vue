@@ -10,11 +10,12 @@
         <br>
       </h5>
     </ion-label>
-    <ion-icon :icon="arrowUp" @click="upload()"></ion-icon>
+    <ion-icon :color= "selectedForUpload ? 'success' : 'medium' " :icon="arrowUp" @click="upload()" ></ion-icon>
     <ion-icon :icon="trash" @click="delteRecording()"  ></ion-icon>
     <ion-icon :icon="pencil" @click="rename()"></ion-icon>
     <ion-icon :icon="cut" @click="edit()"></ion-icon>
     <ion-icon :icon="chevronDownOutline" @click="toggleOpen()"></ion-icon>
+    <ion-icon :icon="playing ? pause : play" @click="playRec()"></ion-icon>
   </ion-item>
 
   <ion-item v-else>
@@ -32,7 +33,7 @@ import {ref} from "vue";
 
 import {useI18n} from "vue-i18n";
 
-import {arrowUp, pencil, trash, chevronDownOutline, chevronBackOutline, cut} from "ionicons/icons";
+import {arrowUp, pencil, trash, chevronDownOutline, chevronBackOutline, cut, play, pause} from "ionicons/icons";
 
 
 import {IonIcon, IonItem, IonLabel} from "@ionic/vue";
@@ -65,6 +66,9 @@ export default {
 
     const isOpen = ref(false);
 
+    const playing = ref(false);
+    const selectedForUpload = ref(false);
+
     const toggleOpen = () => {
       isOpen.value = !isOpen.value;
     };
@@ -72,7 +76,6 @@ export default {
     const currentUser = firebase.auth().currentUser;
     if (currentUser == null) return;
     const UserUID = currentUser.uid;
-
 
 
     const getRecordingDate = () => {
@@ -116,9 +119,19 @@ export default {
 
     const upload = () => {
       //TODO
-      console.log("updload this thing");
+      selectedForUpload.value = !selectedForUpload.value;
+      console.log("updload this thing", selectedForUpload);
     }
 
+    const playRec = async () =>{
+      if(playing.value == false){
+        //TODO
+        playing.value = !playing.value
+      }
+      else{
+        playing.value = !playing.value
+      }
+    }
 
     const actualDelete = async () =>{
       removeRecordingEntry(props.recording);
@@ -199,12 +212,17 @@ export default {
       chevronDownOutline,
       chevronBackOutline,
       isOpen,
+      play,
+      pause,
       toggleOpen,
       getRecordingDate,
       edit,
       upload,
       delteRecording,
       rename,
+      playRec,
+      playing,
+      selectedForUpload,
     };//return
 
   },//setup
