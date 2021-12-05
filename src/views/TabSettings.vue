@@ -35,6 +35,13 @@
       <ion-button @click="deleteAcc()"></ion-button>
     </ion-item>
 
+    <ion-item>
+      <ion-label text-wrap>
+        <p> Alle Aufnahmen löschen</p>
+      </ion-label>
+      <ion-button @click="deleteData()"></ion-button>
+    </ion-item>
+
 
 
   </ion-page>
@@ -111,10 +118,29 @@ export default defineComponent({
       await alert.present();
     }
 
+    const deleteData = async () =>{
+      const alert = await alertController.create({
+        message: 'Do you really want to delete all the local recordings permanently?',
+        buttons: [{
+          text:'Cancel',
+          handler: () =>{
+            console.log('confirm Cancel');
+          },
+        }, {
+          text: 'OK',
+          handler: () =>{
+            removeAllRecordingEntry();
+          },
+        }],
+      });
+      await alert.present();
+    }
+
     return { t,
     optionChanged,
       wifiOnlyActivated,
       deleteAcc,
+      deleteData,
     }
   }
 })
