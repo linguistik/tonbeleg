@@ -136,7 +136,7 @@ export default defineComponent({
 
     const loadData = async () =>{
       const user = firebase.auth().currentUser;
-      if (currentUser == null) return;
+      if (user == null) return;
       await loadUserSettings();
       age.value=getAge();
       job.value=getJob();
@@ -148,6 +148,29 @@ export default defineComponent({
       //const ref = firebase.database();
       //console.log(ref);
     }
+
+    const uploadUserSettings = ()=>{
+
+      const db = firebase.firestore();
+      const currentUser = firebase.auth().currentUser;
+      if (currentUser == null) return;
+      const userUID = currentUser.uid;
+
+
+      console.log("Start uploading");
+
+
+      db.collection("users").doc(userUID).set({
+        age: age.value,
+        job: job.value,
+        firstLanguage:firstLanguage.value,
+        secondLanguage:secondLanguage.value,
+        dialect:dialect.value,
+        zipCode:zipCode.value
+      },{merge: true});
+      console.log("wrote to database");
+    }
+
     const safe = ()=>{
       const user = firebase.auth().currentUser;
       if (currentUser == null) return;
@@ -157,12 +180,12 @@ export default defineComponent({
       setSecondLanguage(secondLanguage.value);
       setDialect(dialect.value);
       setZipCode(zipCode.value);
-      console.log(firstLanguage.value);
+      uploadUserSettings();
 
     }
 
     loadData();
-
+    uploadUserSettings();
     return { t, safe, age,job,firstLanguage,secondLanguage,dialect,zipCode,numberType }
   }
 })
