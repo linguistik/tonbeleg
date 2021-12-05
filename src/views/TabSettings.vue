@@ -29,7 +29,7 @@ import {
 
 import ExploreContainer from '@/components/ExploreContainer.vue';
 
-
+import 'firebase/firestore';
 export default defineComponent({
 
   components: { 

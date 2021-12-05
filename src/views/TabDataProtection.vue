@@ -133,7 +133,7 @@ import {
   setJob,
   setLicense, setSecondLanguage, setZipCode
 } from "@/scripts/UserSettingsStorage";
-
+import 'firebase/firestore';
 export default defineComponent({
 
 
