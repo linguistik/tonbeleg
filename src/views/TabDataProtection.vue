@@ -125,10 +125,10 @@ import firebase from "@/backend/firebase-config";
 //mport 'firebase/firestore';
 import '@firebase/firestore'
 import {
-  getAge,
+
   getLicense,
   loadUserSettings,
-  setAge, setDialect,
+  setDialect,
   setFirstLanguage,
   setJob,
   setLicense, setSecondLanguage, setZipCode
