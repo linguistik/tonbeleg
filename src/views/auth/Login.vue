@@ -144,32 +144,19 @@ export default defineComponent({
       }
     };
 
+    
     const onGoogleLogin = async () => {
-      await firebase
-        .auth()
-        .setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-        .then(() => {
-          const provider = new firebase.auth.GoogleAuthProvider();
-          firebase
-            .auth()
-            .signInWithRedirect(provider)
-            .then(() => {
-              firebase
-                .auth()
-                .getRedirectResult()
-                .then((result) => {
-                  console.log(result);
-                  router.push("/tabs/record");
-                  //return result;
-                });
-            });
-        })
-
-        .catch((error) => {
-          console.log(error);
-        });
-      //if(debugVerbose.value){console.log(username);}
+      await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+      .then(()=>{
+        const provider = new firebase.auth.GoogleAuthProvider();
+        return firebase.auth().signInWithRedirect(provider);
+      })
+      .catch((error)=>{
+        console.log(error)
+      });
     };
+
+
     const onRegister = async () => {
       router.push("/signup");
     };
