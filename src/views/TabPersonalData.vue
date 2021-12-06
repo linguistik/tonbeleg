@@ -15,7 +15,7 @@
 
         <ion-list-header>
           <ion-label>
-            Persöliche Daten
+            Persönliche Daten
           </ion-label>
         </ion-list-header>
 
@@ -84,7 +84,8 @@
         <ion-item>
           <ion-button @click="safe()">Speichern</ion-button>
         </ion-item>
-
+<MultipleElementsParent text="Erstsprache hinzufügen" @valuesChanged="updateFirstLanguages"/>
+<MultipleElementsParent text="Zweitsprache hinzufügen" />
       </ion-list>
     </ion-content>
 
@@ -105,12 +106,14 @@ import {
 import firebase from '@/backend/firebase-config';
 
 import 'firebase/firestore';
+import MultipleElementsParent from '@/components/dynamicElement/MultipleElementsParent.vue';
 
 export default defineComponent({
 
   components: { 
     PageHeader, 
-    IonHeader, IonToolbar, IonTitle, IonContent, IonPage, IonList, IonItem, IonListHeader, IonLabel, IonInput, IonButton
+    IonHeader, IonToolbar, IonTitle, IonContent, IonPage, IonList, IonItem, IonListHeader, IonLabel, IonInput, IonButton,
+    MultipleElementsParent
   },
 
 //TODO upload data
@@ -214,7 +217,12 @@ export default defineComponent({
 
     loadData();
     uploadUserSettings();
-    return { t, safe, job,firstLanguage,secondLanguage,dialect,zipCode,numberType, shownZipCode, dateType,birthday }
+
+    const updateFirstLanguages = (languages: string[])=>{
+      console.log(languages);
+    }
+
+    return { t, safe, job,firstLanguage,secondLanguage,dialect,zipCode,numberType, shownZipCode, dateType,birthday, updateFirstLanguages }
   }
 })
 </script>
