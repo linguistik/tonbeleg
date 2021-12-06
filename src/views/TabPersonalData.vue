@@ -21,11 +21,11 @@
 
         <ion-item>
           <ion-label>
-            Alter
+            Geburtstag
           </ion-label>
         <ion-input
-        v-model:type="numberType"
-        v-model="shownAge"
+        v-model:type="dateType"
+        v-model="birthday"
         ></ion-input>
         </ion-item>
 
@@ -96,7 +96,7 @@
 import { defineComponent, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import PageHeader from '@/components/layout/PageHeader.vue';
-import {loadUserSettings, setAge, setJob,setFirstLanguage,setSecondLanguage,setDialect,setZipCode, getAge,getJob,getFirstLanguage,getSecondLanguage,getDialect,getZipCode} from "@/scripts/UserSettingsStorage";
+import {loadUserSettings, setBirthday, setJob,setFirstLanguage,setSecondLanguage,setDialect,setZipCode, getBirthday,getJob,getFirstLanguage,getSecondLanguage,getDialect,getZipCode} from "@/scripts/UserSettingsStorage";
 import { 
   IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonListHeader, IonLabel, IonInput,IonButton
 } from '@ionic/vue';
@@ -125,27 +125,25 @@ export default defineComponent({
     console.log(currentUser.uid);
 
 
-    const age=ref(-1); //-1 gibt ungültigen wert an, richtiges alter
-    const shownAge=ref("");//angezeigtes alter als string
+    const birthday = ref('');
+
     const job=ref('');
     const firstLanguage=ref('');
     const secondLanguage=ref('');
     const dialect=ref('');
     const zipCode=ref(-1);
+
     const shownZipCode=ref("");
 
     const numberType = ref('number');
-
+    const dateType = ref('date');
     const loadData = async () =>{
+
       const user = firebase.auth().currentUser;
       if (user == null) return;
       await loadUserSettings();
-      age.value=getAge();
-      if(age.value<0){
-        shownAge.value="";
-      }else{
-        shownAge.value=age.value.toString();
-      }
+      birthday.value=getBirthday();
+
       job.value=getJob();
       firstLanguage.value=getFirstLanguage();
       secondLanguage.value=getSecondLanguage();
@@ -173,7 +171,7 @@ export default defineComponent({
 
 
       db.collection("users").doc(userUID).set({
-        age: age.value,
+        birthday: birthday.value,
         job: job.value,
         firstLanguage:firstLanguage.value,
         secondLanguage:secondLanguage.value,
@@ -184,21 +182,11 @@ export default defineComponent({
     }
 
     const safe = ()=>{
+      console.log(birthday.value)
       const user = firebase.auth().currentUser;
       if (currentUser == null) return;
 
-      if(isNaN(parseInt(shownAge.value)) || parseInt(shownAge.value)<0) {
-        if(age.value<0)
-          shownAge.value="";
-        else
-          shownAge.value=age.value.toString() //reset des alten wertes
-        console.log("ungültiges alter")
-      }
 
-      else{//wert ist größer null und eine gültige number
-        setAge(parseInt(shownAge.value));
-        age.value=parseInt(shownAge.value);
-      }
 
 
       if(isNaN(parseInt(shownZipCode.value)) || parseInt(shownZipCode.value)<0) {
@@ -214,6 +202,7 @@ export default defineComponent({
         zipCode.value=parseInt(shownZipCode.value);
       }
 
+      setBirthday(birthday.value)
       setJob(job.value);
       setFirstLanguage(firstLanguage.value);
       setSecondLanguage(secondLanguage.value);
@@ -225,7 +214,7 @@ export default defineComponent({
 
     loadData();
     uploadUserSettings();
-    return { t, safe, age,job,firstLanguage,secondLanguage,dialect,zipCode,numberType, shownAge, shownZipCode }
+    return { t, safe, job,firstLanguage,secondLanguage,dialect,zipCode,numberType, shownZipCode, dateType,birthday }
   }
 })
 </script>
