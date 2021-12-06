@@ -5,7 +5,7 @@ import { Directory, Encoding, Filesystem } from "@capacitor/filesystem";
 
 //const r = new RecordingData(1,"a", ["a","b"],22);
 
-export let userSettings: UserSettings = new UserSettings(0,"","","","",0, "", false);
+export let userSettings: UserSettings = new UserSettings(-1,"","","","",-1, "", false);
 
 export async function safeUserSettings() {//call this function on closing or on every change
     const dataString = JSON.stringify(userSettings);

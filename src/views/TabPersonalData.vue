@@ -25,7 +25,7 @@
           </ion-label>
         <ion-input
         v-model:type="numberType"
-        v-model="age"
+        v-model="shownAge"
         ></ion-input>
         </ion-item>
 
@@ -77,7 +77,7 @@
           <ion-label>
             Postleitzahl
           </ion-label>
-        <ion-input v-model="zipCode"
+        <ion-input v-model="shownZipCode"
             v-model:type="numberType"></ion-input>
         </ion-item>
 
@@ -125,12 +125,14 @@ export default defineComponent({
     console.log(currentUser.uid);
 
 
-    const age=ref(0);
+    const age=ref(-1); //-1 gibt ungültigen wert an, richtiges alter
+    const shownAge=ref("");//angezeigtes alter als string
     const job=ref('');
     const firstLanguage=ref('');
     const secondLanguage=ref('');
     const dialect=ref('');
-    const zipCode=ref(0);
+    const zipCode=ref(-1);
+    const shownZipCode=ref("");
 
     const numberType = ref('number');
 
@@ -139,11 +141,21 @@ export default defineComponent({
       if (user == null) return;
       await loadUserSettings();
       age.value=getAge();
+      if(age.value<0){
+        shownAge.value="";
+      }else{
+        shownAge.value=age.value.toString();
+      }
       job.value=getJob();
       firstLanguage.value=getFirstLanguage();
       secondLanguage.value=getSecondLanguage();
       dialect.value=getDialect();
       zipCode.value=getZipCode();
+      if(zipCode.value<0){
+        shownZipCode.value="";
+      }else{
+        shownZipCode.value=zipCode.value.toString();
+      }
       //const store = firebase.firestore();
       //const ref = firebase.database();
       //console.log(ref);
@@ -174,19 +186,46 @@ export default defineComponent({
     const safe = ()=>{
       const user = firebase.auth().currentUser;
       if (currentUser == null) return;
-      setAge(age.value);
+
+      if(isNaN(parseInt(shownAge.value)) || parseInt(shownAge.value)<0) {
+        if(age.value<0)
+          shownAge.value="";
+        else
+          shownAge.value=age.value.toString() //reset des alten wertes
+        console.log("ungültiges alter")
+      }
+
+      else{//wert ist größer null und eine gültige number
+        setAge(parseInt(shownAge.value));
+        age.value=parseInt(shownAge.value);
+      }
+
+
+      if(isNaN(parseInt(shownZipCode.value)) || parseInt(shownZipCode.value)<0) {
+        if(zipCode.value<0)
+          shownZipCode.value="";
+        else
+          shownZipCode.value=zipCode.value.toString() //reset des alten wertes außer -1 da ungültiger wert
+        console.log("ungültiger zipcode")
+      }
+
+     else{
+        setZipCode(parseInt(shownZipCode.value));
+        zipCode.value=parseInt(shownZipCode.value);
+      }
+
       setJob(job.value);
       setFirstLanguage(firstLanguage.value);
       setSecondLanguage(secondLanguage.value);
       setDialect(dialect.value);
-      setZipCode(zipCode.value);
+
       uploadUserSettings();
 
     }
 
     loadData();
     uploadUserSettings();
-    return { t, safe, age,job,firstLanguage,secondLanguage,dialect,zipCode,numberType }
+    return { t, safe, age,job,firstLanguage,secondLanguage,dialect,zipCode,numberType, shownAge, shownZipCode }
   }
 })
 </script>
