@@ -2,32 +2,35 @@
   <ion-page>
     <PageHeader v-bind:title="t('general.appname')" />
 
-
     <ion-content :fullscreen="true">
-      
       <ion-header collapse="condense">
         <ion-toolbar>
           <ion-title size="large">Einstellungen</ion-title>
         </ion-toolbar>
       </ion-header>
-    
-      <ExploreContainer name="Settings" />
-    </ion-content>
 
-    <ion-item>
-      <ion-label text-wrap>
-        <p>
-          Tonbelege nur im Wlan hochladen.
-        </p>
-      </ion-label>
-      <ion-toggle
-          slot="start"
-          name = "RecordingWifi"
-          v-bind:checked="wifiOnlyActivated"
-          @IonChange="optionChanged($event)"
-      ></ion-toggle>
-    </ion-item>
+      <ion-list lines="full">
+        <ion-item>
+          <ion-button slot="start" @click="logOut"> Abmelden </ion-button>
+          <ion-label>
+            <p>{{ mail }}</p>
+          </ion-label>
+        </ion-item>
 
+        <ion-item>
+          <ion-label text-wrap>
+            <h2></h2>
+            <p>Tonbelege nur im Wlan hochladen.</p>
+          </ion-label>
+          <ion-toggle
+            slot="start"
+            name="RecordingWifi"
+            v-bind:checked="wifiOnlyActivated"
+            @IonChange="optionChanged($event)"
+          ></ion-toggle>
+        </ion-item>
+        
+        
     <ion-item>
       <ion-label text-wrap>
         <p> Account löschen</p>
@@ -41,45 +44,71 @@
       </ion-label>
       <ion-button @click="deleteData()"></ion-button>
     </ion-item>
-
-
-
+        
+      </ion-list>
+    </ion-content>
   </ion-page>
 </template>
 
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import { useI18n } from 'vue-i18n';
-import PageHeader from '@/components/layout/PageHeader.vue';
-import {ref} from "vue";
+import { defineComponent } from "vue";
+import { useI18n } from "vue-i18n";
+import PageHeader from "@/components/layout/PageHeader.vue";
+import { ref } from "vue";
 import {
-  IonPage, IonHeader, IonToolbar, IonTitle, IonContent, alertController
-} from '@ionic/vue';
+  IonPage,
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonContent,
+  IonItem,
+  IonToggle,
+  IonLabel,
+  IonList,
+  IonButton,
+  alertController
+} from "@ionic/vue";
 
-import ExploreContainer from '@/components/ExploreContainer.vue';
+import { setWifi } from "@/scripts/UserSettingsStorage";
 import firebase from "@/backend/firebase-config";
+import router from "@/router";
 import 'firebase/firestore';
-import { setWifi, getWifi} from "@/scripts/UserSettingsStorage";
 import {removeAllRecordingEntry} from "@/scripts/RecordingStorage"
-export default defineComponent({
 
-  components: { 
-    PageHeader, 
-    IonHeader, IonToolbar, IonTitle, IonContent, IonPage,
-    ExploreContainer
+export default defineComponent({
+  components: {
+    PageHeader,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonContent,
+    IonPage,
+    IonItem,
+    IonToggle,
+    IonLabel,
+    IonList,
+    IonButton,
   },
 
-  setup(){
+  setup() {
     // multi-lingual support
     const { t } = useI18n();
 
     const wifiOnlyActivated = ref(false);
 
-    const optionChanged = (event: any)=>{
+    const mail = ref("");
+
+    const currentUser = firebase.auth().currentUser;
+    if (currentUser == null) return;
+    if (currentUser.email != null) {
+      mail.value = currentUser.email;
+    }
+
+    const optionChanged = (event: any) => {
       wifiOnlyActivated.value = !wifiOnlyActivated.value;
       setWifi(wifiOnlyActivated.value);
-    }
+    };
 
     const deleteAccInDatabase = () =>{
       //TODO
@@ -92,6 +121,10 @@ export default defineComponent({
       //currentUser.delete();
     }
 
+    const logOut = () => {
+      firebase.auth().signOut();
+      router.push("/");
+    };
 
     const yesDeleteAcc = () =>{
       removeAllRecordingEntry(); //ich glaube es ist wichtig dass das zuerst passiert
@@ -141,6 +174,7 @@ export default defineComponent({
       wifiOnlyActivated,
       deleteAcc,
       deleteData,
+      mail, logOut
     }
   }
 })

@@ -21,11 +21,13 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/edit/:folderName',
     component: () => import('@/views/editing/EditMainView.vue'),
-    props: true
+    props: true,
+    meta: { requiresAuth: true },
   },
   {
     path: '/tabs/',
     component: Tabs,
+    meta: { requiresAuth: true },
     children: [
       {
         path: '',
@@ -33,8 +35,7 @@ const routes: Array<RouteRecordRaw> = [
       },
       {
         path: 'saved',
-        component: () => import('@/views/TabSaved.vue'),
-        meta: { requiresAuth: true }
+        component: () => import('@/views/TabSaved.vue')
       },
       {
         path: 'record',
@@ -82,6 +83,16 @@ router.beforeEach((to: RouteLocationNormalized,
     next();
   }
 });
+
+
+/** Call `getRedirectResult` when app starts
+ * see views/auth/Login.vue, onGoogleLogin/signInWithRedirect
+ */
+// firebase.auth().getRedirectResult()
+// .then((results) => {
+//   console.log(results.user)
+//   router.push("/tabs/record");
+// });
 
 
 export default router;
