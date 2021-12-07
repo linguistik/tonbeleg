@@ -34,18 +34,22 @@ import {ref} from "vue";
 
 import {useI18n} from "vue-i18n";
 
-import {arrowUp, pencil, trash, chevronDownOutline, chevronBackOutline, cut, play, pause, help} from "ionicons/icons";
+import {arrowUp, chevronBackOutline, chevronDownOutline, cut, help, pause, pencil, play, trash} from "ionicons/icons";
 
-import {IonIcon, IonItem, IonLabel} from "@ionic/vue";
-import {alertController} from "@ionic/vue";
+import {alertController, IonIcon, IonItem, IonLabel} from "@ionic/vue";
 
 
 import router from '@/router';
-import {Directory, Filesystem} from "@capacitor/filesystem";
+import {Directory, Encoding, Filesystem} from "@capacitor/filesystem";
 import firebase from "@/backend/firebase-config";
 
 import RecordingData from "@/scripts/RecordingData";
-import {removeRecordingEntry, setRecordingEntryName, setRecordingEntryUploadBoolean, getRecordingEntryUploadBoolean} from "@/scripts/RecordingStorage";
+import {
+  getRecordingEntryUploadBoolean,
+  removeRecordingEntry,
+  setRecordingEntryName,
+  setRecordingEntryUploadBoolean
+} from "@/scripts/RecordingStorage";
 
 export default {
   name: "Recording",
@@ -143,11 +147,22 @@ export default {
     }
 
     const playRec = async () =>{
+      //const audioRef = new Audio("/" + props.recording.userUID + "/" + props.recording.timestamp + "/" + "0.raw");
+          const audioRef = await Filesystem.readFile({
+            path: "/" + currentUser.uid + "/" + props.recording.timestamp + "/" + "0.raw",
+            directory: Directory.Data,
+            encoding: Encoding.UTF8,
+        });
+
+      const audioString = new Audio(audioRef.data);
       if(playing.value == false){
         //TODO
+        audioString.oncanplay = () => audioString.play()
+        audioString.load()
         playing.value = !playing.value
       }
       else{
+        audioString.pause();
         playing.value = !playing.value
       }
     }
