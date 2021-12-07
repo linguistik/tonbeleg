@@ -70,12 +70,10 @@ import {
   alertController
 } from "@ionic/vue";
 
-import "firebase/firestore";
-import { setWifi, getWifi } from "@/scripts/UserSettingsStorage";
+import { setWifi } from "@/scripts/UserSettingsStorage";
 import firebase from "@/backend/firebase-config";
 import router from "@/router";
 import 'firebase/firestore';
-import { setWifi, getWifi} from "@/scripts/UserSettingsStorage";
 import {removeAllRecordingEntry} from "@/scripts/RecordingStorage"
 
 export default defineComponent({
@@ -176,6 +174,7 @@ export default defineComponent({
       wifiOnlyActivated,
       deleteAcc,
       deleteData,
+      mail, logOut
     }
   }
 })

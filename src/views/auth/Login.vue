@@ -136,8 +136,8 @@ const isOpenRef = ref(true);
 firebase.auth().getRedirectResult()
 .then((results) => {
   console.log("redirect results:", results.user)
-  router.push("/tabs/record");
   isOpenRef.value = false;
+  router.push("/tabs/record");
 })
 
 
