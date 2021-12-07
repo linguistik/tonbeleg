@@ -35,7 +35,6 @@ import {useI18n} from "vue-i18n";
 
 import {arrowUp, pencil, trash, chevronDownOutline, chevronBackOutline, cut, play, pause} from "ionicons/icons";
 
-
 import {IonIcon, IonItem, IonLabel} from "@ionic/vue";
 import {alertController} from "@ionic/vue";
 

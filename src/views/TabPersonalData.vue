@@ -15,17 +15,17 @@
 
         <ion-list-header>
           <ion-label>
-            Persöliche Daten
+            Persönliche Daten
           </ion-label>
         </ion-list-header>
 
         <ion-item>
           <ion-label>
-            Alter
+            Geburtstag
           </ion-label>
         <ion-input
-        v-model:type="numberType"
-        v-model="age"
+        v-model:type="dateType"
+        v-model="birthday"
         ></ion-input>
         </ion-item>
 
@@ -77,14 +77,15 @@
           <ion-label>
             Postleitzahl
           </ion-label>
-        <ion-input v-model="zipCode"
+        <ion-input v-model="shownZipCode"
             v-model:type="numberType"></ion-input>
         </ion-item>
 
         <ion-item>
           <ion-button @click="safe()">Speichern</ion-button>
         </ion-item>
-
+<MultipleElementsParent text="Erstsprache hinzufügen" @valuesChanged="updateFirstLanguages"/>
+<MultipleElementsParent text="Zweitsprache hinzufügen" />
       </ion-list>
     </ion-content>
 
@@ -96,7 +97,7 @@
 import { defineComponent, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import PageHeader from '@/components/layout/PageHeader.vue';
-import {loadUserSettings, setAge, setJob,setFirstLanguage,setSecondLanguage,setDialect,setZipCode, getAge,getJob,getFirstLanguage,getSecondLanguage,getDialect,getZipCode} from "@/scripts/UserSettingsStorage";
+import {loadUserSettings, setBirthday, setJob,setFirstLanguage,setSecondLanguage,setDialect,setZipCode, getBirthday,getJob,getFirstLanguage,getSecondLanguage,getDialect,getZipCode} from "@/scripts/UserSettingsStorage";
 import { 
   IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonListHeader, IonLabel, IonInput,IonButton
 } from '@ionic/vue';
@@ -105,12 +106,14 @@ import {
 import firebase from '@/backend/firebase-config';
 
 import 'firebase/firestore';
+import MultipleElementsParent from '@/components/dynamicElement/MultipleElementsParent.vue';
 
 export default defineComponent({
 
   components: { 
     PageHeader, 
-    IonHeader, IonToolbar, IonTitle, IonContent, IonPage, IonList, IonItem, IonListHeader, IonLabel, IonInput, IonButton
+    IonHeader, IonToolbar, IonTitle, IonContent, IonPage, IonList, IonItem, IonListHeader, IonLabel, IonInput, IonButton,
+    MultipleElementsParent
   },
 
 //TODO upload data
@@ -125,25 +128,35 @@ export default defineComponent({
     console.log(currentUser.uid);
 
 
-    const age=ref(0);
+    const birthday = ref('');
+
     const job=ref('');
     const firstLanguage=ref('');
     const secondLanguage=ref('');
     const dialect=ref('');
-    const zipCode=ref(0);
+    const zipCode=ref(-1);
+
+    const shownZipCode=ref("");
 
     const numberType = ref('number');
-
+    const dateType = ref('date');
     const loadData = async () =>{
+
       const user = firebase.auth().currentUser;
       if (user == null) return;
       await loadUserSettings();
-      age.value=getAge();
+      birthday.value=getBirthday();
+
       job.value=getJob();
       firstLanguage.value=getFirstLanguage();
       secondLanguage.value=getSecondLanguage();
       dialect.value=getDialect();
       zipCode.value=getZipCode();
+      if(zipCode.value<0){
+        shownZipCode.value="";
+      }else{
+        shownZipCode.value=zipCode.value.toString();
+      }
       //const store = firebase.firestore();
       //const ref = firebase.database();
       //console.log(ref);
@@ -161,7 +174,7 @@ export default defineComponent({
 
 
       db.collection("users").doc(userUID).set({
-        age: age.value,
+        birthday: birthday.value,
         job: job.value,
         firstLanguage:firstLanguage.value,
         secondLanguage:secondLanguage.value,
@@ -172,21 +185,44 @@ export default defineComponent({
     }
 
     const safe = ()=>{
+      console.log(birthday.value)
       const user = firebase.auth().currentUser;
       if (currentUser == null) return;
-      setAge(age.value);
+
+
+
+
+      if(isNaN(parseInt(shownZipCode.value)) || parseInt(shownZipCode.value)<0) {
+        if(zipCode.value<0)
+          shownZipCode.value="";
+        else
+          shownZipCode.value=zipCode.value.toString() //reset des alten wertes außer -1 da ungültiger wert
+        console.log("ungültiger zipcode")
+      }
+
+     else{
+        setZipCode(parseInt(shownZipCode.value));
+        zipCode.value=parseInt(shownZipCode.value);
+      }
+
+      setBirthday(birthday.value)
       setJob(job.value);
       setFirstLanguage(firstLanguage.value);
       setSecondLanguage(secondLanguage.value);
       setDialect(dialect.value);
-      setZipCode(zipCode.value);
+
       uploadUserSettings();
 
     }
 
     loadData();
     uploadUserSettings();
-    return { t, safe, age,job,firstLanguage,secondLanguage,dialect,zipCode,numberType }
+
+    const updateFirstLanguages = (languages: string[])=>{
+      console.log(languages);
+    }
+
+    return { t, safe, job,firstLanguage,secondLanguage,dialect,zipCode,numberType, shownZipCode, dateType,birthday, updateFirstLanguages }
   }
 })
 </script>
