@@ -12,9 +12,10 @@
     </ion-label>
     <ion-icon Left-icon :icon="playing ? pause : play" @click="playRec()"></ion-icon>
     <ion-icon :color= "selectedForUpload ? 'success' : 'medium' " :icon="arrowUp" @click="upload()" ></ion-icon>
-    <ion-icon :icon="trash" @click="delteRecording()"  ></ion-icon>
+    <ion-icon :icon="trash" @click="deleteRecording()"  ></ion-icon>
     <ion-icon :icon="pencil" @click="rename()"></ion-icon>
     <ion-icon :icon="cut" @click="edit()"></ion-icon>
+    <ion-icon :icon="help" @click="changeLicense()"></ion-icon>
     <ion-icon :icon="chevronDownOutline" @click="toggleOpen()"></ion-icon>
   </ion-item>
 
@@ -33,7 +34,7 @@ import {ref} from "vue";
 
 import {useI18n} from "vue-i18n";
 
-import {arrowUp, pencil, trash, chevronDownOutline, chevronBackOutline, cut, play, pause} from "ionicons/icons";
+import {arrowUp, pencil, trash, chevronDownOutline, chevronBackOutline, cut, play, pause, help} from "ionicons/icons";
 
 import {IonIcon, IonItem, IonLabel} from "@ionic/vue";
 import {alertController} from "@ionic/vue";
@@ -116,6 +117,24 @@ export default {
       router.push("/edit/" + props.recording.timestamp);
     }
 
+    const changeLicense = async () =>{
+      const alert = await alertController.create({
+        message: 'Do you really want to delete this file?',
+        buttons: [{
+          text:'Cancel',
+          handler: () =>{
+            console.log('confirm Cancel');
+          },
+        }, {
+          text: 'OK',
+          handler: () =>{
+            //TODO
+          },
+        }],
+      });
+      await alert.present();
+    }
+
     const upload = () => {
       //TODO
       setRecordingEntryUploadBoolean(props.recording.timestamp, !props.recording.upload);
@@ -183,7 +202,7 @@ export default {
       await alert.present();
     }//method rename
 
-    const delteRecording = async (folder: string)=>{
+    const deleteRecording = async (folder: string)=>{
       //TODO delete entry in outsourced
       const alert = await alertController.create({
         message: 'Do you really want to delete this file?',
@@ -214,16 +233,18 @@ export default {
       isOpen,
       play,
       pause,
+      help,
       toggleOpen,
       getRecordingDate,
       edit,
       upload,
-      delteRecording,
+      deleteRecording,
       rename,
       playRec,
       playing,
       selectedForUpload,
       getRecordingEntryUploadBoolean,
+      changeLicense,
     };//return
 
   },//setup

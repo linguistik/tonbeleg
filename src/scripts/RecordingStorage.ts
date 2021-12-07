@@ -77,6 +77,12 @@ export function setRecordingEntryName(timestamp: number, newName: string){
     safeRecordings();
 }
 
+export function setRecordingLicense(timestamp: number, newLicense: string){
+    const data = getRecordingEntry(timestamp);
+    data.license = newLicense;
+    safeRecordings();
+}
+
 export function setRecordingEntryUploadBoolean(timestamp: number, uploadBoolean: boolean){
     const data = getRecordingEntry(timestamp);
     data.upload = uploadBoolean;
@@ -86,6 +92,11 @@ export function setRecordingEntryUploadBoolean(timestamp: number, uploadBoolean:
 export function getRecordingEntryUploadBoolean(timestamp: number): boolean{
     const data = getRecordingEntry(timestamp);
     return data.upload;
+}
+
+export function getRecordingLicense(timestamp: number): string{
+    const data = getRecordingEntry(timestamp);
+    return data.license;
 }
 
 export function removeRecordingEntry(recording: RecordingData) {
@@ -101,8 +112,6 @@ export function removeRecordingEntry(recording: RecordingData) {
     if (currentUser == null) {
         return;
     }
-
-
 
     const userUID = currentUser.uid;
     Filesystem.rmdir({

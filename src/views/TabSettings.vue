@@ -131,7 +131,6 @@ export default defineComponent({
       }
     }
 
-
     const logOut = () => {
       firebase.auth().signOut();
       router.push("/");
