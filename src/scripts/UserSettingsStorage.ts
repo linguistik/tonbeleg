@@ -2,7 +2,7 @@ import UserSettings from "./UserSettings"
 
 import firebase from "@/backend/firebase-config";
 import { Directory, Encoding, Filesystem } from "@capacitor/filesystem";
-
+import router from "@/router";
 //const r = new RecordingData(1,"a", ["a","b"],22);
 
 export let userSettings: UserSettings = new UserSettings("","","","","",-1, "", false);
@@ -58,6 +58,25 @@ export function getUserSettings(): UserSettings {
 }
 */
 
+export async function deleteUserSettings() {
+    const currentUser = firebase.auth().currentUser;
+    if (currentUser == null) {
+        console.log("\n\nFATAL ERROR: no user logged in, so user data cannot be loaded\n\n");
+        return;
+    }
+    const userUID = currentUser.uid;
+    try {
+        const deletePersonalData = await Filesystem.deleteFile({
+            path: userUID + "/usersettings.json",
+            directory: Directory.Data,
+        });
+    }catch(error){//ignore error when file does not exist already, this happens on first login
+        if(error.message == "File does not exist."){/**/}
+        console.log("reading error: ", error);
+    }
+    await router.push("../tabs/tabpersonaldata");
+    console.log("user Settings Deleted");
+}
 
 export function setBirthday(newBirthday: string){
     userSettings.birthday=newBirthday;
