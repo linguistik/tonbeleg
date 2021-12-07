@@ -73,7 +73,6 @@ import {
 import { setWifi } from "@/scripts/UserSettingsStorage";
 import firebase from "@/backend/firebase-config";
 import router from "@/router";
-import 'firebase/firestore';
 import {removeAllRecordingEntry} from "@/scripts/RecordingStorage"
 import {deleteUserSettings} from "@/scripts/UserSettingsStorage";
 
@@ -111,15 +110,25 @@ export default defineComponent({
       setWifi(wifiOnlyActivated.value);
     };
 
-    const deleteAccInDatabase = () =>{
+    const deleteAccInDatabase = async () =>{
       //TODO
       const currentUser = firebase.auth().currentUser;
       if (currentUser == null) {
-        console.log("\n\nFATAL ERROR: no user logged in, so user data cannot be safed\n\n");
+        console.log("\n\nFATAL ERROR: no user logged in, so user can be deleted\n\n");
         return;
       }
 
-      //currentUser.delete();
+      try {
+        //await currentUser.delete();
+      }
+      catch(error){
+        //TODO
+        //problem ist rauszufinden welche sign in methode
+        const providerId = currentUser.providerId;
+        if(providerId == "www.google.com"){
+         //TODO pls help i cant do it
+        }
+      }
     }
 
 

@@ -105,6 +105,7 @@ import {
 
 import {insertRecordingEntry} from "@/scripts/RecordingStorage";
 import RecordingData from "@/scripts/RecordingData";
+import {getLicense} from "@/scripts/UserSettingsStorage";
 
 export default defineComponent({
   components: {
@@ -280,7 +281,7 @@ export default defineComponent({
       }
 
       //create Entry in RecordingStorage
-      insertRecordingEntry(new RecordingData(timestamp,timestamp.toString(),["0.raw"],timer.value.getSeconds(), false));
+      insertRecordingEntry(new RecordingData(timestamp,timestamp.toString(),["0.raw"],timer.value.getSeconds(), false, getLicense()));
 
     };//method: stopRecordingTrigger
 
@@ -309,6 +310,7 @@ export default defineComponent({
       stopRecordingTrigger,
       continueRecordingTrigger,
       pauseRecordingTrigger,
+      getLicense,
       caretForwardOutline,
       stopSharp,
       recordingStatusEnums,

@@ -2,6 +2,7 @@ import RecordingData from "./RecordingData"
 
 import firebase from "@/backend/firebase-config";
 import { Directory, Encoding, Filesystem } from "@capacitor/filesystem";
+import {getLicense} from "@/scripts/UserSettingsStorage";
 
 //const r = new RecordingData(1,"a", ["a","b"],22);
 
@@ -67,7 +68,7 @@ export function getRecordingEntry(timestamp: number): RecordingData{
             return recording;
     }
     console.log("\n\nFATAL ERROR: could not find recording with timestamp: " + timestamp + "\n\n");
-    return new RecordingData(0,"ERROR", [],0, false);
+    return new RecordingData(0,"ERROR", [],0, false, getLicense());
 }
 
 export function setRecordingEntryName(timestamp: number, newName: string){
