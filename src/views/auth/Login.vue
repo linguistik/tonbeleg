@@ -7,6 +7,13 @@
     </ion-header>
 
     <ion-content :fullscreen="true">
+<ion-loading
+    :is-open="isOpenRef"
+    cssClass="my-custom-class"
+    message="Please wait..."
+  >
+  </ion-loading>
+
       <ion-card>
         <ion-card-header>
           <ion-card-title>{{ t("auth.signup_noun") }}</ion-card-title>
@@ -89,6 +96,7 @@ import {
   IonButton,
   IonLabel,
   IonItem,
+  IonLoading
 } from "@ionic/vue";
 
 export default defineComponent({
@@ -109,11 +117,30 @@ export default defineComponent({
     IonButton,
     IonLabel,
     IonItem,
+    IonLoading
   },
 
   setup() {
     // multi-lingual support
     const { t } = useI18n();
+
+
+
+//2 threaded idea, problem: data races, we need something like atomic{...}
+
+// wait                              //start getting redirect result
+//stop if other thread found result  //tell other thread that we found result and set isOpenRef = false
+//set isOpenRef = true
+
+const isOpenRef = ref(true);
+firebase.auth().getRedirectResult()
+.then((results) => {
+  console.log("redirect results:", results.user)
+  router.push("/tabs/record");
+  isOpenRef.value = false;
+})
+
+
 
     // other variables
     const debugVerbose = ref(true);
@@ -124,7 +151,7 @@ export default defineComponent({
     const errorMessage = ref("");
 
     const onEmailLogin = async () => {
-      console.log(firebase.auth().currentUser);
+      //console.log("user", firebase.auth().currentUser);
       try {
         await firebase
           .auth()
@@ -132,10 +159,10 @@ export default defineComponent({
           .then(() => {
             firebase
               .auth()
-              .signInWithEmailAndPassword(email.value, password.value);
+              .signInWithEmailAndPassword(email.value, password.value).then(()=>router.push("/tabs/record"));
+        
           });
         //if(debugVerbose.value){console.log(username);}
-        router.push("/tabs/record");
       } catch (err) {
         errorMessage.value = err.message;
         if (debugVerbose.value) {
@@ -169,6 +196,7 @@ export default defineComponent({
       onEmailLogin,
       onGoogleLogin,
       onRegister,
+      isOpenRef
     };
   },
 });

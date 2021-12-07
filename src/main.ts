@@ -49,10 +49,11 @@ import './theme/variables.css';
 
 /** Call `getRedirectResult` when app starts
  * see views/auth/Login.vue, onGoogleLogin/signInWithRedirect
- */
+ *//*
 import firebase from '@/backend/firebase-config';
 firebase.auth().getRedirectResult()
 .then((results) => {
-  console.log(results.user)
+  console.log("redirect results:", results.user)
   router.push("/tabs/record");
 })
+*/
