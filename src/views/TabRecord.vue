@@ -106,6 +106,7 @@ import {
 import {insertRecordingEntry} from "@/scripts/RecordingStorage";
 import RecordingData from "@/scripts/RecordingData";
 import {getLicense} from "@/scripts/UserSettingsStorage";
+import {Encoding} from "@capacitor/filesystem";
 
 export default defineComponent({
   components: {
@@ -208,6 +209,19 @@ export default defineComponent({
       recordingStatus.value= recordingStatusEnums.IS_RECORDING;
     };
 
+    /*let audioRef = new Audio();
+    const stopRecordingTrigger = async () =>{
+      let recordingData;
+      VoiceRecorder.stopRecording()
+          .then((result: RecordingData) => {
+            console.log(result.value);
+            audioRef = new Audio(result.value.recordDataBase64)
+            audioRef.oncanplaythrough = () => audioRef.play()
+            audioRef.load()
+          })
+          .catch(error => console.log(error))
+    };*/
+
 
     const stopRecordingTrigger = async () => {
 
@@ -274,6 +288,7 @@ export default defineComponent({
           path: "/" + userUID + "/" + timestamp + "/" + "0.raw",
           data: recordingData.value.recordDataBase64,
           directory: Directory.Data,
+          encoding: Encoding.UTF8,
         });
       } catch (error) {
         console.log(error);
@@ -299,7 +314,6 @@ export default defineComponent({
     setInterval(() => {
       timerHandler(); // Now the "this" still references the component
     }, 1000);
-
 
     // Abspielen: https://github.com/tchvu3/capacitor-voice-recorder#playback
 
