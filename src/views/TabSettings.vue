@@ -75,6 +75,7 @@ import firebase from "@/backend/firebase-config";
 import router from "@/router";
 import 'firebase/firestore';
 import {removeAllRecordingEntry} from "@/scripts/RecordingStorage"
+import {deleteUserSettings} from "@/scripts/UserSettingsStorage";
 
 export default defineComponent({
   components: {
@@ -121,6 +122,7 @@ export default defineComponent({
       //currentUser.delete();
     }
 
+
     const logOut = () => {
       firebase.auth().signOut();
       router.push("/");
@@ -128,6 +130,7 @@ export default defineComponent({
 
     const yesDeleteAcc = () =>{
       removeAllRecordingEntry(); //ich glaube es ist wichtig dass das zuerst passiert
+      deleteUserSettings()
       deleteAccInDatabase();
     }
 
@@ -174,7 +177,9 @@ export default defineComponent({
       wifiOnlyActivated,
       deleteAcc,
       deleteData,
-      mail, logOut
+      mail, logOut, removeAllRecordingEntry, deleteUserSettings,
+      yesDeleteAcc,
+
     }
   }
 })
