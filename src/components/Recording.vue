@@ -42,7 +42,7 @@ import {alertController, IonIcon, IonItem, IonLabel} from "@ionic/vue";
 import router from '@/router';
 import {Directory, Encoding, Filesystem} from "@capacitor/filesystem";
 import firebase from "@/backend/firebase-config";
-
+import {replayAudioData, audioDaten} from "@/scripts/ReplayData";
 import RecordingData from "@/scripts/RecordingData";
 import {
   getRecordingEntryUploadBoolean,
@@ -65,21 +65,25 @@ export default {
 
   setup(props: any, context: any) {
     // multi-lingual support
-
     const {t} = useI18n();
 
-    const isOpen = ref(false);
+    const currentUser = firebase.auth().currentUser;
+    if (currentUser == null) return;
+    const UserUID = currentUser.uid;
 
+    let audioString = new Audio();
+
+    const isOpen = ref(false);
+    let currentTime = 0;
+    let counter = 0;
     const playing = ref(false);
     const selectedForUpload = ref(props.recording.upload);
 
     const toggleOpen = () => {
       isOpen.value = !isOpen.value;
+      //replayAudioData(props.recording.timestamp, currentUser.uid);
+      //audioString = audioDaten;
     };
-
-    const currentUser = firebase.auth().currentUser;
-    if (currentUser == null) return;
-    const UserUID = currentUser.uid;
 
 
     const getRecordingDate = () => {
@@ -147,22 +151,23 @@ export default {
     }
 
     const playRec = async () =>{
-      //const audioRef = new Audio("/" + props.recording.userUID + "/" + props.recording.timestamp + "/" + "0.raw");
-          const audioRef = await Filesystem.readFile({
-            path: "/" + currentUser.uid + "/" + props.recording.timestamp + "/" + "0.raw",
-            directory: Directory.Data,
-            encoding: Encoding.UTF8,
-        });
 
-      const audioString = new Audio(audioRef.data);
       if(playing.value == false){
         //TODO
-        audioString.oncanplay = () => audioString.play()
-        audioString.load()
+        if(counter == 0) {
+          audioString = await replayAudioData(props.recording.timestamp, currentUser.uid);
+          counter++;
+        }
+        if(currentTime != 0){
+          audioString.currentTime = currentTime;
+        }
+        audioString.oncanplay = () => audioString.play();
         playing.value = !playing.value
+        audioString.onended = () => playing.value = !playing.value, counter = 0;
       }
       else{
         audioString.pause();
+        currentTime = audioString.currentTime;
         playing.value = !playing.value
       }
     }
@@ -260,6 +265,9 @@ export default {
       selectedForUpload,
       getRecordingEntryUploadBoolean,
       changeLicense,
+      currentTime,
+      audioDaten,
+      replayAudioData,
     };//return
 
   },//setup
