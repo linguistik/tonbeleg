@@ -45,6 +45,12 @@ import firebase from "@/backend/firebase-config";
 import {replayAudioData, audioDaten} from "@/scripts/ReplayData";
 import RecordingData from "@/scripts/RecordingData";
 import {
+  RecordingUploadArray,
+  addToUploadArray,
+  UploadToFirebase,
+  deleteFromUploadArray
+} from "@/scripts/RecordingUpload";
+import {
   getRecordingEntryUploadBoolean,
   removeRecordingEntry,
   setRecordingEntryName,
@@ -62,6 +68,7 @@ export default {
   props: {
     recording: RecordingData,
   },
+  //methods & mounted glaube doch nicht
 
   setup(props: any, context: any) {
     // multi-lingual support
@@ -70,6 +77,7 @@ export default {
     const currentUser = firebase.auth().currentUser;
     if (currentUser == null) return;
     const UserUID = currentUser.uid;
+
 
     let audioString = new Audio();
 
@@ -81,8 +89,6 @@ export default {
 
     const toggleOpen = () => {
       isOpen.value = !isOpen.value;
-      //replayAudioData(props.recording.timestamp, currentUser.uid);
-      //audioString = audioDaten;
     };
 
 
@@ -143,11 +149,33 @@ export default {
       await alert.present();
     }
 
-    const upload = () => {
+    const upload = async () => {
       //TODO
+      const currentUser = firebase.auth().currentUser;
+      if (currentUser == null) return;
+
       setRecordingEntryUploadBoolean(props.recording.timestamp, !props.recording.upload);
-      selectedForUpload.value = !selectedForUpload.value;
       console.log("upload this thing", props.recording.upload);
+      selectedForUpload.value = !selectedForUpload.value;
+      //const db = firebase.firestore();
+      if(selectedForUpload.value) {
+        addToUploadArray((await Filesystem.readFile({
+          path: "/" + currentUser.uid + "/" + props.recording.timestamp + "/" + "0.raw",
+          directory: Directory.Data,
+          encoding: Encoding.UTF8,
+        })).data, currentUser.uid.concat(props.recording.timestamp.toString())); //warum nur aaaaaa's
+      }
+      else{
+        deleteFromUploadArray(currentUser.uid.concat(props.recording.timestamp.toString()));
+      }
+      /*await db.collection("users").doc(currentUser.uid).set({
+        Recording: (await Filesystem.readFile({
+          path: "/" + currentUser.uid + "/" + props.recording.timestamp + "/" + "0.raw",
+          directory: Directory.Data,
+          encoding: Encoding.UTF8,
+        })).data,
+      },{merge: true});
+      console.log("wrote to database");*/
     }
 
     const playRec = async () =>{

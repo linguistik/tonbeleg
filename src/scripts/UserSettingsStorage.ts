@@ -5,7 +5,7 @@ import { Directory, Encoding, Filesystem } from "@capacitor/filesystem";
 import router from "@/router";
 //const r = new RecordingData(1,"a", ["a","b"],22);
 
-export let userSettings: UserSettings = new UserSettings("","","","","",-1, "", false);
+export let userSettings: UserSettings = new UserSettings("","","","","",-1, "", false, [], [], []);
 
 export async function safeUserSettings() {//call this function on closing or on every change
     const dataString = JSON.stringify(userSettings);
@@ -112,6 +112,33 @@ export function setWifi(newWifi: boolean){
     userSettings.wifi=newWifi;
     safeUserSettings();
 }
+
+export function setUploadArray(uploadArray: string[]){
+    userSettings.uploadArray=uploadArray;
+    safeUserSettings();
+}
+
+export function setAlreadyUploadedArray(alreadyUploadedArray: string[]){
+    userSettings.alreadyUploadedArray=alreadyUploadedArray;
+    safeUserSettings();
+}
+
+export function setInUploadArrayIdent(inUploadArrayIdent: string[]){
+    userSettings.inUploadArrayIdent=inUploadArrayIdent;
+    safeUserSettings();
+}
+
+export function getUploadArray(): string[]{
+    return userSettings.uploadArray;
+}
+export function getAlreadyUploadedArray(): string[]{
+    return userSettings.alreadyUploadedArray;
+}
+
+export function getInUploadArrayIdent(): string[]{
+    return userSettings.inUploadArrayIdent;
+}
+
 
 export function getWifi(): boolean{
     return userSettings.wifi;

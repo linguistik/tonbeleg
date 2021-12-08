@@ -8,7 +8,7 @@
           <ion-title size="large">Gespeichertes</ion-title>
         </ion-toolbar>
       </ion-header>
-      <ion-button v-on:click="safeRecordings();">
+      <ion-button v-on:click="safeRecordings(), UploadToFirebase()">
         refresh
       </ion-button>
       <ion-list
@@ -41,7 +41,7 @@ read example.spec.ts first
 import {defineComponent, ref, Ref} from "vue";
 import { useI18n } from "vue-i18n";
 import PageHeader from "@/components/layout/PageHeader.vue";
-
+import {UploadToFirebase} from "@/scripts/RecordingUpload";
 import {
   IonPage,
   IonHeader,
@@ -64,7 +64,9 @@ import Recording from "@/components/Recording.vue";
 
 import {loadRecordings, safeRecordings, getRecordings } from "@/scripts/RecordingStorage";
 import RecordingData from "@/scripts/RecordingData";
-
+import {loadUserSettings} from "@/scripts/UserSettingsStorage";
+import {getAlreadyUploadedArray, getUploadArray, getInUploadArrayIdent} from "@/scripts/UserSettingsStorage";
+import {setUploadArrays} from "@/scripts/RecordingUpload";
 export default defineComponent({
   name: "TabSaved",
   components: {
@@ -78,7 +80,16 @@ export default defineComponent({
     IonList,
     Recording,
   },
-
+  methods:{
+    async setUpUploadArray(){
+      await loadUserSettings();
+      setUploadArrays(getUploadArray(),
+      getAlreadyUploadedArray(), getInUploadArrayIdent());
+    }
+  },
+  mounted(){
+    this.setUpUploadArray();
+  },
   setup() {
     // multi-lingual support
     const { t } = useI18n();
@@ -112,7 +123,11 @@ export default defineComponent({
     refresh,
     safeRecordings,
     loadRecordings,
-    updateKey
+    updateKey,
+      UploadToFirebase,
+      getUploadArray,
+      getAlreadyUploadedArray,
+      setUploadArrays,
     };
 
   },
