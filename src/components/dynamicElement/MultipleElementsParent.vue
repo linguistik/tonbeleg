@@ -1,11 +1,5 @@
 <template>
-  <MultipleElementsChild
-    v-for="item in children"
-    v-bind:key="item"
-    v-bind:id="item"
-    @remove="remove"
-    @change="childChanged"
-  />
+
   <ion-item>
     <ion-label>
       {{ text }}
@@ -16,6 +10,15 @@
       color="success"
     ></ion-icon>
   </ion-item>
+  <MultipleElementsChild
+
+      v-for="item in children"
+      v-bind:key="item"
+      v-bind:id="item"
+      :ref="form"
+      @remove="remove"
+      @change="childChanged"
+  />
 </template>
 
 <script lang="ts">
@@ -39,6 +42,32 @@ export default defineComponent({
     text: String,
   },
 
+//ermöglicht auf alle kindelemente mit itemRefs[] zuzugreifen
+
+  data() {
+    return {
+      itemRefs: []
+    }
+  },
+
+  methods: {
+    form(el: any) {
+      if (el) {
+        this.itemRefs.push(el)
+      }
+    }
+  },
+
+  beforeUpdate() {
+    this.itemRefs = []
+  },
+
+  updated() {
+    console.log(this.itemRefs)
+  },
+// bis hier
+
+
   setup(props: any, context: any) {
 
     const children: Ref<number[]> = ref([]);
@@ -50,7 +79,7 @@ export default defineComponent({
       children.value.push(lastIndex++);
     };
 
-    const EmitChange = ()=>{
+    const emitChange = ()=>{
         const ret: string[] = [];
         data.forEach((value)=>{
             if(value!=""){
@@ -66,9 +95,10 @@ export default defineComponent({
         children.value.splice(index, 1);
       }
       if(data.delete(id)){//element had data entry
-          EmitChange();
+          emitChange();
       }
     };
+
 
     const childChanged = (childData: string, id: number)=>{
         if(data.get(id)==childData){
@@ -78,11 +108,25 @@ export default defineComponent({
             return;
         }
         data.set(id, childData);
-        EmitChange();
+        emitChange();
     }
 
 
-    return { addCircle, addChildElement, children, remove,childChanged };
+     const onInit  = async(languages: string[]) => {
+      languages.forEach((value, index)=>{
+        addChildElement();
+        data.set(index, value);
+      });
+      console.log(data);
+
+
+    };
+
+
+    return { addCircle, addChildElement, children, remove,childChanged, onInit};
   },
+
+
 });
+
 </script>
