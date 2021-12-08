@@ -68,7 +68,7 @@ export function getRecordingEntry(timestamp: number): RecordingData{
             return recording;
     }
     console.log("\n\nFATAL ERROR: could not find recording with timestamp: " + timestamp + "\n\n");
-    return new RecordingData(0,"ERROR", [],0, false, getLicense());
+    return new RecordingData(0,"ERROR", [],0, false, getLicense(), "NoUserAvailable");
 }
 
 export function setRecordingEntryName(timestamp: number, newName: string){
