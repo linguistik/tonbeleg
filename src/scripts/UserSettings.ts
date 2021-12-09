@@ -3,13 +3,13 @@ export default class RecordingData{
     birthday: string;
     job: string;
     //Languages: string[];
-    firstLanguage: string;
-    secondLanguage: string;
+    firstLanguage: string[];
+    secondLanguage: string[];
     dialect: string;
     zipCode: number;
     license: string;
     wifi: boolean;
-    constructor(birthday: string,job: string, firstLanguage: string, secondLanguage: string, dialect: string, zipCode: number, license: string, wifi: boolean){
+    constructor(birthday: string,job: string, firstLanguage: string[], secondLanguage: string[], dialect: string, zipCode: number, license: string, wifi: boolean){
         this.birthday = birthday;
         this.job = job;
         this.firstLanguage = firstLanguage;

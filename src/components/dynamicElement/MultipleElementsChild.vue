@@ -27,8 +27,9 @@ export default defineComponent({
     id: Number,
   },
 
+
   setup(props: any, context: any) {
-    const input = ref("");
+    const input = ref();
     const removeFromParent = () => {
       context.emit("remove", props.id);
     };
@@ -36,7 +37,16 @@ export default defineComponent({
       context.emit("change", input.value, props.id);
     };
 
-    return { removeCircle, removeFromParent, inputChanged, input };
+
+
+    const initName = (name: string, index: number) => {
+
+      if(props.id != index){console.log("hier is5t was schief gegangen")}
+      input.value=name;
+
+    };
+
+    return { removeCircle, removeFromParent, inputChanged, input, initName };
   },
 });
 </script>
