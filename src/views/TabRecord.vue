@@ -296,7 +296,7 @@ export default defineComponent({
       }
 
       //create Entry in RecordingStorage
-      insertRecordingEntry(new RecordingData(timestamp,timestamp.toString(),["0.raw"],timer.value.getSeconds(), false, getLicense(), currentUser.uid));
+      insertRecordingEntry(new RecordingData(timestamp,timestamp.toString(),["0.raw"],timer.value.getSeconds(), false, false, getLicense(), currentUser.uid));
 
     };//method: stopRecordingTrigger
 
