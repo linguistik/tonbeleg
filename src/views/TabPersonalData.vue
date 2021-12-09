@@ -44,13 +44,11 @@
         </ion-list-header>
 
         <ion-item>
-
-          <MultipleElementsParent text="Erstsprache hinzufügen" @valuesChanged="updateFirstLanguages" ref="form" />
+          <MultipleElementsParent text="Erstsprache hinzufügen" @valuesChanged="updateFirstLanguages" ref="lng1" />
         </ion-item>
 
         <ion-item>
-
-          <MultipleElementsParent text="Zweitsprache hinzufügen" @valuesChanged="updateSecondLanguages"/>
+          <MultipleElementsParent text="Zweitsprache hinzufügen" @valuesChanged="updateSecondLanguages" ref="lng2"/>
         </ion-item>
 
         <ion-item>
@@ -111,13 +109,18 @@ export default defineComponent({
     MultipleElementsParent
   },
   methods: {
+    //läd geladene Sprachen und setzt die Einträge, bisschen unübersichtliches spaghetti aber seh keinen andere lösung
     async setupLanguages() {
       await loadUserSettings(); //läd user settinmg
-      await this.$refs.form.onInit(getFirstLanguage()); //erstellt kinder
-      this.$refs.form.itemRefs.forEach((entrys: any, index: number) =>{ //füllt bei kinder die geladenen namen ein
+      await this.$refs.lng1.onInit(getFirstLanguage()); //erstellt kinder erstSprache
+      this.$refs.lng1.itemRefs.forEach((entrys: any, index: number) =>{ //füllt bei kinder die geladenen namen ein
         entrys.initName(getFirstLanguage()[index],index);
       })
 
+      await this.$refs.lng2.onInit(getSecondLanguage()); //erstellt kinder zweite Sprache
+      this.$refs.lng2.itemRefs.forEach((entrys: any, index: number) =>{ //füllt bei kinder die geladenen namen ein
+        entrys.initName(getSecondLanguage()[index],index);
+      })
     }
   },
 
@@ -199,7 +202,7 @@ export default defineComponent({
       const user = firebase.auth().currentUser;
       if (currentUser == null) return;
 
-      if(isNaN(parseInt(shownZipCode.value)) || parseInt(shownZipCode.value)<0) {//zip code leagler wert
+      if(isNaN(parseInt(shownZipCode.value)) || parseInt(shownZipCode.value)<0) {//zip code legaler wert?
         if(zipCode.value<0)
           shownZipCode.value="";
         else
