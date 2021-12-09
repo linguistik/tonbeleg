@@ -5,7 +5,8 @@ import { Directory, Encoding, Filesystem } from "@capacitor/filesystem";
 import router from "@/router";
 //const r = new RecordingData(1,"a", ["a","b"],22);
 
-export let userSettings: UserSettings = new UserSettings("","","","","",-1, "", false);
+export let userSettings: UserSettings = new UserSettings("","",[],[],"",-1, "", false);
+
 
 export async function safeUserSettings() {//call this function on closing or on every change
     const dataString = JSON.stringify(userSettings);
@@ -86,11 +87,11 @@ export function setJob(newName: string){
     userSettings.job=newName;
     safeUserSettings();
 }
-export function setFirstLanguage(newFirstLanguage: string){
+export function setFirstLanguage(newFirstLanguage: string[]){
     userSettings.firstLanguage=newFirstLanguage;
     safeUserSettings();
 }
-export function setSecondLanguage(newSecondLanguage: string){
+export function setSecondLanguage(newSecondLanguage: string[]){
     userSettings.secondLanguage=newSecondLanguage;
     safeUserSettings();
 }
@@ -152,10 +153,10 @@ export function getJob(): string{
     return userSettings.job;
 }
 
-export function getFirstLanguage(): string{
+export function getFirstLanguage(): string[]{
     return userSettings.firstLanguage;
 }
-export function getSecondLanguage(): string{
+export function getSecondLanguage(): string[]{
     return userSettings.secondLanguage;
 }
 export function getDialect(): string{

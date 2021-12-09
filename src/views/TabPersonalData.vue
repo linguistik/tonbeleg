@@ -25,7 +25,7 @@
           </ion-label>
         <ion-input
         v-model:type="dateType"
-        v-model="birthday"
+        v-model="birthday" @ionBlur="safe()"
         ></ion-input>
         </ion-item>
 
@@ -33,37 +33,29 @@
           <ion-label>
             Beruf
           </ion-label>
-        <ion-input v-model="job"
+        <ion-input v-model="job" @ionBlur="safe()"
         ></ion-input>
         </ion-item>
 
         <ion-list-header>
           <ion-label>
-            Sprache
+            Sprachen
           </ion-label>
         </ion-list-header>
 
         <ion-item>
-          <ion-label>
-            Erstsprache
-          </ion-label>
-        <ion-input v-model="firstLanguage"
-        ></ion-input>
+          <MultipleElementsParent text="Erstsprache hinzufügen" @valuesChanged="updateFirstLanguages" ref="lng1" />
         </ion-item>
 
         <ion-item>
-          <ion-label>
-            Zweitsprache
-          </ion-label>
-        <ion-input v-model="secondLanguage"
-        ></ion-input>
+          <MultipleElementsParent text="Zweitsprache hinzufügen" @valuesChanged="updateSecondLanguages" ref="lng2"/>
         </ion-item>
 
         <ion-item>
           <ion-label>
             Dialekt
           </ion-label>
-        <ion-input v-model="dialect"
+        <ion-input v-model="dialect" @ionBlur="safe()"
         ></ion-input>
         </ion-item>
 
@@ -78,14 +70,15 @@
             Postleitzahl
           </ion-label>
         <ion-input v-model="shownZipCode"
-            v-model:type="numberType"></ion-input>
+            v-model:type="numberType" @ionBlur="safe()"
+        >
+        </ion-input>
         </ion-item>
 
         <ion-item>
           <ion-button @click="safe()">Speichern</ion-button>
         </ion-item>
-<MultipleElementsParent text="Erstsprache hinzufügen" @valuesChanged="updateFirstLanguages"/>
-<MultipleElementsParent text="Zweitsprache hinzufügen" />
+        <ion-button @click="triggerChildMethod()">test</ion-button>
       </ion-list>
     </ion-content>
 
@@ -115,10 +108,30 @@ export default defineComponent({
     IonHeader, IonToolbar, IonTitle, IonContent, IonPage, IonList, IonItem, IonListHeader, IonLabel, IonInput, IonButton,
     MultipleElementsParent
   },
+  methods: {
+    //läd geladene Sprachen und setzt die Einträge, bisschen unübersichtliches spaghetti aber seh keinen andere lösung
+    async setupLanguages() {
+      await loadUserSettings(); //läd user settinmg
+      await this.$refs.lng1.onInit(getFirstLanguage()); //erstellt kinder erstSprache
+      this.$refs.lng1.itemRefs.forEach((entrys: any, index: number) =>{ //füllt bei kinder die geladenen namen ein
+        entrys.initName(getFirstLanguage()[index],index);
+      })
 
+      await this.$refs.lng2.onInit(getSecondLanguage()); //erstellt kinder zweite Sprache
+      this.$refs.lng2.itemRefs.forEach((entrys: any, index: number) =>{ //füllt bei kinder die geladenen namen ein
+        entrys.initName(getSecondLanguage()[index],index);
+      })
+    }
+  },
+
+  mounted() {//kinder erst nach setup laden
+
+    this.setupLanguages();
+
+  },
 //TODO upload data
 
-  setup(){
+  setup(props: any, context: any){
     // multi-lingual support
     const { t } = useI18n();
 
@@ -129,10 +142,9 @@ export default defineComponent({
 
 
     const birthday = ref('');
-
     const job=ref('');
-    const firstLanguage=ref('');
-    const secondLanguage=ref('');
+    const firstLanguage =ref(['']);
+    const secondLanguage=ref(['']);
     const dialect=ref('');
     const zipCode=ref(-1);
 
@@ -140,6 +152,7 @@ export default defineComponent({
 
     const numberType = ref('number');
     const dateType = ref('date');
+
     const loadData = async () =>{
 
       const user = firebase.auth().currentUser;
@@ -189,17 +202,13 @@ export default defineComponent({
       const user = firebase.auth().currentUser;
       if (currentUser == null) return;
 
-
-
-
-      if(isNaN(parseInt(shownZipCode.value)) || parseInt(shownZipCode.value)<0) {
+      if(isNaN(parseInt(shownZipCode.value)) || parseInt(shownZipCode.value)<0) {//zip code legaler wert?
         if(zipCode.value<0)
           shownZipCode.value="";
         else
           shownZipCode.value=zipCode.value.toString() //reset des alten wertes außer -1 da ungültiger wert
         console.log("ungültiger zipcode")
       }
-
      else{
         setZipCode(parseInt(shownZipCode.value));
         zipCode.value=parseInt(shownZipCode.value);
@@ -207,10 +216,9 @@ export default defineComponent({
 
       setBirthday(birthday.value)
       setJob(job.value);
-      setFirstLanguage(firstLanguage.value);
+      setFirstLanguage(firstLanguage.value); //redundant wird eigentlich automatisch gemacht aber zu testzwecken noch hier
       setSecondLanguage(secondLanguage.value);
       setDialect(dialect.value);
-
       uploadUserSettings();
 
     }
@@ -220,9 +228,17 @@ export default defineComponent({
 
     const updateFirstLanguages = (languages: string[])=>{
       console.log(languages);
+      firstLanguage.value=languages;
+      setFirstLanguage(languages)
     }
 
-    return { t, safe, job,firstLanguage,secondLanguage,dialect,zipCode,numberType, shownZipCode, dateType,birthday, updateFirstLanguages }
+    const updateSecondLanguages = (languages: string[])=>{
+      console.log(languages);
+      secondLanguage.value=languages;
+      setSecondLanguage(languages);
+    }
+
+    return { t, safe, job,firstLanguage,secondLanguage,dialect,zipCode,numberType, shownZipCode, dateType,birthday, updateFirstLanguages, updateSecondLanguages }
   }
 })
 </script>

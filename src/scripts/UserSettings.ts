@@ -3,17 +3,18 @@ export default class RecordingData{ //Muss das nicht UserSettings heißen
     birthday: string;
     job: string;
     //Languages: string[];
-    firstLanguage: string;
-    secondLanguage: string;
+    firstLanguage: string[];
+    secondLanguage: string[];
     dialect: string;
     zipCode: number;
     license: string;
     wifi: boolean;
+
     //uploadArray: string[];
     //alreadyUploadedArray: string[][];
     //inUploadArrayIdent: string[][];
+    constructor(birthday: string,job: string, firstLanguage: string[], secondLanguage: string[], dialect: string, zipCode: number, license: string, wifi: boolean){
 
-    constructor(birthday: string,job: string, firstLanguage: string, secondLanguage: string, dialect: string, zipCode: number, license: string, wifi: boolean){
         this.birthday = birthday;
         this.job = job;
         this.firstLanguage = firstLanguage;
