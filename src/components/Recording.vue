@@ -11,7 +11,7 @@
       </h5>
     </ion-label>
     <ion-icon Left-icon :icon="playing ? pause : play" @click="playRec()"></ion-icon>
-    <ion-icon :color= "selectedForUpload ? 'success' : 'medium' " :icon="arrowUp" @click="upload()" ></ion-icon>
+    <ion-icon :color= "alreadyUploaded ? 'success' : (selectedForUpload ? 'warning' : 'medium' )" :icon="arrowUp" @click="upload()" ></ion-icon>
     <ion-icon :icon="trash" @click="deleteRecording()"  ></ion-icon>
     <ion-icon :icon="pencil" @click="rename()"></ion-icon>
     <ion-icon :icon="cut" @click="edit()"></ion-icon>
@@ -46,16 +46,18 @@ import {replayAudioData, audioDaten} from "@/scripts/ReplayData";
 import RecordingData from "@/scripts/RecordingData";
 import {
   RecordingUploadArray,
-  addToUploadArray,
+  //addToUploadArray,
   UploadToFirebase,
-  deleteFromUploadArray
+  //deleteFromUploadArray,
 } from "@/scripts/RecordingUpload";
 import {
   getRecordingEntryUploadBoolean,
   removeRecordingEntry,
   setRecordingEntryName,
-  setRecordingEntryUploadBoolean
+  setRecordingEntryUploadBoolean,
+  setSelectedForUpload, getSelectedForUpload, loadRecordings,
 } from "@/scripts/RecordingStorage";
+import {loadUserSettings} from "@/scripts/UserSettingsStorage";
 
 export default {
   name: "Recording",
@@ -63,6 +65,16 @@ export default {
     IonItem,
     IonIcon,
     IonLabel,
+  },
+
+  methods:{
+    async setEverything(){
+      await loadUserSettings();
+      await loadRecordings();
+    }
+  },
+  mounted(){
+    this.setEverything();
   },
 
   props: {
@@ -77,7 +89,7 @@ export default {
     const currentUser = firebase.auth().currentUser;
     if (currentUser == null) return;
     const UserUID = currentUser.uid;
-
+    const alreadyUploaded = ref(props.recording.upload);
 
     let audioString = new Audio();
 
@@ -85,7 +97,7 @@ export default {
     let currentTime = 0;
     let counter = 0;
     const playing = ref(false);
-    const selectedForUpload = ref(props.recording.upload);
+    const selectedForUpload = ref(props.recording.selectedForUpload);
 
     const toggleOpen = () => {
       isOpen.value = !isOpen.value;
@@ -133,7 +145,7 @@ export default {
 
     const changeLicense = async () =>{
       const alert = await alertController.create({
-        message: 'Do you really want to delete this file?',
+        message: 'Select a License for this recording.',
         buttons: [{
           text:'Cancel',
           handler: () =>{
@@ -154,28 +166,19 @@ export default {
       const currentUser = firebase.auth().currentUser;
       if (currentUser == null) return;
 
-      setRecordingEntryUploadBoolean(props.recording.timestamp, !props.recording.upload);
       console.log("upload this thing", props.recording.upload);
       selectedForUpload.value = !selectedForUpload.value;
-      //const db = firebase.firestore();
-      if(selectedForUpload.value) {
+      setSelectedForUpload(props.recording.timestamp, selectedForUpload.value);
+      /*if(selectedForUpload.value) {
         addToUploadArray((await Filesystem.readFile({
           path: "/" + currentUser.uid + "/" + props.recording.timestamp + "/" + "0.raw",
           directory: Directory.Data,
           encoding: Encoding.UTF8,
-        })).data, currentUser.uid.concat(props.recording.timestamp.toString())); //warum nur aaaaaa's
+        })).data, currentUser.uid, props.recording.timestamp.toString()); //warum nur aaaaaa's
       }
       else{
         deleteFromUploadArray(currentUser.uid.concat(props.recording.timestamp.toString()));
-      }
-      /*await db.collection("users").doc(currentUser.uid).set({
-        Recording: (await Filesystem.readFile({
-          path: "/" + currentUser.uid + "/" + props.recording.timestamp + "/" + "0.raw",
-          directory: Directory.Data,
-          encoding: Encoding.UTF8,
-        })).data,
-      },{merge: true});
-      console.log("wrote to database");*/
+      }*/
     }
 
     const playRec = async () =>{
@@ -198,6 +201,7 @@ export default {
         currentTime = audioString.currentTime;
         playing.value = !playing.value
       }
+
     }
 
     const actualDelete = async () =>{
@@ -296,6 +300,7 @@ export default {
       currentTime,
       audioDaten,
       replayAudioData,
+      alreadyUploaded,
     };//return
 
   },//setup

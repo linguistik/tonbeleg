@@ -12,7 +12,7 @@ export function safeRecordings() {//call this function on closing or on every ch
     const dataString = JSON.stringify(recordings);
     const currentUser = firebase.auth().currentUser;
     if (currentUser == null) {
-        console.log("\n\nFATAL ERROR: no user logged in, so safing recordings does not work\n\n");
+        console.log("\n\nFATAL ERROR: no user logged in, so saving recordings does not work\n\n");
         return;
     }
     const userUID = currentUser.uid;
@@ -68,7 +68,7 @@ export function getRecordingEntry(timestamp: number): RecordingData{
             return recording;
     }
     console.log("\n\nFATAL ERROR: could not find recording with timestamp: " + timestamp + "\n\n");
-    return new RecordingData(0,"ERROR", [],0, false, getLicense(), "NoUserAvailable");
+    return new RecordingData(0,"ERROR", [],0, false, false,getLicense(), "NoUserAvailable");
 }
 
 export function setRecordingEntryName(timestamp: number, newName: string){
@@ -77,10 +77,17 @@ export function setRecordingEntryName(timestamp: number, newName: string){
     safeRecordings();
 }
 
+export function setSelectedForUpload(timestamp: number, newBool: boolean){
+    const data = getRecordingEntry(timestamp);
+    data.selectedForUpload = newBool;
+    safeRecordings();
+}
+
 export function setRecordingLicense(timestamp: number, newLicense: string){
     const data = getRecordingEntry(timestamp);
     data.license = newLicense;
     safeRecordings();
+
 }
 
 export function setRecordingEntryUploadBoolean(timestamp: number, uploadBoolean: boolean){
@@ -97,6 +104,11 @@ export function getRecordingEntryUploadBoolean(timestamp: number): boolean{
 export function getRecordingLicense(timestamp: number): string{
     const data = getRecordingEntry(timestamp);
     return data.license;
+}
+
+export function getSelectedForUpload(timestamp: number): boolean{
+    const data = getRecordingEntry(timestamp);
+    return data.selectedForUpload;
 }
 
 export function removeRecordingEntry(recording: RecordingData) {

@@ -8,7 +8,7 @@
           <ion-title size="large">Gespeichertes</ion-title>
         </ion-toolbar>
       </ion-header>
-      <ion-button v-on:click="safeRecordings(), UploadToFirebase()">
+      <ion-button v-on:click="UploadToFirebase(), safeRecordings(), refreshAfterTimeout()">
         refresh
       </ion-button>
       <ion-list
@@ -65,8 +65,8 @@ import Recording from "@/components/Recording.vue";
 import {loadRecordings, safeRecordings, getRecordings } from "@/scripts/RecordingStorage";
 import RecordingData from "@/scripts/RecordingData";
 import {loadUserSettings} from "@/scripts/UserSettingsStorage";
-import {getAlreadyUploadedArray, getUploadArray, getInUploadArrayIdent} from "@/scripts/UserSettingsStorage";
-import {setUploadArrays} from "@/scripts/RecordingUpload";
+//import {getAlreadyUploadedArray, getUploadArray, getInUploadArrayIdent} from "@/scripts/UserSettingsStorage";
+//import {setUploadArrays} from "@/scripts/RecordingUpload";
 export default defineComponent({
   name: "TabSaved",
   components: {
@@ -83,8 +83,7 @@ export default defineComponent({
   methods:{
     async setUpUploadArray(){
       await loadUserSettings();
-      setUploadArrays(getUploadArray(),
-      getAlreadyUploadedArray(), getInUploadArrayIdent());
+      await loadRecordings();
     }
   },
   mounted(){
@@ -97,12 +96,14 @@ export default defineComponent({
     const recordingsRef: Ref<RecordingData[]> = ref([]);
     const initialize = async () => {
       await loadRecordings().then(()=>{recordingsRef.value =  getRecordings();});
+
     }
     initialize();
 
     const updateKey = ref(0);
     const forceUpdate = ()=>{
       updateKey.value += 1;
+
     }
 
     const refresh = async () => {
@@ -116,7 +117,6 @@ export default defineComponent({
     }
 
 
-
     return { t, 
     recordingsRef, 
     refreshAfterTimeout, 
@@ -125,13 +125,9 @@ export default defineComponent({
     loadRecordings,
     updateKey,
       UploadToFirebase,
-      getUploadArray,
-      getAlreadyUploadedArray,
-      setUploadArrays,
     };
 
   },
-
 
 }
 
