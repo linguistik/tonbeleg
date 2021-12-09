@@ -8,7 +8,7 @@
           <ion-title size="large">Gespeichertes</ion-title>
         </ion-toolbar>
       </ion-header>
-      <ion-button v-on:click="safeRecordings();">
+      <ion-button v-on:click="loadEverythingPls()">
         refresh
       </ion-button>
       <ion-list
@@ -23,11 +23,7 @@
     <p>Du hast auf diesem Gerät noch keine gespeicherten Aufnahmen </p>
   </div>
 
-
-
     </ion-content>
-
-
 
   </ion-page>
 </template>
@@ -41,7 +37,7 @@ read example.spec.ts first
 import {defineComponent, ref, Ref} from "vue";
 import { useI18n } from "vue-i18n";
 import PageHeader from "@/components/layout/PageHeader.vue";
-
+import {UploadToFirebase} from "@/scripts/RecordingUpload";
 import {
   IonPage,
   IonHeader,
@@ -64,7 +60,9 @@ import Recording from "@/components/Recording.vue";
 
 import {loadRecordings, safeRecordings, getRecordings } from "@/scripts/RecordingStorage";
 import RecordingData from "@/scripts/RecordingData";
-
+import {loadUserSettings} from "@/scripts/UserSettingsStorage";
+//import {getAlreadyUploadedArray, getUploadArray, getInUploadArrayIdent} from "@/scripts/UserSettingsStorage";
+//import {setUploadArrays} from "@/scripts/RecordingUpload";
 export default defineComponent({
   name: "TabSaved",
   components: {
@@ -78,7 +76,15 @@ export default defineComponent({
     IonList,
     Recording,
   },
-
+  methods:{
+    async setUpUploadArray(){
+      await loadUserSettings();
+      await loadRecordings();
+    }
+  },
+  mounted(){
+    this.setUpUploadArray();
+  },
   setup() {
     // multi-lingual support
     const { t } = useI18n();
@@ -86,12 +92,14 @@ export default defineComponent({
     const recordingsRef: Ref<RecordingData[]> = ref([]);
     const initialize = async () => {
       await loadRecordings().then(()=>{recordingsRef.value =  getRecordings();});
+
     }
     initialize();
 
     const updateKey = ref(0);
     const forceUpdate = ()=>{
       updateKey.value += 1;
+
     }
 
     const refresh = async () => {
@@ -99,11 +107,15 @@ export default defineComponent({
       forceUpdate();
     }
 
+    const loadEverythingPls = async () => {
+      await safeRecordings();
+      await UploadToFirebase();
+      refresh()
+    }
 
     const refreshAfterTimeout = async () => {
       window.setTimeout(refresh,100);
     }
-
 
 
     return { t, 
@@ -112,11 +124,12 @@ export default defineComponent({
     refresh,
     safeRecordings,
     loadRecordings,
-    updateKey
+    updateKey,
+      UploadToFirebase,
+      loadEverythingPls,
     };
 
   },
-
 
 }
 

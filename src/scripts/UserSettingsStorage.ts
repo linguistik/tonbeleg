@@ -114,6 +114,33 @@ export function setWifi(newWifi: boolean){
     safeUserSettings();
 }
 
+/*export function setUploadArray(uploadArray: string[]){
+    userSettings.uploadArray=uploadArray;
+    safeUserSettings();
+}
+
+export function setAlreadyUploadedArray(alreadyUploadedArray: string[][]){
+    userSettings.alreadyUploadedArray=alreadyUploadedArray;
+    safeUserSettings();
+}
+
+export function setInUploadArrayIdent(inUploadArrayIdent: string[][]){
+    userSettings.inUploadArrayIdent=inUploadArrayIdent;
+    safeUserSettings();
+}
+
+export function getUploadArray(): string[]{
+    return userSettings.uploadArray;
+}
+export function getAlreadyUploadedArray(): string[][]{
+    return userSettings.alreadyUploadedArray;
+}
+
+export function getInUploadArrayIdent(): string[][]{
+    return userSettings.inUploadArrayIdent;
+}*/
+
+
 export function getWifi(): boolean{
     return userSettings.wifi;
 }
