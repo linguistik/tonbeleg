@@ -103,7 +103,6 @@ export default {
       isOpen.value = !isOpen.value;
     };
 
-
     const getRecordingDate = () => {
       const date = new Date(parseInt(props.recording.timestamp));
       let day = date.getDate().toString();

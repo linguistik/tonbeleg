@@ -8,7 +8,7 @@
           <ion-title size="large">Gespeichertes</ion-title>
         </ion-toolbar>
       </ion-header>
-      <ion-button v-on:click="UploadToFirebase(), safeRecordings(), refreshAfterTimeout()">
+      <ion-button v-on:click="loadEverythingPls()">
         refresh
       </ion-button>
       <ion-list
@@ -23,11 +23,7 @@
     <p>Du hast auf diesem Gerät noch keine gespeicherten Aufnahmen </p>
   </div>
 
-
-
     </ion-content>
-
-
 
   </ion-page>
 </template>
@@ -111,6 +107,11 @@ export default defineComponent({
       forceUpdate();
     }
 
+    const loadEverythingPls = async () => {
+      await safeRecordings();
+      await UploadToFirebase();
+      refresh()
+    }
 
     const refreshAfterTimeout = async () => {
       window.setTimeout(refresh,100);
@@ -125,6 +126,7 @@ export default defineComponent({
     loadRecordings,
     updateKey,
       UploadToFirebase,
+      loadEverythingPls,
     };
 
   },

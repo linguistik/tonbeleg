@@ -1,7 +1,8 @@
 import firebase from "@/backend/firebase-config";
 //import {setAlreadyUploadedArray, setUploadArray, setInUploadArrayIdent} from "@/scripts/UserSettingsStorage";
-import {setRecordingEntryUploadBoolean, getRecordings} from "@/scripts/RecordingStorage";
+import {setRecordingEntryUploadBoolean, getRecordings, loadRecordings} from "@/scripts/RecordingStorage";
 import {Filesystem, Directory, Encoding} from "@capacitor/filesystem";
+import {loadUserSettings} from "@/scripts/UserSettingsStorage";
 
 export const RecordingUploadArray: string[] = [];
 //export let inRecordingArrayIdent: string[][] = [];
@@ -34,17 +35,13 @@ export function deleteFromUploadArray(ident: string){
 }
 
 
-function deleteAllFromUploadArray(){
+*/function deleteAllFromUploadArray(){
     if(RecordingUploadArray.length > 0) {
         for (i = 0; i < RecordingUploadArray.length; i = i + 1) {
-            alreadyUploadedArray.push([inRecordingArrayIdent[i][0], inRecordingArrayIdent[i][1]]);
             RecordingUploadArray.pop();
-            inRecordingArrayIdent.pop();
-            setAlreadyUploadedArray(alreadyUploadedArray);
-            setUploadArray(RecordingUploadArray);
         }
     }
-}*/
+}
 
 const db = firebase.firestore();
 
@@ -62,15 +59,16 @@ export async function UploadToFirebase(){
             })).data)
         }
     }
-
     await db.collection("users").doc(currentUser.uid).set({
         Recordings: RecordingUploadArray
     },{merge: true});
     console.log("wrote to database");
 
+    deleteAllFromUploadArray();
+
     for(i=0; i<RecordingDataArr.length; i=i+1){
         if(RecordingDataArr[i].upload == false && RecordingDataArr[i].selectedForUpload == true)
-        setRecordingEntryUploadBoolean(RecordingDataArr[i].timestamp, true);
+        await setRecordingEntryUploadBoolean(RecordingDataArr[i].timestamp, true);
     }
 
     //deleteAllFromUploadArray();
