@@ -175,6 +175,10 @@ export default defineComponent({
       //console.log(ref);
     }
 
+
+
+
+
     const uploadUserSettings = ()=>{
 
       const db = firebase.firestore();
@@ -223,8 +227,14 @@ export default defineComponent({
 
     }
 
-    loadData();
-    uploadUserSettings();
+
+    const initData = async () =>{
+
+      await loadData();
+      uploadUserSettings();
+
+    }
+    initData();
 
     const updateFirstLanguages = (languages: string[])=>{
       console.log(languages);
