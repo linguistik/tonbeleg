@@ -1,5 +1,9 @@
 <template>
+
   <ion-item>
+    <ion-label>
+            Zweitsprache wählen
+         </ion-label>
       <ion-select v-model="input" @ionChange="inputChanged" value="English">
               <ion-select-option v-for="[short,language] in languages" v-bind:key="short" v-bind:value="short">{{language}}</ion-select-option>
       </ion-select>
