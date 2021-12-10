@@ -1,6 +1,6 @@
 <template>
   <ion-item>
-      <ion-select  v-model="input" @ionChange="inputChanged">
+      <ion-select v-model="input" @ionChange="inputChanged" value="English">
               <ion-select-option v-for="[short,language] in languages" v-bind:key="short" v-bind:value="short">{{language}}</ion-select-option>
       </ion-select>
   </ion-item>
@@ -53,7 +53,22 @@ export default defineComponent({
     return { removeCircle, removeFromParent, inputChanged, input, initName, 
         languages:[["en","English"],
                   ["de","Deutsch"],
-                  ["fr","français"]
+                  ["es","español"],
+                  ["fr","français"],
+                  ["zh","Chinesisch"],
+                  ["hi", "हिन्दी"],
+                  ["bn","বাংলা"],
+                  ["ru","русский"],
+                  ["pt","português"],
+                  ["id","Bahasa Indonesia"],
+                  ["ur","اردو"],
+                  ["ja","日本語"],
+                  ["sw","	Kiswahili"],
+                  ["mr","मराठी"],
+                  ["te","తెలుగు"],
+                  ["tr","Türkçe"],
+                  ["ta","தமிழ்"],
+                  ["ko","한국어"],
 
         ]
     };

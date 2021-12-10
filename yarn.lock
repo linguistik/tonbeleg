@@ -2747,6 +2747,13 @@
   "resolved" "https://registry.npmjs.org/aws4/-/aws4-1.11.0.tgz"
   "version" "1.11.0"
 
+"axios@^0.21.1":
+  "integrity" "sha512-ut5vewkiu8jjGBdqpM44XxjuCjq9LAKeHVmoVfHVzy8eHgxxq8SbAVQNovDA8mVi05kP0Ea/n/UzcSHcTJQfNg=="
+  "resolved" "https://registry.npmjs.org/axios/-/axios-0.21.4.tgz"
+  "version" "0.21.4"
+  dependencies:
+    "follow-redirects" "^1.14.0"
+
 "babel-code-frame@^6.22.0", "babel-code-frame@^6.26.0":
   "integrity" "sha1-Y/1D99weO7fONZR9uP42mj9Yx0s="
   "resolved" "https://registry.npmjs.org/babel-code-frame/-/babel-code-frame-6.26.0.tgz"
@@ -5152,7 +5159,7 @@
     "inherits" "^2.0.3"
     "readable-stream" "^2.3.6"
 
-"follow-redirects@^1.0.0":
+"follow-redirects@^1.0.0", "follow-redirects@^1.14.0":
   "integrity" "sha512-HWqDgT7ZEkqRzBvc2s64vSZ/hfOceEol3ac/7tKwzuvEyWx3/4UegXh5oBOIotkGsObyk3xznnSRVADBgWSQVg=="
   "resolved" "https://registry.npmjs.org/follow-redirects/-/follow-redirects-1.14.1.tgz"
   "version" "1.14.1"
@@ -7601,6 +7608,11 @@
   "integrity" "sha512-4hLB8Py4zZce5s4yd9XzopqwVv/yGNhV1Bl8NTmCq1763HeK2+EwVTv+leGeL13Dnh2wfbqowVPXCIO0z4taYw=="
   "resolved" "https://registry.npmjs.org/pako/-/pako-1.0.11.tgz"
   "version" "1.0.11"
+
+"papaparse@^5.0.0":
+  "integrity" "sha512-Dbt2yjLJrCwH2sRqKFFJaN5XgIASO9YOFeFP8rIBRG2Ain8mqk5r1M6DkfvqEVozVcz3r3HaUGw253hA1nLIcA=="
+  "resolved" "https://registry.npmjs.org/papaparse/-/papaparse-5.3.1.tgz"
+  "version" "5.3.1"
 
 "parallel-transform@^1.1.0":
   "integrity" "sha512-P2vSmIu38uIlvdcU7fDkyrxj33gTUy/ABO5ZUbGowxNCopBq/OoD42bP4UmMrJoPyk4Uqf0mu3mtWBhHCZD8yg=="
@@ -10151,6 +10163,15 @@
   "resolved" "https://registry.npmjs.org/vm-browserify/-/vm-browserify-1.1.2.tgz"
   "version" "1.1.2"
 
+"vue-csv-import@^4.1.2":
+  "integrity" "sha512-sw/iY3taDUjkA7c/OF8waknrUzJKTm0imyom/cmeMUT68pKvN/mG6ufJPMIppzpulJ+y7Rpuo+aAtrnwyb0yGg=="
+  "resolved" "https://registry.npmjs.org/vue-csv-import/-/vue-csv-import-4.1.2.tgz"
+  "version" "4.1.2"
+  dependencies:
+    "axios" "^0.21.1"
+    "lodash" "^4.17.20"
+    "papaparse" "^5.0.0"
+
 "vue-eslint-parser@^7.0.0", "vue-eslint-parser@^7.8.0":
   "integrity" "sha512-ehmmrLZNYLUoKayvVW8l8HyPQIfuYZHiJoQLRP3dapDlTU7bGs4tqIKVGdAEpMuXS/b4R/PImCt7Tkj4UhX1SQ=="
   "resolved" "https://registry.npmjs.org/vue-eslint-parser/-/vue-eslint-parser-7.8.0.tgz"
@@ -10248,7 +10269,7 @@
   "resolved" "https://registry.npmjs.org/vue-template-es2015-compiler/-/vue-template-es2015-compiler-1.9.1.tgz"
   "version" "1.9.1"
 
-"vue@^2 || ^3.0.0-0", "vue@^2.x", "vue@^3.0.0", "vue@^3.0.0-0", "vue@^3.0.1", "vue@3.1.5":
+"vue@^2 || ^3.0.0-0", "vue@^2.x", "vue@^3.0.0", "vue@^3.0.0-0", "vue@^3.0.1", "vue@^3.0.4", "vue@3.1.5":
   "integrity" "sha512-Ho7HNb1nfDoO+HVb6qYZgeaobt1XbY6KXFe4HGs1b9X6RhkWG/113n4/SrtM1LUclM6OrP/Se5aPHHvAPG1iVQ=="
   "resolved" "https://registry.npmjs.org/vue/-/vue-3.1.5.tgz"
   "version" "3.1.5"
