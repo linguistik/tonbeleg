@@ -7,12 +7,12 @@
     </ion-header>
 
     <ion-content :fullscreen="true">
-<ion-loading
-    :is-open="isOpenRef"
-    cssClass="my-custom-class"
-    message="Please wait..."
-  >
-  </ion-loading>
+      <ion-loading
+        :is-open="waitingForRedirectResult"
+        cssClass="my-custom-class"
+        message="Please wait..."
+      >
+      </ion-loading>
 
       <ion-card>
         <ion-card-header>
@@ -68,6 +68,11 @@
             </ion-button>
           </form>
         </ion-card-content>
+
+        <ion-card-content>
+          <ion-checkbox @ionChange="changeRememberMe"> </ion-checkbox>
+          <ion-text> Eingeloggt bleiben </ion-text>
+        </ion-card-content>
       </ion-card>
     </ion-content>
   </ion-page>
@@ -96,7 +101,8 @@ import {
   IonButton,
   IonLabel,
   IonItem,
-  IonLoading
+  IonLoading,
+  IonCheckbox,
 } from "@ionic/vue";
 
 export default defineComponent({
@@ -117,30 +123,28 @@ export default defineComponent({
     IonButton,
     IonLabel,
     IonItem,
-    IonLoading
+    IonLoading,
+    IonCheckbox,
   },
 
   setup() {
     // multi-lingual support
     const { t } = useI18n();
 
+    let rememberMe = false;
+    const changeRememberMe = (event: any) => {
+      rememberMe = event.detail.checked;
+    };
 
-
-//2 threaded idea, problem: data races, we need something like atomic{...}
-
-// wait                              //start getting redirect result
-//stop if other thread found result  //tell other thread that we found result and set isOpenRef = false
-//set isOpenRef = true
-
-const isOpenRef = ref(true);
-firebase.auth().getRedirectResult()
-.then((results) => {
-  console.log("redirect results:", results.user)
-  isOpenRef.value = false;
-  router.push("/tabs/record");
-})
-
-
+    const waitingForRedirectResult = ref(true);
+    firebase
+      .auth()
+      .getRedirectResult()
+      .then((results) => {
+        console.log("redirect results:", results.user);
+        waitingForRedirectResult.value = false;
+        router.push("/tabs/record");
+      });
 
     // other variables
     const debugVerbose = ref(true);
@@ -151,16 +155,19 @@ firebase.auth().getRedirectResult()
     const errorMessage = ref("");
 
     const onEmailLogin = async () => {
-      //console.log("user", firebase.auth().currentUser);
       try {
         await firebase
           .auth()
-          .setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+          .setPersistence(
+            rememberMe
+              ? firebase.auth.Auth.Persistence.LOCAL
+              : firebase.auth.Auth.Persistence.NONE
+          )
           .then(() => {
             firebase
               .auth()
-              .signInWithEmailAndPassword(email.value, password.value).then(()=>router.push("/tabs/record"));
-        
+              .signInWithEmailAndPassword(email.value, password.value)
+              .then(() => router.push("/tabs/record"));
           });
         //if(debugVerbose.value){console.log(username);}
       } catch (err) {
@@ -171,18 +178,22 @@ firebase.auth().getRedirectResult()
       }
     };
 
-    
     const onGoogleLogin = async () => {
-      await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-      .then(()=>{
-        const provider = new firebase.auth.GoogleAuthProvider();
-        return firebase.auth().signInWithRedirect(provider);
-      })
-      .catch((error)=>{
-        console.log(error)
-      });
+      await firebase
+        .auth()
+        .setPersistence(
+          rememberMe
+            ? firebase.auth.Auth.Persistence.LOCAL
+            : firebase.auth.Auth.Persistence.NONE
+        )
+        .then(() => {
+          const provider = new firebase.auth.GoogleAuthProvider();
+          return firebase.auth().signInWithRedirect(provider);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     };
-
 
     const onRegister = async () => {
       router.push("/signup");
@@ -196,7 +207,8 @@ firebase.auth().getRedirectResult()
       onEmailLogin,
       onGoogleLogin,
       onRegister,
-      isOpenRef
+      waitingForRedirectResult,
+      changeRememberMe,
     };
   },
 });
