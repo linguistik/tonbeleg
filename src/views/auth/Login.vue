@@ -16,8 +16,8 @@
 
       <ion-card>
         <ion-card-header>
-          <ion-card-title>{{ t("auth.signup_noun") }}</ion-card-title>
-          <ion-card-subtitle>{{ t("auth.signup_cta") }}</ion-card-subtitle>
+          <ion-card-title>{{ t("auth.login_noun") }}</ion-card-title>
+          <ion-card-subtitle>{{ t("auth.login_cta") }}</ion-card-subtitle>
         </ion-card-header>
 
         <ion-card-content>
