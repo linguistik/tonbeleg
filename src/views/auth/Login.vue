@@ -103,6 +103,7 @@ import {
   IonItem,
   IonLoading,
   IonCheckbox,
+  IonText
 } from "@ionic/vue";
 
 export default defineComponent({
@@ -125,6 +126,7 @@ export default defineComponent({
     IonItem,
     IonLoading,
     IonCheckbox,
+    IonText
   },
 
   setup() {
