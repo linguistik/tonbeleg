@@ -1,31 +1,34 @@
 <template>
-  <ion-item v-if="isOpen">
-    <ion-label>
-      <strong>
-        {{ recording.name }}
-      </strong>
-      <h5>
-        Aufgenommen am:
-        {{ getRecordingDate() }}
-        <br>
-      </h5>
-    </ion-label>
+  <ion-card v-if="isOpen">
+<ion-card-header>
+            <ion-card-title>{{ recording.name }}</ion-card-title>
+          </ion-card-header>
+ <ion-card-content>
+      Aufgenommen am:
+        {{ getRecordingDate() }}<br>
+        Anzahl Aufnahmen:
+        {{5}}
+    </ion-card-content>
+    <ion-item>
     <ion-icon Left-icon :icon="playing ? pause : play" @click="playRec()"></ion-icon>
     <ion-icon :color= "alreadyUploaded ? 'success' : (selectedForUpload ? 'warning' : 'medium' )" :icon="arrowUp" @click="upload()" ></ion-icon>
     <ion-icon :icon="trash" @click="deleteRecording()"  ></ion-icon>
     <ion-icon :icon="pencil" @click="rename()"></ion-icon>
     <ion-icon :icon="cut" @click="edit()"></ion-icon>
     <ion-icon :icon="help" @click="changeLicense()"></ion-icon>
-    <ion-icon :icon="chevronDownOutline" @click="toggleOpen()"></ion-icon>
-  </ion-item>
+    <ion-icon :icon="chevronDownOutline" @click="toggleOpen()" slot="end"></ion-icon>
+    </ion-item>
+  </ion-card>
 
-  <ion-item v-else>
-    <ion-label text-wrap>
-      <strong>
-        {{ recording.name }}
-      </strong> </ion-label>
-    <ion-icon  :icon="chevronBackOutline" @click="toggleOpen()"></ion-icon>
-  </ion-item>
+  <ion-card v-else>
+<ion-card-content>
+            {{ recording.name }}
+          </ion-card-content>
+    <ion-item>
+    <ion-icon :icon="chevronDownOutline" @click="toggleOpen()" slot="end"></ion-icon>
+    </ion-item>
+
+  </ion-card>
 </template>
 
 
@@ -36,7 +39,8 @@ import {useI18n} from "vue-i18n";
 
 import {arrowUp, chevronBackOutline, chevronDownOutline, cut, help, pause, pencil, play, trash} from "ionicons/icons";
 
-import {alertController, IonIcon, IonItem, IonLabel} from "@ionic/vue";
+import {alertController, IonIcon, IonCard, IonLabel,
+IonCardContent} from "@ionic/vue";
 
 
 import router from '@/router';
@@ -62,9 +66,10 @@ import {loadUserSettings} from "@/scripts/UserSettingsStorage";
 export default {
   name: "Recording",
   components: {
-    IonItem,
+    IonCard,
     IonIcon,
-    IonLabel,
+    
+    IonCardContent
   },
 
   methods:{
