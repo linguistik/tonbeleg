@@ -14,10 +14,8 @@
       <ion-list
       lines="full"
       v-if="recordingsRef.length!=0">
-        <ol>
           <Recording v-for="item in recordingsRef" v-bind:key="item" v-bind:recording="item" @refreshEmit="refreshAfterTimeout()">
           </Recording>
-        </ol>
       </ion-list>
   <div id="container" v-else>
     <p>Du hast auf diesem Gerät noch keine gespeicherten Aufnahmen </p>
