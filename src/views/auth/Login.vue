@@ -69,6 +69,10 @@
           </form>
         </ion-card-content>
 
+        <ion-card-content v-if="errorMessage" class="error-message">
+          <ion-text color="danger"> {{errorMessage }}</ion-text>
+        </ion-card-content>
+
         <ion-card-content>
           <ion-checkbox @ionChange="changeRememberMe"> </ion-checkbox>
           <ion-text> Eingeloggt bleiben </ion-text>
@@ -103,7 +107,7 @@ import {
   IonItem,
   IonLoading,
   IonCheckbox,
-  IonText
+  IonText,
 } from "@ionic/vue";
 
 export default defineComponent({
@@ -126,7 +130,7 @@ export default defineComponent({
     IonItem,
     IonLoading,
     IonCheckbox,
-    IonText
+    IonText,
   },
 
   setup() {
@@ -169,11 +173,15 @@ export default defineComponent({
             firebase
               .auth()
               .signInWithEmailAndPassword(email.value, password.value)
-              .then(() => router.push("/tabs/record"));
+              .then(() => router.push("/tabs/record"))
+              .catch((err) => {
+                errorMessage.value = err.message;
+              });
           });
         //if(debugVerbose.value){console.log(username);}
       } catch (err) {
         errorMessage.value = err.message;
+        console.log("error", errorMessage.value);
         if (debugVerbose.value) {
           console.log(err);
         }
