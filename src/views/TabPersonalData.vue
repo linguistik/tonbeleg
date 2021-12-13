@@ -43,13 +43,9 @@
           </ion-label>
         </ion-list-header>
 
-        <ion-item>
           <MultipleElementsParent text="Erstsprache hinzufügen" @valuesChanged="updateFirstLanguages" ref="lng1" />
-        </ion-item>
 
-        <ion-item>
           <MultipleElementsParent text="Zweitsprache hinzufügen" @valuesChanged="updateSecondLanguages" ref="lng2"/>
-        </ion-item>
 
         <ion-item>
           <ion-label>
