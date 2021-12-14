@@ -294,9 +294,10 @@ export default defineComponent({
         console.log(error);
         //TODO exception handling
       }
-
+      const dateObject= new Date(timestamp);
+      const shownName= dateObject.getDay().toString()+"."+dateObject.getMonth().toString() +"."+ dateObject.getFullYear().toString() +", " + dateObject.getHours().toString()+":"+dateObject.getMinutes().toString();
       //create Entry in RecordingStorage
-      insertRecordingEntry(new RecordingData(timestamp,timestamp.toString(),["0.raw"],timer.value.getSeconds(), false, false, getLicense(), currentUser.uid));
+      insertRecordingEntry(new RecordingData(timestamp,shownName,["0.raw"],timer.value.getSeconds(), false, false, getLicense(), currentUser.uid));
 
     };//method: stopRecordingTrigger
 

@@ -273,7 +273,13 @@ export default {
             handler: (data) => {
               const x = data.textField;
               console.log(x);
-              actualRename(x);
+              if(x!="" || x.length<=35){ //nur kleine und nicht leere eingaben
+                actualRename(x);
+              }
+              else{
+                console.log("not a valid name");
+              }
+
             },
           },
         ], //buttons
