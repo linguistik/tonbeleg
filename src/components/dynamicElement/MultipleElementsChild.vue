@@ -1,32 +1,42 @@
 <template>
-<ion-item>
+
+  <ion-item>
+    <ion-grid>
+    <ion-row>
+    <ion-col size="2">
     <ion-icon
       :icon="removeCircle"
       @click="removeFromParent()"
       color="danger"
     ></ion-icon>
-    <ion-label>
-            Zweitsprache wählen
-         </ion-label>
+    </ion-col>
+    <ion-col>
       <ion-select v-model="input" @ionChange="inputChanged" value="English">
               <ion-select-option v-for="[short,language] in languages" v-bind:key="short" v-bind:value="short">{{language}}</ion-select-option>
       </ion-select>
-  </ion-item>
-  
+    </ion-col>
+    </ion-row>
+    </ion-grid>
+ </ion-item>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 
-import { IonIcon, IonItem, IonSelect } from "@ionic/vue";
+import { IonIcon, IonItem, IonSelect, IonGrid, IonRow, IonCol, IonSelectOption } from "@ionic/vue";
 
 import { removeCircle } from "ionicons/icons";
+
 
 export default defineComponent({
   components: {
     IonItem,
     IonIcon,
     IonSelect,
+    IonGrid,
+    IonRow,
+    IonCol,
+    IonSelectOption,
 
   },
 
@@ -77,3 +87,19 @@ export default defineComponent({
   },
 });
 </script>
+
+<style scoped>
+ion-row{
+  padding: 0px;
+  margin: 0px;
+}
+ion-col{
+  padding: 0px;
+  margin: 0px;
+}
+ion-grid{
+  padding: 0px;
+  margin: 0px;
+}
+
+</style>

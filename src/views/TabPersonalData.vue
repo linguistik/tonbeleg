@@ -95,7 +95,7 @@ import { useI18n } from 'vue-i18n';
 import PageHeader from '@/components/layout/PageHeader.vue';
 import {loadUserSettings, setBirthday, setJob,setFirstLanguage,setSecondLanguage,setDialect,setZipCode, getBirthday,getJob,getFirstLanguage,getSecondLanguage,getDialect,getZipCode} from "@/scripts/UserSettingsStorage";
 import { 
-  IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonListHeader, IonLabel, IonInput,IonButton, IonSelect
+  IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonListHeader, IonLabel, IonInput,IonButton, IonSelect, IonSelectOption,
 } from '@ionic/vue';
 
 
@@ -108,8 +108,7 @@ export default defineComponent({
 
   components: { 
     PageHeader, 
-    IonHeader, IonToolbar, IonTitle, IonContent, IonPage, IonList, IonItem, IonListHeader, IonLabel, IonInput, IonButton, IonSelect,
-    MultipleElementsParent
+    IonHeader, IonToolbar, IonTitle, IonContent, IonPage, IonList, IonItem, IonListHeader, IonLabel, IonInput, IonButton, IonSelect,IonSelectOption,    MultipleElementsParent
   },
   methods: {
     //läd geladene Sprachen und setzt die Einträge, bisschen unübersichtliches spaghetti aber seh keinen andere lösung
