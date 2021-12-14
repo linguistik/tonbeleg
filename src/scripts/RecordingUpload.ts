@@ -50,6 +50,8 @@ export async function UploadToFirebase(){
     if (currentUser == null) return;
 
     const RecordingDataArr = await getRecordings();
+    const RecordingUserID = [];
+    const RecordingID = [];
     for(i=0; i<RecordingDataArr.length; i=i+1){
         if(RecordingDataArr[i].upload == false && RecordingDataArr[i].selectedForUpload == true) {
             RecordingUploadArray.push((await Filesystem.readFile({
@@ -57,10 +59,14 @@ export async function UploadToFirebase(){
                 directory: Directory.Data,
                 encoding: Encoding.UTF8,
             })).data)
+            RecordingUserID.push(currentUser.uid);
+            RecordingID.push(RecordingDataArr[i].timestamp.toString())
         }
     }
     await db.collection("users").doc(currentUser.uid).set({
-        Recordings: RecordingUploadArray
+        Recordings: RecordingUploadArray,
+        RecordingsUserID: RecordingUserID,
+        RecordingID: RecordingID
     },{merge: true});
     console.log("wrote to database");
 
