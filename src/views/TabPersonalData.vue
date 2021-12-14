@@ -52,9 +52,8 @@
             </ion-select>
         </ion-item>
 
-        <ion-item>
           <MultipleElementsParent text="Zweitsprache hinzufügen" @valuesChanged="updateSecondLanguages" ref="lng2"/>
-        </ion-item>
+       
 
         <ion-item>
           <ion-label>
@@ -116,14 +115,15 @@ export default defineComponent({
     //läd geladene Sprachen und setzt die Einträge, bisschen unübersichtliches spaghetti aber seh keinen andere lösung
     async setupLanguages() {
       await loadUserSettings(); //läd user settinmg
-      await this.$refs.lng1.onInit(getFirstLanguage()); //erstellt kinder erstSprache
-      this.$refs.lng1.itemRefs.forEach((entrys: any, index: number) =>{ //füllt bei kinder die geladenen namen ein
-        entrys.initName(getFirstLanguage()[index],index);
-      })
+      //await this.$refs.lng1.onInit(getFirstLanguage()); //erstellt kinder erstSprache
+      //this.$refs.lng1.itemRefs.forEach((entrys: any, index: number) =>{ //füllt bei kinder die geladenen namen ein
+       // entrys.initName(getFirstLanguage()[index],index);
+      //})
 
       await this.$refs.lng2.onInit(getSecondLanguage()); //erstellt kinder zweite Sprache
       this.$refs.lng2.itemRefs.forEach((entrys: any, index: number) =>{ //füllt bei kinder die geladenen namen ein
         entrys.initName(getSecondLanguage()[index],index);
+        console.log(index)
       })
     }
   },

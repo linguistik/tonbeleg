@@ -1,6 +1,10 @@
 <template>
-
-  <ion-item>
+<ion-item>
+    <ion-icon
+      :icon="removeCircle"
+      @click="removeFromParent()"
+      color="danger"
+    ></ion-icon>
     <ion-label>
             Zweitsprache wählen
          </ion-label>
@@ -8,13 +12,7 @@
               <ion-select-option v-for="[short,language] in languages" v-bind:key="short" v-bind:value="short">{{language}}</ion-select-option>
       </ion-select>
   </ion-item>
-  <ion-item>
-    <ion-icon
-      :icon="removeCircle"
-      @click="removeFromParent()"
-      color="danger"
-    ></ion-icon>
-  </ion-item>
+  
 </template>
 
 <script lang="ts">
