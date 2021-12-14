@@ -7,7 +7,7 @@
       Aufgenommen am:
       {{ getRecordingDate() }}<br />
       Anzahl Aufnahmen:
-      {{ 5 }}
+      {{ recording.parts.length }}
     </ion-card-content>
     <ion-item>
       <ion-icon
@@ -17,7 +17,7 @@
       ></ion-icon>
       <ion-icon
         :color="
-          alreadyUploaded ? 'success' : selectedForUpload ? 'warning' : 'medium'
+          alreadyUploaded ? 'success' : selectedForUpload ? 'warning' : 'black'
         "
         :icon="arrowUp"
         @click="upload()"
@@ -27,7 +27,7 @@
       <ion-icon :icon="cut" @click="edit()"></ion-icon>
       <ion-icon :icon="help" @click="changeLicense()"></ion-icon>
       <ion-icon
-        :icon="chevronDownOutline"
+        :icon="chevronUpOutline"
         @click="toggleOpen()"
         slot="end"
       ></ion-icon>
@@ -49,8 +49,7 @@ import { useI18n } from "vue-i18n";
 
 import {
   arrowUp,
-  chevronBackOutline,
-  chevronDownOutline,
+  chevronUpOutline,
   cut,
   help,
   pause,
@@ -310,8 +309,7 @@ export default {
       arrowUp,
       pencil,
       cut,
-      chevronDownOutline,
-      chevronBackOutline,
+      chevronUpOutline,
       isOpen,
       play,
       pause,
@@ -337,17 +335,6 @@ export default {
 </script>
 <style scoped>
 ion-icon {
-  position: unset;
-  right: 0px;
-  top: 0;
-}
-ion-item {
-  /* --min-height: 100px;*/
-}
-ion-contenc {
-  --scroll-x: false;
-  --scroll-y: false;
-  scroll-x: false;
-  scroll-y: false;
+  margin: 5px;
 }
 </style>
