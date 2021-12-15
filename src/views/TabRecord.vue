@@ -227,7 +227,6 @@ export default defineComponent({
           .catch(error => console.log(error))
     };*/
 
-
     const stopRecordingTrigger = async () => {
 
       recordingStatus.value=recordingStatusEnums.DOING_SMT;
@@ -245,8 +244,6 @@ export default defineComponent({
         //TODO error handling
         return;
       }
-
-
 
       //get userUID
       const currentUser = firebase.auth().currentUser;
@@ -301,7 +298,6 @@ export default defineComponent({
       }
       const dateObject= new Date(timestamp);
       const shownName= dateObject.getDay().toString()+"."+dateObject.getMonth().toString() +"."+ dateObject.getFullYear().toString() +", " + dateObject.getHours().toString()+":"+dateObject.getMinutes().toString();
-      //create Entry in RecordingStorage
       //create Entry in RecordingStorage //evtl über alert
       insertRecordingEntry(new RecordingData(timestamp,shownName,["0.raw"],timer.value.getSeconds(), false, false, getLicense(), currentUser.uid, getFirstLanguage()));
       openModal.value = !openModal.value;

@@ -77,7 +77,6 @@ export async function UploadToFirebase() {
         if(RecordingDataArr[i].upload == false && RecordingDataArr[i].selectedForUpload == true)
         await setRecordingEntryUploadBoolean(RecordingDataArr[i].timestamp, true);
     }
-
     //deleteAllFromUploadArray();
 }
 
