@@ -3,6 +3,14 @@
     <PageHeader v-bind:title="t('general.appname')" />
 
     <ion-content :fullscreen="true">
+
+      <ion-modal trigger = openModal>
+        <ion-content>
+          <ion-select></ion-select>
+          <ion-button>color = 'success' name = "ok"</ion-button>
+        </ion-content>
+      </ion-modal>
+
       <ion-header collapse="condense">
         <ion-toolbar>
           <ion-title size="large">Aufnehmen</ion-title>
@@ -13,7 +21,7 @@
 
 
         <ion-fab-button
-          v-if="recordingStatus == recordingStatusEnums.NOT_RECORDING "
+          v-if="recordingStatus == recordingStatusEnums.NOT_RECORDING"
           color="success"
           v-on:click="startRecordingTrigger()"
         >
@@ -57,10 +65,6 @@
         <p>Zeit: {{timerString}}</p>
 </div>
 
-
-
-
-
     </ion-content>
   </ion-page>
 </template>
@@ -70,7 +74,8 @@
 import { defineComponent, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import PageHeader from "@/components/layout/PageHeader.vue";
-
+import {setRecordingEntryLanguage, setRecordingEntryName, setRecordingLicense} from "@/scripts/RecordingStorage";
+import {IonModal} from "@ionic/vue";
 
 import {
   IonPage,
@@ -80,7 +85,7 @@ import {
   IonContent,
   IonFab,
   IonFabButton,
-  IonIcon,
+  IonIcon, alertController, modalController,
 } from "@ionic/vue";
 
 import {
@@ -105,8 +110,9 @@ import {
 
 import {insertRecordingEntry} from "@/scripts/RecordingStorage";
 import RecordingData from "@/scripts/RecordingData";
-import {getLicense} from "@/scripts/UserSettingsStorage";
+import {getLicense, getFirstLanguage} from "@/scripts/UserSettingsStorage";
 import {Encoding} from "@capacitor/filesystem";
+import router from "@/router";
 
 export default defineComponent({
   components: {
@@ -119,14 +125,13 @@ export default defineComponent({
     IonFab,
     IonFabButton,
     IonIcon,
-
   },
 
   setup() {
     // multi-lingual support
     const { t } = useI18n();
     //const timer =ref( 0);
-
+    const openModal = ref(false);
     const timer = ref(new Date(0))
     const timerString=ref(timer.value.toISOString().substr(11, 8));
     //https://expertcodeblog.wordpress.com/2018/07/05/typescript-sleep-a-thread/
@@ -293,13 +298,12 @@ export default defineComponent({
       } catch (error) {
         console.log(error);
         //TODO exception handling
+
       }
-
-      //create Entry in RecordingStorage
-      insertRecordingEntry(new RecordingData(timestamp,timestamp.toString(),["0.raw"],timer.value.getSeconds(), false, false, getLicense(), currentUser.uid));
-
+      //create Entry in RecordingStorage //evtl über alert
+      insertRecordingEntry(new RecordingData(timestamp,timestamp.toString(),["0.raw"],timer.value.getSeconds(), false, false, getLicense(), currentUser.uid, getFirstLanguage()));
+      openModal.value = !openModal.value;
     };//method: stopRecordingTrigger
-
 
     //Timer
 
@@ -325,13 +329,17 @@ export default defineComponent({
       continueRecordingTrigger,
       pauseRecordingTrigger,
       getLicense,
+      setRecordingEntryLanguage,
+      setRecordingEntryName,
+      setRecordingLicense,
       caretForwardOutline,
       stopSharp,
       recordingStatusEnums,
       playSkipForwardOutline,
       playOutline,
       timerString,
-      pauseOutline
+      pauseOutline,
+      openModal,
     };
   },
 });
