@@ -74,7 +74,8 @@ export default defineComponent({
     IonList,
     Recording,
   },
-  methods:{
+
+  /*methods:{
     async setUpUploadArray(){
       await loadUserSettings();
       await loadRecordings();
@@ -82,7 +83,8 @@ export default defineComponent({
   },
   mounted(){
     this.setUpUploadArray();
-  },
+  },*/
+
   setup() {
     // multi-lingual support
     const { t } = useI18n();
@@ -108,7 +110,7 @@ export default defineComponent({
     const loadEverythingPls = async () => {
       await safeRecordings();
       await UploadToFirebase();
-      refresh()
+      await refresh()
     }
 
     const refreshAfterTimeout = async () => {

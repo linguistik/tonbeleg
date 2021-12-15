@@ -4,12 +4,13 @@
       <ion-card-title>{{ recording.name }}</ion-card-title>
     </ion-card-header>
     <ion-card-content>
-      Aufgenommen am:
-      {{ getRecordingDate() }}<br />
+      <!---Aufgenommen am:
+      {{ getRecordingDate() }}<br />--->
       Anzahl Aufnahmen:
       {{ recording.parts.length }}
     </ion-card-content>
     <ion-item>
+    
       <ion-icon
         Left-icon
         :icon="playing ? pause : play"
@@ -35,6 +36,7 @@
         @click="toggleOpen()"
         slot="end"
       ></ion-icon>
+
     </ion-item>
   </ion-card>
 
@@ -105,7 +107,7 @@ export default {
     IonCardTitle,
   },
 
-  methods: {
+   /*methods: {
     async setEverything() {
       await loadUserSettings();
       await loadRecordings();
@@ -113,7 +115,7 @@ export default {
   },
   mounted() {
     this.setEverything();
-  },
+  },*/
 
   props: {
     recording: RecordingData,
@@ -133,7 +135,6 @@ export default {
     if (currentUser == null) return;
     const UserUID = currentUser.uid;
     const alreadyUploaded = ref(props.recording.upload);
-
     let audioString = new Audio();
 
     const isOpen = ref(false);
@@ -282,7 +283,13 @@ export default {
             handler: (data) => {
               const x = data.textField;
               console.log(x);
-              actualRename(x);
+              if(x!="" || x.length<=35){ //nur kleine und nicht leere eingaben
+                actualRename(x);
+              }
+              else{
+                console.log("not a valid name");
+              }
+
             },
           },
         ], //buttons

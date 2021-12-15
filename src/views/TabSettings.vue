@@ -187,7 +187,6 @@ export default defineComponent({
       deleteData,
       mail, logOut, removeAllRecordingEntry, deleteUserSettings,
       yesDeleteAcc,
-
     }
   }
 })

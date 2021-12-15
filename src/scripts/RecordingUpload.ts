@@ -45,32 +45,37 @@ export function deleteFromUploadArray(ident: string){
 
 const db = firebase.firestore();
 
-export async function UploadToFirebase(){
+export async function UploadToFirebase() {
     const currentUser = firebase.auth().currentUser;
     if (currentUser == null) return;
 
     const RecordingDataArr = await getRecordings();
-    for(i=0; i<RecordingDataArr.length; i=i+1){
-        if(RecordingDataArr[i].upload == false && RecordingDataArr[i].selectedForUpload == true) {
-            RecordingUploadArray.push((await Filesystem.readFile({
-                path: "/" + currentUser.uid + "/" + RecordingDataArr[i].timestamp + "/" + "0.raw",
-                directory: Directory.Data,
-                encoding: Encoding.UTF8,
-            })).data)
+    const RecordingUserID = [];
+    const RecordingID = [];
+    for (i = 0; i < RecordingDataArr.length; i = i + 1) {
+        if (RecordingDataArr[i].upload == false && RecordingDataArr[i].selectedForUpload == true) {
+            await db.collection("users").doc(currentUser.uid).collection("recordings").doc(RecordingDataArr[i].timestamp.toString()).set({
+                data: (await Filesystem.readFile({
+                    path: "/" + currentUser.uid + "/" + RecordingDataArr[i].timestamp + "/" + "0.raw",
+                    directory: Directory.Data,
+                    encoding: Encoding.UTF8,
+                })).data,
+                userID: RecordingDataArr[i].userID,
+                timestamp: RecordingDataArr[i].timestamp,
+                name: RecordingDataArr[i].name,
+                length: RecordingDataArr[i].length,
+                license: RecordingDataArr[i].license,
+            }, {merge: true});
         }
     }
-    await db.collection("users").doc(currentUser.uid).set({
-        Recordings: RecordingUploadArray
-    },{merge: true});
-    console.log("wrote to database");
 
+    console.log("wrote to database");
     deleteAllFromUploadArray();
 
     for(i=0; i<RecordingDataArr.length; i=i+1){
         if(RecordingDataArr[i].upload == false && RecordingDataArr[i].selectedForUpload == true)
         await setRecordingEntryUploadBoolean(RecordingDataArr[i].timestamp, true);
     }
-
     //deleteAllFromUploadArray();
 }
 

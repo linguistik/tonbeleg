@@ -62,19 +62,31 @@ export function insertRecordingEntry(recording: RecordingData) {
     safeRecordings();
 }
 
+
 export function getRecordingEntry(timestamp: number): RecordingData{
     for(const recording of recordings){
         if(recording.timestamp ==timestamp)
             return recording;
     }
     console.log("\n\nFATAL ERROR: could not find recording with timestamp: " + timestamp + "\n\n");
-    return new RecordingData(0,"ERROR", [],0, false, false,getLicense(), "NoUserAvailable");
+    return new RecordingData(0,"ERROR", [],0, false, false,getLicense(), "NoUserAvailable", []);
+}
+
+export function setRecordingEntryLanguage(timestamp: number, languages: string[]){
+    const data = getRecordingEntry(timestamp);
+    data.languages = languages;
+    safeRecordings();
 }
 
 export function setRecordingEntryName(timestamp: number, newName: string){
     const data = getRecordingEntry(timestamp);
     data.name = newName;
     safeRecordings();
+}
+
+export function getRecordingEntryLanguage(timestamp: number): string[]{
+    const data = getRecordingEntry(timestamp);
+    return data.languages;
 }
 
 export function setSelectedForUpload(timestamp: number, newBool: boolean){
@@ -87,7 +99,6 @@ export function setRecordingLicense(timestamp: number, newLicense: string){
     const data = getRecordingEntry(timestamp);
     data.license = newLicense;
     safeRecordings();
-
 }
 
 export function setRecordingEntryUploadBoolean(timestamp: number, uploadBoolean: boolean){
