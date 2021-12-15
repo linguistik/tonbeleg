@@ -275,6 +275,7 @@ export default defineComponent({
 
 
     const downloadLicense = () =>{ //nicht mehr benötigt eigentlich im moment, kann aber vielleicht noch sinnvoll werden
+    //wird sehr wohl noch verwendet. wenn man lokal keine daten hat, muss man die von der datenbank nehmen
     const db = firebase.firestore();
       const currentUser = firebase.auth().currentUser;
       if (currentUser == null) return;

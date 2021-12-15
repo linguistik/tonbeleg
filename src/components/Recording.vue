@@ -10,13 +10,33 @@
       {{ recording.parts.length }}
     </ion-card-content>
     <ion-item>
-      <ion-icon Left-icon :icon="playing ? pause : play" @click="playRec()"></ion-icon>
-      <ion-icon :color="alreadyUploaded ? 'success' : selectedForUpload ? 'warning' : 'medium'" :icon="arrowUp" @click="upload()"></ion-icon>
-      <ion-icon :icon="trash" @click="deleteRecording()"></ion-icon>
-      <ion-icon :icon="pencil" @click="rename()"></ion-icon>
-      <ion-icon :icon="cut" @click="edit()"></ion-icon>
-      <ion-icon :icon="help" @click="changeLicense()"></ion-icon>
-      <ion-icon :icon="chevronUpOutline" @click="toggleOpen()" slot="end"></ion-icon>
+    
+      <ion-icon
+        Left-icon
+        :icon="playing ? pause : play"
+        @click="playRec()"
+        v-if="provideFunctionality"
+      ></ion-icon>
+      <ion-icon
+        :color="
+          alreadyUploaded ? 'success' : selectedForUpload ? 'warning' : 'black'
+        "
+        :icon="arrowUp"
+        @click="upload()"
+        v-if="provideFunctionality"
+      ></ion-icon>
+      <ion-icon :icon="trash" @click="deleteRecording()" v-if="provideFunctionality"></ion-icon>
+      <ion-icon :icon="pencil" @click="rename()" v-if="provideFunctionality"></ion-icon>
+      <ion-icon :icon="cut" @click="edit()" v-if="provideFunctionality"></ion-icon>
+      <ion-icon :icon="help" @click="changeLicense()" v-if="provideFunctionality"></ion-icon>
+
+
+      <ion-icon
+        :icon="chevronUpOutline"
+        @click="toggleOpen()"
+        slot="end"
+      ></ion-icon>
+
     </ion-item>
   </ion-card>
 
@@ -99,6 +119,11 @@ export default {
 
   props: {
     recording: RecordingData,
+    provideFunctionality:{//pass false to disable interative elements. default is true
+      type: Boolean,
+      required: false,
+      default: true
+    }
   },
   //methods & mounted glaube doch nicht
 
