@@ -99,7 +99,8 @@ export default defineComponent({
                 false,
                 false,
                 doc.get("license"),
-                doc.get("userID")
+                doc.get("userID"),
+                ["language"]
               )
             );
           });
