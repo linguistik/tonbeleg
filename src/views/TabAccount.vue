@@ -93,13 +93,13 @@ export default defineComponent({
             buffer.push(
               new RecordingData(
                 doc.get("timestamp"),
-                doc.get("timestamp"),
+                doc.get("name"),
                 ["first"], //create array with length = doc.get("data").length();
-                0,
+                doc.get("length"),
                 false,
                 false,
-                "CC00",
-                "userID"
+                doc.get("license"),
+                doc.get("userID")
               )
             );
           });
