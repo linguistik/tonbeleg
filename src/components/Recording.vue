@@ -7,7 +7,7 @@
       Aufgenommen am:
       {{ getRecordingDate() }}<br />
       Anzahl Aufnahmen:
-      {{ 5 }}
+      {{ recording.parts.length }}
     </ion-card-content>
     <ion-item>
       <ion-icon Left-icon :icon="playing ? pause : play" @click="playRec()"></ion-icon>
@@ -17,6 +17,7 @@
       <ion-icon :icon="cut" @click="edit()"></ion-icon>
       <ion-icon :icon="help" @click="changeLicense()"></ion-icon>
       <ion-icon :icon="chevronDownOutline" @click="toggleOpen()" slot="end"></ion-icon>
+
     </ion-item>
   </ion-card>
 
@@ -35,8 +36,7 @@ import { useI18n } from "vue-i18n";
 
 import {
   arrowUp,
-  chevronBackOutline,
-  chevronDownOutline,
+  chevronUpOutline,
   cut,
   help,
   pause,
@@ -260,7 +260,13 @@ export default {
             handler: (data) => {
               const x = data.textField;
               console.log(x);
-              actualRename(x);
+              if(x!="" || x.length<=35){ //nur kleine und nicht leere eingaben
+                actualRename(x);
+              }
+              else{
+                console.log("not a valid name");
+              }
+
             },
           },
         ], //buttons
@@ -296,8 +302,7 @@ export default {
       arrowUp,
       pencil,
       cut,
-      chevronDownOutline,
-      chevronBackOutline,
+      chevronUpOutline,
       isOpen,
       play,
       pause,
@@ -323,17 +328,6 @@ export default {
 </script>
 <style scoped>
 ion-icon {
-  position: unset;
-  right: 0px;
-  top: 0;
-}
-ion-item {
-  /* --min-height: 100px;*/
-}
-ion-contenc {
-  --scroll-x: false;
-  --scroll-y: false;
-  scroll-x: false;
-  scroll-y: false;
+  margin: 5px;
 }
 </style>
