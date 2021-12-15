@@ -54,22 +54,21 @@ export async function UploadToFirebase() {
     const RecordingID = [];
     for (i = 0; i < RecordingDataArr.length; i = i + 1) {
         if (RecordingDataArr[i].upload == false && RecordingDataArr[i].selectedForUpload == true) {
-            RecordingUploadArray.push((await Filesystem.readFile({
-                path: "/" + currentUser.uid + "/" + RecordingDataArr[i].timestamp + "/" + "0.raw",
-                directory: Directory.Data,
-                encoding: Encoding.UTF8,
-            })).data)
-            RecordingUserID.push(currentUser.uid);
-            RecordingID.push(RecordingDataArr[i].timestamp.toString())
+            await db.collection("users").doc(currentUser.uid).collection("recordings").doc(RecordingDataArr[i].timestamp.toString()).set({
+                data: (await Filesystem.readFile({
+                    path: "/" + currentUser.uid + "/" + RecordingDataArr[i].timestamp + "/" + "0.raw",
+                    directory: Directory.Data,
+                    encoding: Encoding.UTF8,
+                })).data,
+                userID: RecordingDataArr[i].userID,
+                timestamp: RecordingDataArr[i].timestamp,
+                name: RecordingDataArr[i].name,
+                length: RecordingDataArr[i].length,
+                license: RecordingDataArr[i].license,
+            }, {merge: true});
         }
     }
-    for (i = 0; i < RecordingUploadArray.length; i = i + 1) {
-    await db.collection("users").doc(currentUser.uid).collection("recordings").doc(RecordingDataArr[i].timestamp.toString()).set({
-        data: RecordingUploadArray[i],
-        userID: RecordingUserID[i],
-        timestamp: RecordingID[i]
-    }, {merge: true});
-}
+
     console.log("wrote to database");
     deleteAllFromUploadArray();
 
