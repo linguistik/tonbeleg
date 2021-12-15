@@ -88,7 +88,7 @@ export default {
     IonCardTitle,
   },
 
-  methods: {
+   /*methods: {
     async setEverything() {
       await loadUserSettings();
       await loadRecordings();
@@ -96,7 +96,7 @@ export default {
   },
   mounted() {
     this.setEverything();
-  },
+  },*/
 
   props: {
     recording: RecordingData,

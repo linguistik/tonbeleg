@@ -71,8 +71,6 @@ export async function UploadToFirebase() {
     }, {merge: true});
 }
     console.log("wrote to database");
-
-
     deleteAllFromUploadArray();
 
     for(i=0; i<RecordingDataArr.length; i=i+1){
