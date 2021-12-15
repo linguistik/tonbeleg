@@ -108,7 +108,7 @@ export default defineComponent({
     const loadEverythingPls = async () => {
       await safeRecordings();
       await UploadToFirebase();
-      refresh()
+      await refresh()
     }
 
     const refreshAfterTimeout = async () => {

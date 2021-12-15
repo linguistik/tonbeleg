@@ -4,8 +4,8 @@
       <ion-card-title>{{ recording.name }}</ion-card-title>
     </ion-card-header>
     <ion-card-content>
-      Aufgenommen am:
-      {{ getRecordingDate() }}<br />
+      <!---Aufgenommen am:
+      {{ getRecordingDate() }}<br />--->
       Anzahl Aufnahmen:
       {{ recording.parts.length }}
     </ion-card-content>
@@ -16,8 +16,7 @@
       <ion-icon :icon="pencil" @click="rename()"></ion-icon>
       <ion-icon :icon="cut" @click="edit()"></ion-icon>
       <ion-icon :icon="help" @click="changeLicense()"></ion-icon>
-      <ion-icon :icon="chevronDownOutline" @click="toggleOpen()" slot="end"></ion-icon>
-
+      <ion-icon :icon="chevronUpOutline" @click="toggleOpen()" slot="end"></ion-icon>
     </ion-item>
   </ion-card>
 
@@ -111,7 +110,6 @@ export default {
     if (currentUser == null) return;
     const UserUID = currentUser.uid;
     const alreadyUploaded = ref(props.recording.upload);
-
     let audioString = new Audio();
 
     const isOpen = ref(false);
