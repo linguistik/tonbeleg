@@ -1,10 +1,16 @@
 import firebase from "@/backend/firebase-config";
 //import {setAlreadyUploadedArray, setUploadArray, setInUploadArrayIdent} from "@/scripts/UserSettingsStorage";
-import {setRecordingEntryUploadBoolean, getRecordings, loadRecordings} from "@/scripts/RecordingStorage";
+import {
+    setRecordingEntryUploadBoolean,
+    getRecordings,
+    loadRecordings,
+    removeRecordingEntry
+} from "@/scripts/RecordingStorage";
 import {Filesystem, Directory, Encoding} from "@capacitor/filesystem";
 import {loadUserSettings} from "@/scripts/UserSettingsStorage";
+import RecordingData from "@/scripts/RecordingData";
 
-export const RecordingUploadArray: string[] = [];
+export const RecordingUploadArray: RecordingData[] = [];
 //export let inRecordingArrayIdent: string[][] = [];
 //export let alreadyUploadedArray: string[][] = []; //müssen beide in der json datei gespeichert werden
 let i
@@ -35,13 +41,17 @@ export function deleteFromUploadArray(ident: string){
 }
 
 
-*/function deleteAllFromUploadArray(){
-    if(RecordingUploadArray.length > 0) {
-        for (i = 0; i < RecordingUploadArray.length; i = i + 1) {
-            RecordingUploadArray.pop();
-        }
-    }
+*/export async function deleteAllFromUploadArray(){
+    RecordingUploadArray.splice(0,)
 }
+
+export async function deleteUploadedRecordsFromDevice(){
+        for (i = 0; i < RecordingUploadArray.length; i = i + 1) {
+            await removeRecordingEntry(RecordingUploadArray[i]);
+        }
+        RecordingUploadArray.splice(0, )
+}
+
 
 const db = firebase.firestore();
 
@@ -66,11 +76,12 @@ export async function UploadToFirebase() {
                 length: RecordingDataArr[i].length,
                 license: RecordingDataArr[i].license,
             }, {merge: true});
+            RecordingUploadArray.push(RecordingDataArr[i]);
         }
     }
 
     console.log("wrote to database");
-    deleteAllFromUploadArray();
+    //deleteAllFromUploadArray();
 
     for(i=0; i<RecordingDataArr.length; i=i+1){
         if(RecordingDataArr[i].upload == false && RecordingDataArr[i].selectedForUpload == true)
