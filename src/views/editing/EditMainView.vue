@@ -25,14 +25,12 @@ import {
 } from '@ionic/vue';
 
 import ExploreContainer from '@/components/ExploreContainer.vue';
-
 import router from '@/router';
 
 export default defineComponent({
   name: 'TabAccount',
 
-  components: { 
-     
+  components: {
     IonHeader, IonToolbar, IonTitle, IonContent, IonPage,
     ExploreContainer, IonButton
   },

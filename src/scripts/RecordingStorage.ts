@@ -145,6 +145,28 @@ export function removeRecordingEntry(recording: RecordingData) {
     safeRecordings();
 }
 
+export function removeLastRecordingEntry() {
+    const index = recordings.length-1;
+    if(index<0){
+        console.log("\n\nERROR on deleting. Element could not be found\n\n");
+        return;
+    }
+
+    const currentUser = firebase.auth().currentUser;
+    if (currentUser == null) {
+        return;
+    }
+    const userUID = currentUser.uid;
+    Filesystem.rmdir({
+        path: userUID + "/" + recordings[index].timestamp,
+        directory: Directory.Data,
+        recursive: true
+    })
+    recordings.splice(index,1);
+
+    safeRecordings();
+}
+
 export function removeAllRecordingEntry() {
     recordings.splice(0,);
     //delete actual folder
