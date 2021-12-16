@@ -4,12 +4,17 @@
 
     <ion-content :fullscreen="true">
 
-      <ion-modal trigger = openModal>
-        <ion-content>
-          <ion-select></ion-select>
-          <ion-button>color = 'success' name = "ok"</ion-button>
-        </ion-content>
-      </ion-modal>
+        <ion-card v-if= "openModal"><!---brauch eig nen modal das kann man nicht wegklicken--->
+          <ion-item>
+            <ion-label v-model:position="fixed" >Name:</ion-label>
+            <ion-input v-model="newName" placeholder ="choose a Name" v-model:inputmode="text"  v-model:value="lastRecording.name"></ion-input>
+          </ion-item>
+          <ion-select>Select language</ion-select>
+          <ion-select>Select license</ion-select>
+          <ion-button color= "danger" @click="deleteLastRecording()">delete</ion-button>
+          <ion-button color= "success" @click="saveChanges()"> ok</ion-button>
+        </ion-card>
+
 
       <ion-header collapse="condense">
         <ion-toolbar>
@@ -74,8 +79,7 @@
 import { defineComponent, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import PageHeader from "@/components/layout/PageHeader.vue";
-import {setRecordingEntryLanguage, setRecordingEntryName, setRecordingLicense} from "@/scripts/RecordingStorage";
-import {IonModal} from "@ionic/vue";
+import {setRecordingEntryLanguage, setRecordingEntryName, setRecordingLicense, removeLastRecordingEntry, getRecordingEntry} from "@/scripts/RecordingStorage";
 
 import {
   IonPage,
@@ -85,7 +89,7 @@ import {
   IonContent,
   IonFab,
   IonFabButton,
-  IonIcon, alertController, modalController,
+  IonIcon, IonInput, IonLabel, IonItem,
 } from "@ionic/vue";
 
 import {
@@ -125,13 +129,21 @@ export default defineComponent({
     IonFab,
     IonFabButton,
     IonIcon,
+    IonInput,
+    IonItem, IonLabel,
   },
 
   setup() {
     // multi-lingual support
     const { t } = useI18n();
     //const timer =ref( 0);
+    //PopUpValuesForRecording
+    const lastRecording = ref(new RecordingData(0,"",[],0,false,false,"","",[]));
     const openModal = ref(false);
+    const newName = ref("");
+
+
+
     const timer = ref(new Date(0))
     const timerString=ref(timer.value.toISOString().substr(11, 8));
     //https://expertcodeblog.wordpress.com/2018/07/05/typescript-sleep-a-thread/
@@ -297,10 +309,11 @@ export default defineComponent({
         //TODO exception handling
       }
       const dateObject= new Date(timestamp);
-      const shownName= dateObject.getDay().toString()+"."+dateObject.getMonth().toString() +"."+ dateObject.getFullYear().toString() +", " + dateObject.getHours().toString()+":"+dateObject.getMinutes().toString();
+      const shownName= dateObject.getDay().toString()+"."+dateObject.getMonth().toString() +"."+ dateObject.getFullYear().toString() +", " + dateObject.getHours().toString()+":"+(dateObject.getMinutes()<=9 ? +"0" +dateObject.getMinutes().toString():+dateObject.getMinutes().toString());
       //create Entry in RecordingStorage //evtl über alert
       insertRecordingEntry(new RecordingData(timestamp,shownName,["0.raw"],timer.value.getSeconds(), false, false, getLicense(), currentUser.uid, getFirstLanguage()));
       openModal.value = !openModal.value;
+      lastRecording.value = getRecordingEntry(timestamp);
     };//method: stopRecordingTrigger
 
     //Timer
@@ -312,6 +325,26 @@ export default defineComponent({
         console.log(timer.value);
       }
     }
+
+    const clearVariables = () =>{
+      newName.value = "";
+    }
+
+    const saveChanges = async () =>{
+      //TODO
+      if(newName.value != "") {
+        setRecordingEntryName(lastRecording.value.timestamp, newName.value);
+      }
+      openModal.value = !openModal.value;
+      clearVariables();
+    }
+
+    const deleteLastRecording = async () =>{
+      //TODO
+      removeLastRecordingEntry();
+      openModal.value = !openModal.value;
+    }
+
 
     setInterval(() => {
       timerHandler(); // Now the "this" still references the component
@@ -338,6 +371,10 @@ export default defineComponent({
       timerString,
       pauseOutline,
       openModal,
+      saveChanges,
+      deleteLastRecording,
+      lastRecording,
+      newName,
     };
   },
 });
