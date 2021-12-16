@@ -35,7 +35,7 @@ read example.spec.ts first
 import {defineComponent, ref, Ref} from "vue";
 import { useI18n } from "vue-i18n";
 import PageHeader from "@/components/layout/PageHeader.vue";
-import {UploadToFirebase} from "@/scripts/RecordingUpload";
+import {UploadToFirebase, deleteAllFromUploadArray, deleteUploadedRecordsFromDevice, RecordingUploadArray} from "@/scripts/RecordingUpload";
 import {
   IonPage,
   IonHeader,
@@ -43,7 +43,7 @@ import {
   IonTitle,
   IonContent,
   IonButton,
-  IonList,
+  IonList, alertController,
 } from "@ionic/vue";
 /*
 import {
@@ -111,6 +111,29 @@ export default defineComponent({
       await safeRecordings();
       await UploadToFirebase();
       await refresh()
+      if(RecordingUploadArray.length > 0) {
+        const alert = await alertController.create({
+          message: "Do you want to delete the records you just uploaded from your device?",
+          buttons: [
+            {
+              text: "Cancel",
+              handler: () => {
+                deleteAllFromUploadArray();
+                console.log("confirm Cancel");
+                refresh()
+              },
+            },
+            {
+              text: "OK",
+              handler: () => {
+                deleteUploadedRecordsFromDevice();
+                refresh()
+              },
+            },
+          ],
+        });
+        await alert.present();
+      }
     }
 
     const refreshAfterTimeout = async () => {

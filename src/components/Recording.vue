@@ -4,8 +4,8 @@
       <ion-card-title>{{ recording.name }}</ion-card-title>
     </ion-card-header>
     <ion-card-content>
-      <!---Aufgenommen am:
-      {{ getRecordingDate() }}<br />--->
+      Aufgenommen am:
+      {{ getRecordingDate() }}<br />
       Anzahl Aufnahmen:
       {{ recording.parts.length }}
     </ion-card-content>
