@@ -6,9 +6,11 @@ import {
     loadRecordings,
     removeRecordingEntry
 } from "@/scripts/RecordingStorage";
+import {getWifi} from "@/scripts/UserSettingsStorage";
 import {Filesystem, Directory, Encoding} from "@capacitor/filesystem";
 import {loadUserSettings} from "@/scripts/UserSettingsStorage";
 import RecordingData from "@/scripts/RecordingData";
+import {Network} from "@capacitor/network";
 
 export const RecordingUploadArray: RecordingData[] = [];
 //export let inRecordingArrayIdent: string[][] = [];
@@ -54,11 +56,16 @@ export async function deleteUploadedRecordsFromDevice(){
 
 
 const db = firebase.firestore();
-
 export async function UploadToFirebase() {
     const currentUser = firebase.auth().currentUser;
     if (currentUser == null) return;
+    const networkStatus = await Network.getStatus().then(result => result);
+    console.log("network Status:" ,networkStatus);
 
+    if(getWifi()==true && networkStatus.connectionType != 'wifi'){
+        console.log("Upload not possible due to wrong Connection Type")
+        return;
+    }
     const RecordingDataArr = await getRecordings();
     const RecordingUserID = [];
     const RecordingID = [];

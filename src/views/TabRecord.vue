@@ -9,7 +9,12 @@
             <ion-label v-model:position="fixed" >Name:</ion-label>
             <ion-input v-model="newName" placeholder ="choose a Name" v-model:inputmode="text"  v-model:value="lastRecording.name"></ion-input>
           </ion-item>
-          <ion-select>Select language</ion-select>
+          <ion-item>
+            <ion-label>Select Language</ion-label>
+            <ion-select v-model:value="getFirstLanguage()[0]">
+              <!---ion-select-option--->
+            </ion-select>
+          </ion-item>
           <ion-select>Select license</ion-select>
           <ion-button color= "danger" @click="deleteLastRecording()">delete</ion-button>
           <ion-button color= "success" @click="saveChanges()"> ok</ion-button>
@@ -79,7 +84,7 @@
 import { defineComponent, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import PageHeader from "@/components/layout/PageHeader.vue";
-import {setRecordingEntryLanguage, setRecordingEntryName, setRecordingLicense, removeLastRecordingEntry, getRecordingEntry} from "@/scripts/RecordingStorage";
+import {setRecordingEntryLanguage, setRecordingEntryName, removeLastRecordingEntry, getRecordingEntry, setRecordingLicense} from "@/scripts/RecordingStorage";
 
 import {
   IonPage,
@@ -141,6 +146,8 @@ export default defineComponent({
     const lastRecording = ref(new RecordingData(0,"",[],0,false,false,"","",[]));
     const openModal = ref(false);
     const newName = ref("");
+    const newLanguage = ref("");
+    const newLicense = ref("");
 
 
 
@@ -328,12 +335,20 @@ export default defineComponent({
 
     const clearVariables = () =>{
       newName.value = "";
+      newLanguage.value = "";
+      newLicense.value = "";
     }
 
     const saveChanges = async () =>{
       //TODO
       if(newName.value != "") {
         setRecordingEntryName(lastRecording.value.timestamp, newName.value);
+      }
+      if(newLanguage.value != "") {
+        setRecordingEntryLanguage(lastRecording.value.timestamp, [newLanguage.value]);
+      }
+      if(newLicense.value != "") {
+        setRecordingLicense(lastRecording.value.timestamp, newLicense.value);
       }
       openModal.value = !openModal.value;
       clearVariables();
@@ -363,6 +378,7 @@ export default defineComponent({
       setRecordingEntryLanguage,
       setRecordingEntryName,
       setRecordingLicense,
+      getFirstLanguage,
       caretForwardOutline,
       stopSharp,
       recordingStatusEnums,

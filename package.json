@@ -18,6 +18,7 @@
     "@capacitor/filesystem": "^1.0.6",
     "@capacitor/haptics": "1.0.2",
     "@capacitor/keyboard": "1.0.2",
+    "@capacitor/network": "^1.0.6",
     "@capacitor/status-bar": "1.0.2",
     "@ionic/vue": "^5.4.0",
     "@ionic/vue-router": "^5.4.0",
