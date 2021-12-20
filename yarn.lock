@@ -1051,6 +1051,11 @@
   resolved "https://registry.npmjs.org/@capacitor/keyboard/-/keyboard-1.0.2.tgz"
   integrity sha512-JdIkYXfrfiuP/iLxO65GJe8rY+VcCoGesPzu/eMHRoWOuRyRcwjw9AtVOPyAXj4qPq1bbmGB8if/m2/R1S1X9A==
 
+"@capacitor/network@^1.0.6":
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/@capacitor/network/-/network-1.0.6.tgz#f13bb95be6c7faa048627e20e3299b1e628da21a"
+  integrity sha512-xkkmRLlFcg1dM0WfblxKwcKFjcfBQ04yWYX0ubD/n5QfQjLCCb8GbAHlorqIyt2j4PUvSAb0ERLyL89hpKlh2w==
+
 "@capacitor/status-bar@1.0.2":
   version "1.0.2"
   resolved "https://registry.npmjs.org/@capacitor/status-bar/-/status-bar-1.0.2.tgz"
