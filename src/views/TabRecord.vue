@@ -121,7 +121,7 @@ import {insertRecordingEntry} from "@/scripts/RecordingStorage";
 import RecordingData from "@/scripts/RecordingData";
 import {getLicense, getFirstLanguage} from "@/scripts/UserSettingsStorage";
 import {Encoding} from "@capacitor/filesystem";
-import router from "@/router";
+//import router from "@/router";
 
 export default defineComponent({
   components: {
@@ -321,6 +321,8 @@ export default defineComponent({
       insertRecordingEntry(new RecordingData(timestamp,shownName,["0.raw"],timer.value.getSeconds(), false, false, getLicense(), currentUser.uid, getFirstLanguage()));
       openModal.value = !openModal.value;
       lastRecording.value = getRecordingEntry(timestamp);
+      timer.value =  (new Date(0));
+      timerString.value=timer.value.toISOString().substr(11,8);
     };//method: stopRecordingTrigger
 
     //Timer
