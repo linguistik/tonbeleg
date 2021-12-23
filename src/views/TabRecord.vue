@@ -333,7 +333,6 @@ export default defineComponent({
         timerString.value=timer.value.toISOString().substr(11, 8);
         console.log(timer.value);
       }
-
     }
 
     const clearVariables = () =>{
