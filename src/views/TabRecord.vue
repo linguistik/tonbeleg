@@ -94,7 +94,7 @@ import {
   IonContent,
   IonFab,
   IonFabButton,
-  IonIcon, IonInput, IonLabel, IonItem,
+  IonIcon, IonInput, IonLabel, IonItem, IonCard,
 } from "@ionic/vue";
 
 import {
@@ -135,7 +135,7 @@ export default defineComponent({
     IonFabButton,
     IonIcon,
     IonInput,
-    IonItem, IonLabel,
+    IonItem, IonLabel, IonCard,
   },
 
   setup() {
@@ -316,7 +316,7 @@ export default defineComponent({
         //TODO exception handling
       }
       const dateObject= new Date(timestamp);
-      const shownName= dateObject.getDay().toString()+"."+dateObject.getMonth().toString() +"."+ dateObject.getFullYear().toString() +", " + dateObject.getHours().toString()+":"+(dateObject.getMinutes()<=9 ? +"0" +dateObject.getMinutes().toString():+dateObject.getMinutes().toString());
+      const shownName= dateObject.getUTCDate().toString()+"."+(dateObject.getMonth() + 1).toString() +"."+ dateObject.getFullYear().toString() +", " + dateObject.getHours().toString()+":"+(dateObject.getMinutes()<=9 ? +"0" +dateObject.getMinutes().toString():+dateObject.getMinutes().toString());
       //create Entry in RecordingStorage //evtl über alert
       insertRecordingEntry(new RecordingData(timestamp,shownName,["0.raw"],timer.value.getSeconds(), false, false, getLicense(), currentUser.uid, getFirstLanguage()));
       openModal.value = !openModal.value;

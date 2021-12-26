@@ -10,7 +10,7 @@ import {getWifi} from "@/scripts/UserSettingsStorage";
 import {Filesystem, Directory, Encoding} from "@capacitor/filesystem";
 import {loadUserSettings} from "@/scripts/UserSettingsStorage";
 import RecordingData from "@/scripts/RecordingData";
-import {Network} from "@capacitor/network";
+import {ConnectionStatus, Network} from "@capacitor/network";
 
 export const RecordingUploadArray: RecordingData[] = [];
 //export let inRecordingArrayIdent: string[][] = [];
@@ -97,6 +97,11 @@ export async function UploadToFirebase() {
     //deleteAllFromUploadArray();
 }
 
+export async function isConnected(){
+    const Status = await Network.getStatus().then(result => result);
+    console.log("is Connected?:" ,Status.connected);
+    return Status.connected;
+}
 /*export function setUploadArrays(uploadArray: string[], alreadyUp: string[][], uploadArrayIdent: string[][]){
     RecordingUploadArray = uploadArray;
     //alreadyUploadedArray = alreadyUp;
