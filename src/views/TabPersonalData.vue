@@ -51,8 +51,14 @@
           <ion-label>
             Dialekt
           </ion-label>
-        <ion-input v-model="dialect" @ionBlur="safe()"
+          <ion-chip v-if="dialect!=''" color="dark">
+            <ion-label>{{dialect}}</ion-label>
+            <ion-icon name="close-circle" @click="deleteDialect"></ion-icon>
+          </ion-chip>
+          <ion-label v-if="dialect==''">
+             <ion-input v-model="dialect" ionBlur="safe()"
         ></ion-input>
+          </ion-label>
         </ion-item>
 
         <ion-list-header>
@@ -66,8 +72,7 @@
             Postleitzahl
           </ion-label>
         <ion-input v-model="shownZipCode"
-            v-model:type="numberType" @ionBlur="safe()"
-        >
+            v-model:type="numberType" @ionBlur="safe()">
         </ion-input>
         </ion-item>
 
@@ -88,7 +93,7 @@ import { useI18n } from 'vue-i18n';
 import PageHeader from '@/components/layout/PageHeader.vue';
 import {loadUserSettings, setBirthday, setJob,setFirstLanguage,setSecondLanguage,setDialect,setZipCode, getBirthday,getJob,getFirstLanguage,getSecondLanguage,getDialect,getZipCode} from "@/scripts/UserSettingsStorage";
 import { 
-  IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonListHeader, IonLabel, IonInput,IonButton
+  IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonListHeader, IonLabel, IonInput,IonButton, IonChip
 } from '@ionic/vue';
 
 
@@ -102,7 +107,7 @@ export default defineComponent({
   components: { 
     PageHeader, 
     IonHeader, IonToolbar, IonTitle, IonContent, IonPage, IonList, IonItem, IonListHeader, IonLabel, IonInput, IonButton,
-    MultipleElementsParent
+    MultipleElementsParent,IonChip
   },
   methods: {
     //läd geladene Sprachen und setzt die Einträge, bisschen unübersichtliches spaghetti aber seh keinen andere lösung
@@ -243,8 +248,12 @@ export default defineComponent({
       secondLanguage.value=languages;
       setSecondLanguage(languages);
     }
+    const deleteDialect =()=>{
+      console.log(dialect.value)
+      setDialect('')
+    }
 
-    return { t, safe, job,firstLanguage,secondLanguage,dialect,zipCode,numberType, shownZipCode, dateType,birthday, updateFirstLanguages, updateSecondLanguages }
+    return { t, safe, job,firstLanguage,secondLanguage,dialect,zipCode,numberType, shownZipCode, dateType,birthday, updateFirstLanguages, updateSecondLanguages, deleteDialect }
   }
 })
 </script>
