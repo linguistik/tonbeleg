@@ -4,10 +4,11 @@
     <ion-grid>
     <ion-row>
     <ion-col size="2">
-    <ion-icon
+    <ion-icon 
       :icon="removeCircle"
       @click="removeFromParent()"
       color="danger"
+      size="large"
     ></ion-icon>
     </ion-col>
     <ion-col>
