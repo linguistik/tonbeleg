@@ -1,3 +1,5 @@
+[![Join the chat at https://gitter.im/linguistik/community](https://badges.gitter.im/linguistik/community.svg)](https://gitter.im/linguistik/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 # DELETE THIS LATER
 Files to change
 - [x] `package.json`, the name of the repo

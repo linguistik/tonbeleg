@@ -1,48 +1,83 @@
 <template>
-  <ion-item v-if="isOpen">
-    <ion-label>
-      <strong>
-        {{ recording.name }}
-      </strong>
-      <h5>
-        Aufgenommen am:
-        {{ getRecordingDate() }}
-        <br>
-      </h5>
-    </ion-label>
-    <ion-icon Left-icon :icon="playing ? pause : play" @click="playRec()"></ion-icon>
-    <ion-icon :color= "alreadyUploaded ? 'success' : (selectedForUpload ? 'warning' : 'medium' )" :icon="arrowUp" @click="upload()" ></ion-icon>
-    <ion-icon :icon="trash" @click="deleteRecording()"  ></ion-icon>
-    <ion-icon :icon="pencil" @click="rename()"></ion-icon>
-    <ion-icon :icon="cut" @click="edit()"></ion-icon>
-    <ion-icon :icon="help" @click="changeLicense()"></ion-icon>
-    <ion-icon :icon="chevronDownOutline" @click="toggleOpen()"></ion-icon>
-  </ion-item>
+  <ion-card v-if="isOpen">
+    <ion-card-header>
+      <ion-card-title>{{ recording.name }}</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      Aufgenommen am:
+      {{ getRecordingDate() }}<br />
+      Anzahl Aufnahmen:
+      {{ recording.parts.length }}
+    </ion-card-content>
+    <ion-item>
+    
+      <ion-icon
+        Left-icon
+        :icon="playing ? pause : play"
+        @click="playRec()"
+        v-if="provideFunctionality"
+      ></ion-icon>
+      <ion-icon
+        :color="
+          alreadyUploaded ? 'success' : selectedForUpload ? 'warning' : 'black'
+        "
+        :icon="arrowUp"
+        @click="upload()"
+        v-if="provideFunctionality"
+      ></ion-icon>
+      <ion-icon :icon="trash" @click="deleteRecording()" v-if="provideFunctionality"></ion-icon>
+      <ion-icon :icon="pencil" @click="rename()" v-if="provideFunctionality"></ion-icon>
+      <ion-icon :icon="cut" @click="edit()" v-if="provideFunctionality"></ion-icon>
+      <ion-icon :icon="help" @click="changeLicense()" v-if="provideFunctionality"></ion-icon>
 
-  <ion-item v-else>
-    <ion-label text-wrap>
-      <strong>
-        {{ recording.name }}
-      </strong> </ion-label>
-    <ion-icon  :icon="chevronBackOutline" @click="toggleOpen()"></ion-icon>
-  </ion-item>
+
+      <ion-icon
+        :icon="chevronUpOutline"
+        @click="toggleOpen()"
+        slot="end"
+      ></ion-icon>
+
+    </ion-item>
+  </ion-card>
+
+  <ion-card v-else>
+    <ion-card-content @click="toggleOpen()">
+      {{ recording.name }}
+    </ion-card-content>
+  </ion-card>
 </template>
 
 
 <script lang="ts">
-import {ref} from "vue";
+import { ref } from "vue";
 
-import {useI18n} from "vue-i18n";
+import { useI18n } from "vue-i18n";
 
-import {arrowUp, chevronBackOutline, chevronDownOutline, cut, help, pause, pencil, play, trash} from "ionicons/icons";
+import {
+  arrowUp,
+  chevronUpOutline,
+  cut,
+  help,
+  pause,
+  pencil,
+  play,
+  trash,
+} from "ionicons/icons";
 
-import {alertController, IonIcon, IonItem, IonLabel} from "@ionic/vue";
+import {
+  alertController,
+  IonIcon,
+  IonCard,
+  IonItem,
+  IonCardHeader,
+  IonCardTitle,
+  IonCardContent,
+} from "@ionic/vue";
 
-
-import router from '@/router';
-import {Directory, Encoding, Filesystem} from "@capacitor/filesystem";
+import router from "@/router";
+import { Directory, Encoding, Filesystem } from "@capacitor/filesystem";
 import firebase from "@/backend/firebase-config";
-import {replayAudioData, audioDaten} from "@/scripts/ReplayData";
+import { replayAudioData, audioDaten } from "@/scripts/ReplayData";
 import RecordingData from "@/scripts/RecordingData";
 import {
   RecordingUploadArray,
@@ -55,42 +90,51 @@ import {
   removeRecordingEntry,
   setRecordingEntryName,
   setRecordingEntryUploadBoolean,
-  setSelectedForUpload, getSelectedForUpload, loadRecordings,
+  setSelectedForUpload,
+  getSelectedForUpload,
+  loadRecordings,
 } from "@/scripts/RecordingStorage";
-import {loadUserSettings} from "@/scripts/UserSettingsStorage";
+import { loadUserSettings } from "@/scripts/UserSettingsStorage";
 
 export default {
   name: "Recording",
   components: {
-    IonItem,
+    IonCard,
     IonIcon,
-    IonLabel,
+    IonItem,
+    IonCardContent,
+    IonCardHeader,
+    IonCardTitle,
   },
 
-  methods:{
-    async setEverything(){
+   /*methods: {
+    async setEverything() {
       await loadUserSettings();
       await loadRecordings();
-    }
+    },
   },
-  mounted(){
+  mounted() {
     this.setEverything();
-  },
+  },*/
 
   props: {
     recording: RecordingData,
+    provideFunctionality:{//pass false to disable interative elements. default is true
+      type: Boolean,
+      required: false,
+      default: true
+    }
   },
   //methods & mounted glaube doch nicht
 
   setup(props: any, context: any) {
     // multi-lingual support
-    const {t} = useI18n();
+    const { t } = useI18n();
 
     const currentUser = firebase.auth().currentUser;
     if (currentUser == null) return;
     const UserUID = currentUser.uid;
     const alreadyUploaded = ref(props.recording.upload);
-
     let audioString = new Audio();
 
     const isOpen = ref(false);
@@ -111,54 +155,46 @@ export default {
       let hours = date.getHours().toString();
       let minutes = date.getMinutes().toString();
 
-      if(minutes.length==1){
-        minutes ="0" + minutes; 
+      if (minutes.length == 1) {
+        minutes = "0" + minutes;
       }
-      if(hours.length==1){
+      if (hours.length == 1) {
         hours = "0" + hours;
       }
-      if(month.length==1){
+      if (month.length == 1) {
         month = "0" + month;
       }
-      if(day.length==1){
+      if (day.length == 1) {
         day = "0" + day;
       }
 
-      return (
-          day +
-          "." +
-          month +
-          "." +
-          year +
-          ", " +
-          hours +
-          ":" +
-          minutes
+      return day + "." + month + "." + year + ", " + hours + ":" + minutes;
+    }; //method: getRecordingDate
 
-      );
-    };//method: getRecordingDate
-
-    const edit = ()=>{
+    const edit = () => {
       router.push("/edit/" + props.recording.timestamp);
-    }
+    };
 
-    const changeLicense = async () =>{
+    const changeLicense = async () => {
       const alert = await alertController.create({
-        message: 'Select a License for this recording.',
-        buttons: [{
-          text:'Cancel',
-          handler: () =>{
-            console.log('confirm Cancel');
+        message: "Select a License for this recording.",
+        buttons: [
+          {
+            text: "Cancel",
+            handler: () => {
+              console.log("confirm Cancel");
+            },
           },
-        }, {
-          text: 'OK',
-          handler: () =>{
-            //TODO
+          {
+            text: "OK",
+            handler: () => {
+              //TODO
+            },
           },
-        }],
+        ],
       });
       await alert.present();
-    }
+    };
 
     const upload = async () => {
       //TODO
@@ -178,100 +214,110 @@ export default {
       else{
         deleteFromUploadArray(currentUser.uid.concat(props.recording.timestamp.toString()));
       }*/
-    }
+    };
 
-    const playRec = async () =>{
-
-      if(playing.value == false){
+    const playRec = async () => {
+      if (playing.value == false) {
         //TODO
-        if(counter == 0) {
-          audioString = await replayAudioData(props.recording.timestamp, currentUser.uid);
+        if (counter == 0) {
+          audioString = await replayAudioData(
+            props.recording.timestamp,
+            currentUser.uid
+          );
           counter++;
         }
-        if(currentTime != 0){
+        if (currentTime != 0) {
           audioString.currentTime = currentTime;
         }
         audioString.oncanplay = () => audioString.play();
-        playing.value = !playing.value
-        audioString.onended = () => playing.value = !playing.value, counter = 0;
-      }
-      else{
+        playing.value = !playing.value;
+        (audioString.onended = () => (playing.value = !playing.value)),
+          (counter = 0);
+      } else {
         audioString.pause();
         currentTime = audioString.currentTime;
-        playing.value = !playing.value
+        playing.value = !playing.value;
       }
+    };
 
-    }
-
-    const actualDelete = async () =>{
+    const actualDelete = async () => {
       removeRecordingEntry(props.recording);
-      context.emit('refreshEmit');
-    }//method: deleteFolder
+      context.emit("refreshEmit");
+    }; //method: deleteFolder
 
-
-    const actualRename = (name: string) => {//props.recording is just a copy of the real object
+    const actualRename = (name: string) => {
+      //props.recording is just a copy of the real object
       setRecordingEntryName(props.recording.timestamp, name);
-      context.emit('refreshEmit');
-    }//method: actualRename
+      context.emit("refreshEmit");
+    }; //method: actualRename
 
-    const rename = async ()=> {
+    const rename = async () => {
       //TODO
       const alert = await alertController.create({
-        message: 'Choose a name',
+        message: "Choose a name",
         inputs: [
           {
-            name:'textField',
-            id: 'textField',
-            type: 'text',
+            name: "textField",
+            id: "textField",
+            type: "text",
             attributes: {
               required: true,
               minlength: 1,
               maxlength: 20,
-              inputMode: 'text',
+              inputMode: "text",
             },
             handler: () => {
-              console.log('texteingabe erfolgt');//is this handler really necessary? For some reason it is^^
-            }
-          }
-        ],//inputs
-        buttons:[{
-          text: 'cancel',
-          handler: ()=>{
-            console.log('confirm cancel');
+              console.log("texteingabe erfolgt"); //is this handler really necessary? For some reason it is^^
+            },
           },
-        },
+        ], //inputs
+        buttons: [
           {
-          text: 'OK',
-            handler: (data) =>{
-                const x = data.textField;
-                console.log(x);
+            text: "cancel",
+            handler: () => {
+              console.log("confirm cancel");
+            },
+          },
+          {
+            text: "OK",
+            handler: (data) => {
+              const x = data.textField;
+              console.log(x);
+              if(x!="" || x.length<=35){ //nur kleine und nicht leere eingaben
                 actualRename(x);
-            }
-        }
-        ]//buttons
-      });//create alert
-      await alert.present();
-    }//method rename
+              }
+              else{
+                console.log("not a valid name");
+              }
 
-    const deleteRecording = async (folder: string)=>{
+            },
+          },
+        ], //buttons
+      }); //create alert
+      await alert.present();
+    }; //method rename
+
+    const deleteRecording = async (folder: string) => {
       //TODO delete entry in outsourced
       const alert = await alertController.create({
-        message: 'Do you really want to delete this file?',
-        buttons: [{
-          text:'Cancel',
-          handler: () =>{
-            console.log('confirm Cancel');
+        message: "Do you really want to delete this file?",
+        buttons: [
+          {
+            text: "Cancel",
+            handler: () => {
+              console.log("confirm Cancel");
+            },
           },
-        }, {
-          text: 'OK',
-          handler: () =>{
-            actualDelete();
+          {
+            text: "OK",
+            handler: () => {
+              actualDelete();
+            },
           },
-        }],
+        ],
       });
       await alert.present();
-    }//method: deleteRecording
-
+    }; //method: deleteRecording
 
     return {
       t,
@@ -279,8 +325,7 @@ export default {
       arrowUp,
       pencil,
       cut,
-      chevronDownOutline,
-      chevronBackOutline,
+      chevronUpOutline,
       isOpen,
       play,
       pause,
@@ -300,27 +345,12 @@ export default {
       audioDaten,
       replayAudioData,
       alreadyUploaded,
-    };//return
-
-  },//setup
-
-
-};//export default
-
+    }; //return
+  }, //setup
+}; //export default
 </script>
 <style scoped>
 ion-icon {
-  position: unset;
-  right: 0px;
-  top: 0;
-}
-ion-item {
-  /* --min-height: 100px;*/
-}
-ion-contenc {
-  --scroll-x: false;
-  --scroll-y: false;
-  scroll-x: false;
-  scroll-y: false;
+  margin: 5px;
 }
 </style>

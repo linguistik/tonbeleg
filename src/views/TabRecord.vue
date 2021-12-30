@@ -3,6 +3,24 @@
     <PageHeader v-bind:title="t('general.appname')" />
 
     <ion-content :fullscreen="true">
+
+        <ion-card v-if= "openModal"><!---brauch eig nen modal das kann man nicht wegklicken--->
+          <ion-item>
+            <ion-label v-model:position="fixed" >Name:</ion-label>
+            <ion-input v-model="newName" placeholder ="choose a Name" v-model:inputmode="text"  v-model:value="lastRecording.name"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label>Select Language</ion-label>
+            <ion-select v-model:value="getFirstLanguage()[0]">
+              <!---ion-select-option--->
+            </ion-select>
+          </ion-item>
+          <ion-select>Select license</ion-select>
+          <ion-button color= "danger" @click="deleteLastRecording()">delete</ion-button>
+          <ion-button color= "success" @click="saveChanges()"> ok</ion-button>
+        </ion-card>
+
+
       <ion-header collapse="condense">
         <ion-toolbar>
           <ion-title size="large">Aufnehmen</ion-title>
@@ -13,7 +31,7 @@
 
 
         <ion-fab-button
-          v-if="recordingStatus == recordingStatusEnums.NOT_RECORDING "
+          v-if="recordingStatus == recordingStatusEnums.NOT_RECORDING"
           color="success"
           v-on:click="startRecordingTrigger()"
         >
@@ -57,10 +75,6 @@
         <p>Zeit: {{timerString}}</p>
 </div>
 
-
-
-
-
     </ion-content>
   </ion-page>
 </template>
@@ -70,7 +84,7 @@
 import { defineComponent, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import PageHeader from "@/components/layout/PageHeader.vue";
-
+import {setRecordingEntryLanguage, setRecordingEntryName, removeLastRecordingEntry, getRecordingEntry, setRecordingLicense} from "@/scripts/RecordingStorage";
 
 import {
   IonPage,
@@ -80,7 +94,7 @@ import {
   IonContent,
   IonFab,
   IonFabButton,
-  IonIcon,
+  IonIcon, IonInput, IonLabel, IonItem, IonCard,
 } from "@ionic/vue";
 
 import {
@@ -105,8 +119,9 @@ import {
 
 import {insertRecordingEntry} from "@/scripts/RecordingStorage";
 import RecordingData from "@/scripts/RecordingData";
-import {getLicense} from "@/scripts/UserSettingsStorage";
+import {getLicense, getFirstLanguage} from "@/scripts/UserSettingsStorage";
 import {Encoding} from "@capacitor/filesystem";
+//import router from "@/router";
 
 export default defineComponent({
   components: {
@@ -119,13 +134,22 @@ export default defineComponent({
     IonFab,
     IonFabButton,
     IonIcon,
-
+    IonInput,
+    IonItem, IonLabel, IonCard,
   },
 
   setup() {
     // multi-lingual support
     const { t } = useI18n();
     //const timer =ref( 0);
+    //PopUpValuesForRecording
+    const lastRecording = ref(new RecordingData(0,"",[],0,false,false,"","",[]));
+    const openModal = ref(false);
+    const newName = ref("");
+    const newLanguage = ref("");
+    const newLicense = ref("");
+
+
 
     const timer = ref(new Date(0))
     const timerString=ref(timer.value.toISOString().substr(11, 8));
@@ -222,7 +246,6 @@ export default defineComponent({
           .catch(error => console.log(error))
     };*/
 
-
     const stopRecordingTrigger = async () => {
 
       recordingStatus.value=recordingStatusEnums.DOING_SMT;
@@ -240,8 +263,6 @@ export default defineComponent({
         //TODO error handling
         return;
       }
-
-
 
       //get userUID
       const currentUser = firebase.auth().currentUser;
@@ -294,12 +315,15 @@ export default defineComponent({
         console.log(error);
         //TODO exception handling
       }
-
-      //create Entry in RecordingStorage
-      insertRecordingEntry(new RecordingData(timestamp,timestamp.toString(),["0.raw"],timer.value.getSeconds(), false, false, getLicense(), currentUser.uid));
-
+      const dateObject= new Date(timestamp);
+      const shownName= dateObject.getUTCDate().toString()+"."+(dateObject.getMonth() + 1).toString() +"."+ dateObject.getFullYear().toString() +", " + dateObject.getHours().toString()+":"+(dateObject.getMinutes()<=9 ? +"0" +dateObject.getMinutes().toString():+dateObject.getMinutes().toString());
+      //create Entry in RecordingStorage //evtl über alert
+      insertRecordingEntry(new RecordingData(timestamp,shownName,["0.raw"],timer.value.getSeconds(), false, false, getLicense(), currentUser.uid, getFirstLanguage()));
+      openModal.value = !openModal.value;
+      lastRecording.value = getRecordingEntry(timestamp);
+      timer.value =  (new Date(0));
+      timerString.value=timer.value.toISOString().substr(11,8);
     };//method: stopRecordingTrigger
-
 
     //Timer
 
@@ -310,6 +334,34 @@ export default defineComponent({
         console.log(timer.value);
       }
     }
+
+    const clearVariables = () =>{
+      newName.value = "";
+      newLanguage.value = "";
+      newLicense.value = "";
+    }
+
+    const saveChanges = async () =>{
+      //TODO
+      if(newName.value != "") {
+        setRecordingEntryName(lastRecording.value.timestamp, newName.value);
+      }
+      if(newLanguage.value != "") {
+        setRecordingEntryLanguage(lastRecording.value.timestamp, [newLanguage.value]);
+      }
+      if(newLicense.value != "") {
+        setRecordingLicense(lastRecording.value.timestamp, newLicense.value);
+      }
+      openModal.value = !openModal.value;
+      clearVariables();
+    }
+
+    const deleteLastRecording = async () =>{
+      //TODO
+      removeLastRecordingEntry();
+      openModal.value = !openModal.value;
+    }
+
 
     setInterval(() => {
       timerHandler(); // Now the "this" still references the component
@@ -325,13 +377,22 @@ export default defineComponent({
       continueRecordingTrigger,
       pauseRecordingTrigger,
       getLicense,
+      setRecordingEntryLanguage,
+      setRecordingEntryName,
+      setRecordingLicense,
+      getFirstLanguage,
       caretForwardOutline,
       stopSharp,
       recordingStatusEnums,
       playSkipForwardOutline,
       playOutline,
       timerString,
-      pauseOutline
+      pauseOutline,
+      openModal,
+      saveChanges,
+      deleteLastRecording,
+      lastRecording,
+      newName,
     };
   },
 });

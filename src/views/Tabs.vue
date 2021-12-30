@@ -16,8 +16,8 @@
         </ion-tab-button>
         
         <ion-tab-button tab="account" href="/tabs/account">
-          <ion-icon :icon="personCircle" />
-          <ion-label>Account</ion-label>
+          <ion-icon :icon="cloud" />
+          <ion-label>Hochgeladen</ion-label>
         </ion-tab-button>
 
       </ion-tab-bar>
@@ -31,7 +31,7 @@ import {
   IonTabBar, IonTabButton, IonTabs, IonLabel, IonIcon, IonPage, IonRouterOutlet 
 } from '@ionic/vue';
 
-import { personCircle, save, ellipse } from 'ionicons/icons';
+import { cloud, save, ellipse } from 'ionicons/icons';
 import { useI18n } from 'vue-i18n';
 
 
@@ -48,7 +48,7 @@ export default {
     return {
       t,
       ellipse, 
-      personCircle, 
+      cloud, 
       save,
     }
   },

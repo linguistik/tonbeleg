@@ -55,6 +55,7 @@
           <MultipleElementsParent text="Zweitsprache hinzufügen" @valuesChanged="updateSecondLanguages" ref="lng2"/>
        
 
+
         <ion-item>
           <ion-label>
             Dialekt
@@ -178,6 +179,10 @@ export default defineComponent({
       //console.log(ref);
     }
 
+
+
+
+
     const uploadUserSettings = ()=>{
 
       const db = firebase.firestore();
@@ -227,7 +232,10 @@ export default defineComponent({
 
     }
 
-   const initData = async () =>{
+
+
+    const initData = async () =>{
+
 
       await loadData();
       uploadUserSettings();

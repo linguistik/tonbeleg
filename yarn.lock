@@ -959,6 +959,11 @@
   "resolved" "https://registry.npmjs.org/@capacitor/keyboard/-/keyboard-1.0.2.tgz"
   "version" "1.0.2"
 
+"@capacitor/network@^1.0.6":
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/@capacitor/network/-/network-1.0.6.tgz#f13bb95be6c7faa048627e20e3299b1e628da21a"
+  integrity sha512-xkkmRLlFcg1dM0WfblxKwcKFjcfBQ04yWYX0ubD/n5QfQjLCCb8GbAHlorqIyt2j4PUvSAb0ERLyL89hpKlh2w==
+
 "@capacitor/status-bar@1.0.2":
   "integrity" "sha512-NgAZIw8Uq2lm6Ln1lWipAqi/YxqIDd92boO4k81Z1WMOdZJt6oLxZB8LfJRDLXU7xNkpW97zHcNBf5pIXJIFqw=="
   "resolved" "https://registry.npmjs.org/@capacitor/status-bar/-/status-bar-1.0.2.tgz"
