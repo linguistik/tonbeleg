@@ -43,9 +43,18 @@
           </ion-label>
         </ion-list-header>
 
-          <MultipleElementsParent text="Erstsprache hinzufügen" @valuesChanged="updateFirstLanguages" ref="lng1" />
+        <ion-item>
+          <ion-label>
+            Erstsprache wählen
+          </ion-label>
+           <ion-select v-model="firstLanguage" @ionChange="safe()">
+              <ion-select-option v-for="[short,language] in languages" v-bind:key="short" v-bind:value="short">{{language}}</ion-select-option>
+            </ion-select>
+        </ion-item>
 
           <MultipleElementsParent text="Zweitsprache hinzufügen" @valuesChanged="updateSecondLanguages" ref="lng2"/>
+       
+
 
         <ion-item>
           <ion-label>
@@ -74,7 +83,6 @@
         <ion-item>
           <ion-button @click="safe()">Speichern</ion-button>
         </ion-item>
-        <ion-button @click="triggerChildMethod()">test</ion-button>
       </ion-list>
     </ion-content>
 
@@ -88,7 +96,7 @@ import { useI18n } from 'vue-i18n';
 import PageHeader from '@/components/layout/PageHeader.vue';
 import {loadUserSettings, setBirthday, setJob,setFirstLanguage,setSecondLanguage,setDialect,setZipCode, getBirthday,getJob,getFirstLanguage,getSecondLanguage,getDialect,getZipCode} from "@/scripts/UserSettingsStorage";
 import { 
-  IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonListHeader, IonLabel, IonInput,IonButton
+  IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonListHeader, IonLabel, IonInput,IonButton, IonSelect, IonSelectOption,
 } from '@ionic/vue';
 
 
@@ -101,21 +109,21 @@ export default defineComponent({
 
   components: { 
     PageHeader, 
-    IonHeader, IonToolbar, IonTitle, IonContent, IonPage, IonList, IonItem, IonListHeader, IonLabel, IonInput, IonButton,
-    MultipleElementsParent
+    IonHeader, IonToolbar, IonTitle, IonContent, IonPage, IonList, IonItem, IonListHeader, IonLabel, IonInput, IonButton, IonSelect,IonSelectOption,    MultipleElementsParent
   },
   methods: {
     //läd geladene Sprachen und setzt die Einträge, bisschen unübersichtliches spaghetti aber seh keinen andere lösung
     async setupLanguages() {
       await loadUserSettings(); //läd user settinmg
-      await this.$refs.lng1.onInit(getFirstLanguage()); //erstellt kinder erstSprache
-      this.$refs.lng1.itemRefs.forEach((entrys: any, index: number) =>{ //füllt bei kinder die geladenen namen ein
-        entrys.initName(getFirstLanguage()[index],index);
-      })
+      //await this.$refs.lng1.onInit(getFirstLanguage()); //erstellt kinder erstSprache
+      //this.$refs.lng1.itemRefs.forEach((entrys: any, index: number) =>{ //füllt bei kinder die geladenen namen ein
+       // entrys.initName(getFirstLanguage()[index],index);
+      //})
 
       await this.$refs.lng2.onInit(getSecondLanguage()); //erstellt kinder zweite Sprache
       this.$refs.lng2.itemRefs.forEach((entrys: any, index: number) =>{ //füllt bei kinder die geladenen namen ein
         entrys.initName(getSecondLanguage()[index],index);
+        console.log(index)
       })
     }
   },
@@ -199,6 +207,7 @@ export default defineComponent({
 
     const safe = ()=>{
       console.log(birthday.value)
+      console.log(firstLanguage.value)
       const user = firebase.auth().currentUser;
       if (currentUser == null) return;
 
@@ -224,7 +233,9 @@ export default defineComponent({
     }
 
 
+
     const initData = async () =>{
+
 
       await loadData();
       uploadUserSettings();
@@ -244,7 +255,27 @@ export default defineComponent({
       setSecondLanguage(languages);
     }
 
-    return { t, safe, job,firstLanguage,secondLanguage,dialect,zipCode,numberType, shownZipCode, dateType,birthday, updateFirstLanguages, updateSecondLanguages }
+    return { t, safe, job,firstLanguage,secondLanguage,dialect,zipCode,numberType, shownZipCode, dateType,birthday, updateFirstLanguages, updateSecondLanguages, 
+            languages:[["en","English"],
+                  ["de","Deutsch"],
+                  ["es","español"],
+                  ["fr","français"],
+                  ["zh","Chinesisch"],
+                  ["hi", "हिन्दी"],
+                  ["bn","বাংলা"],
+                  ["ru","русский"],
+                  ["pt","português"],
+                  ["id","Bahasa Indonesia"],
+                  ["ur","اردو"],
+                  ["ja","日本語"],
+                  ["sw","	Kiswahili"],
+                  ["mr","मराठी"],
+                  ["te","తెలుగు"],
+                  ["tr","Türkçe"],
+                  ["ta","தமிழ்"],
+                  ["ko","한국어"],
+
+        ] }
   }
 })
 </script>

@@ -4,7 +4,8 @@
       <ion-router-outlet></ion-router-outlet>
       <ion-tab-bar slot="bottom">
 
-        <ion-tab-button tab="saved" href="/tabs/saved">
+        <ion-tab-button tab="saved" href="/tabs/saved"
+        v-on:click="loadData()" >
           <ion-icon :icon="save" />
           <ion-label>{{t('general.saved') }}</ion-label>
         </ion-tab-button>
@@ -49,6 +50,11 @@ export default {
       ellipse, 
       cloud, 
       save,
+    }
+  },
+  methods: {
+    loadDate(){
+      window.location.reload()
     }
   }
 }
