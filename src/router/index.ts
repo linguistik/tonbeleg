@@ -76,11 +76,15 @@ router.beforeEach((to: RouteLocationNormalized,
                    from: RouteLocationNormalized, 
                    next: NavigationGuardNext) => {
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
-  const isAuthenticated = firebase.auth().currentUser;
-  if (requiresAuth && !isAuthenticated) {
-    next("/login");
-  } else {
+  if(!requiresAuth){
     next();
+  }else{
+    const isAuthenticated = firebase.auth().currentUser;
+    if (isAuthenticated) {
+      next();
+    } else {
+      next("/login");
+    }
   }
 });
 
