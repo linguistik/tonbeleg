@@ -58,7 +58,6 @@ import Recording from "@/components/Recording.vue";
 
 import {loadRecordings, safeRecordings, getRecordings } from "@/scripts/RecordingStorage";
 import RecordingData from "@/scripts/RecordingData";
-import {loadUserSettings} from "@/scripts/UserSettingsStorage";
 //import {getAlreadyUploadedArray, getUploadArray, getInUploadArrayIdent} from "@/scripts/UserSettingsStorage";
 //import {setUploadArrays} from "@/scripts/RecordingUpload";
 export default defineComponent({
