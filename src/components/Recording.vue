@@ -118,7 +118,7 @@ export default {
   },*/
 
   props: {
-    recording: RecordingData,
+    recording: Object,
     provideFunctionality:{//pass false to disable interative elements. default is true
       type: Boolean,
       required: false,
