@@ -75,26 +75,14 @@ import {
 } from "@ionic/vue";
 
 import router from "@/router";
-import { Directory, Encoding, Filesystem } from "@capacitor/filesystem";
 import firebase from "@/backend/firebase-config";
 import { replayAudioData, audioDaten } from "@/scripts/ReplayData";
-import RecordingData from "@/scripts/RecordingData";
-import {
-  RecordingUploadArray,
-  //addToUploadArray,
-  UploadToFirebase,
-  //deleteFromUploadArray,
-} from "@/scripts/RecordingUpload";
 import {
   getRecordingEntryUploadBoolean,
   removeRecordingEntry,
   setRecordingEntryName,
-  setRecordingEntryUploadBoolean,
   setSelectedForUpload,
-  getSelectedForUpload,
-  loadRecordings,
 } from "@/scripts/RecordingStorage";
-import { loadUserSettings } from "@/scripts/UserSettingsStorage";
 
 export default {
   name: "Recording",
@@ -133,7 +121,7 @@ export default {
 
     const currentUser = firebase.auth().currentUser;
     if (currentUser == null) return;
-    const UserUID = currentUser.uid;
+
     const alreadyUploaded = ref(props.recording.upload);
     let audioString = new Audio();
 
@@ -297,7 +285,7 @@ export default {
       await alert.present();
     }; //method rename
 
-    const deleteRecording = async (folder: string) => {
+    const deleteRecording = async () => {
       //TODO delete entry in outsourced
       const alert = await alertController.create({
         message: "Do you really want to delete this file?",
