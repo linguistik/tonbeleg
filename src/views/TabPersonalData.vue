@@ -140,9 +140,6 @@ export default defineComponent({
     const { t } = useI18n();
 
     const currentUser = firebase.auth().currentUser;
-    if (currentUser == null) return;
-    const UserUID = currentUser.uid;
-    console.log(currentUser.uid);
 
 
     const birthday = ref('');
@@ -208,7 +205,6 @@ export default defineComponent({
     const safe = ()=>{
       console.log(birthday.value)
       console.log(firstLanguage.value)
-      const user = firebase.auth().currentUser;
       if (currentUser == null) return;
 
       if(isNaN(parseInt(shownZipCode.value)) || parseInt(shownZipCode.value)<0) {//zip code legaler wert?
