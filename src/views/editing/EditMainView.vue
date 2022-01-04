@@ -34,7 +34,6 @@ import router from "@/router";
 import firebase from "@/backend/firebase-config";
 
 import WaveSurfer from "wavesurfer.js";
-import RegionsPlugin from 'wavesurfer.regions.js';
 import { Filesystem, Directory } from '@capacitor/filesystem';
 
 import {replayAudioData} from "@/scripts/ReplayData";
