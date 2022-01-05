@@ -40,9 +40,9 @@ import RegionPlugin from "wavesurfer.js/dist/plugin/wavesurfer.regions.js";
 import ExportAudioPlugin from "wavesurfer-export-audio-plugin";
 import { Filesystem, Directory } from "@capacitor/filesystem";
 
-import encode from "opus-encode";
-import EmsWorkerProxy from "opusenc.js/worker/EmsWorkerProxy";
-import{ OpusEncoder }from "@discordjs/opus";
+//import encode from "opus-encode";
+//import EmsWorkerProxy from "opusenc.js/worker/EmsWorkerProxy";
+//import{ OpusEncoder }from "@discordjs/opus";
 
 import { replayAudioData, getAudioString } from "@/scripts/ReplayData";
 import { Region } from "wavesurfer.js/src/plugin/regions";
@@ -162,12 +162,12 @@ export default defineComponent({
       audio.load();
       audio.oncanplay = ()=>{console.log("play");audio.play();}*/
 
-      /*const context = new AudioContext();
+      const context = new AudioContext();
       const source = context.createBufferSource();
       source.buffer = trimmedAudio;
       source.connect(context.destination);
       source.start();
-*/
+
       //const worker = new Worker("opus-encdec/dist/encoderWorker.js");
 //console.log(worker);
       //console.log(new OpusEncoder());
@@ -180,7 +180,7 @@ export default defineComponent({
       outData: outData,
       fileData: trimmedAudio.getChannelData(0)})*/
 
-      const encoder = new OpusEncoder(48000,1);
+      //const encoder = new OpusEncoder(48000,1);
 
       //const encoded = encoder.encode(trimmedAudio);
       //console.log(encoded);

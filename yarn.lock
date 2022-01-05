@@ -12111,6 +12111,11 @@ watchpack@^1.7.4:
     chokidar "^3.4.1"
     watchpack-chokidar2 "^2.0.1"
 
+wavesurfer-export-audio-plugin@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/wavesurfer-export-audio-plugin/-/wavesurfer-export-audio-plugin-1.0.4.tgz#4ba4f7449608c1e2d6a7fcc5d99c37d74f6f3eb2"
+  integrity sha512-A4oBznoMnNwgDkf00rsR6XRE5MZEhDO/qmLwOzc263X/jkfEgoFC3Qe+iEFi9YWxwCv40tcFTkE2FRRHEPwtpA==
+
 wavesurfer.js@^5.2.0:
   version "5.2.0"
   resolved "https://registry.npmjs.org/wavesurfer.js/-/wavesurfer.js-5.2.0.tgz"
