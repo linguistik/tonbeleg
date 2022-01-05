@@ -13,3 +13,13 @@ export async function replayAudioData(timestamp: string, userID: string){
     return audioString;
 }
 
+export async function getAudioString(timestamp: string, userID: string){
+    const audioRef = await Filesystem.readFile({
+        path: "/" + userID + "/" + timestamp + "/" + "0.raw",
+        directory: Directory.Data,
+        encoding: Encoding.UTF8,
+    });
+    return audioRef.data;
+}
+
+
