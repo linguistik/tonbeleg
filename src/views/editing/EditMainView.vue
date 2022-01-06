@@ -225,6 +225,16 @@ export default defineComponent({
       
     };
 
+    const playAudioBuffer = (buf) =>{
+      new AudioContext().decodeAudioData(buf, function(decodedBuffer){
+          const context = new AudioContext();
+      const source = context.createBufferSource();
+      source.buffer = decodedBuffer;
+      source.connect(context.destination);
+      source.start();
+      });
+    }
+
     const finish = async () => {
       for (const regionId of regionIds) {
         console.log(regionId);
@@ -243,6 +253,10 @@ export default defineComponent({
       });
       console.log("read", readRes.data);
       console.log(typeof(readRes.data));
+
+      playAudioBuffer(readRes.data);
+
+
       /*new AudioContext().decodeAudioData(readRes.data, function(buffer){
         console.log(buffer);
       })*/
@@ -253,7 +267,7 @@ export default defineComponent({
       source.connect(context.destination);
       source.start();
 */
-      wavesurfer.load(readRes.data);
+     // wavesurfer.load(readRes.data);
     };
 
     const goBack = () => {
