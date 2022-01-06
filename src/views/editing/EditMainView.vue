@@ -38,11 +38,18 @@ import firebase from "@/backend/firebase-config";
 import WaveSurfer from "wavesurfer.js";
 import RegionPlugin from "wavesurfer.js/dist/plugin/wavesurfer.regions.js";
 import ExportAudioPlugin from "wavesurfer-export-audio-plugin";
-import { Filesystem, Directory } from "@capacitor/filesystem";
+import { Filesystem, Directory, Encoding } from "@capacitor/filesystem";
 
 //import encode from "opus-encode";
 //import EmsWorkerProxy from "opusenc.js/worker/EmsWorkerProxy";
 //import{ OpusEncoder }from "@discordjs/opus";
+//import  OpusScript from "opusscript";
+//import concat from "concat-stream";
+//import encode from "opus-encode/lib/encoder.js";
+//import * as encode from "opus-encode/lib/encoder.js";
+//import stream from "stream";
+//import audioEncoder from "audio-encoder";
+import toWav from "audiobuffer-to-wav";
 
 import { replayAudioData, getAudioString } from "@/scripts/ReplayData";
 import { Region } from "wavesurfer.js/src/plugin/regions";
@@ -92,6 +99,9 @@ export default defineComponent({
 
     const regionIds: string[] = [];
     let renderedBuffer;
+      const currentUser = firebase.auth().currentUser;
+      if (currentUser == null) return;
+      const currentUserUID = currentUser.uid;
 
     const load = async () => {
       wavesurfer = WaveSurfer.create({
@@ -103,9 +113,6 @@ export default defineComponent({
 
       console.log(wavesurfer.RegionsPlugin);
 
-      const currentUser = firebase.auth().currentUser;
-      if (currentUser == null) return;
-      const currentUserUID = currentUser.uid;
 
       //TODO for all parts
 
@@ -162,12 +169,12 @@ export default defineComponent({
       audio.load();
       audio.oncanplay = ()=>{console.log("play");audio.play();}*/
 
-      const context = new AudioContext();
+/*      const context = new AudioContext();
       const source = context.createBufferSource();
       source.buffer = trimmedAudio;
       source.connect(context.destination);
       source.start();
-
+*/
       //const worker = new Worker("opus-encdec/dist/encoderWorker.js");
 //console.log(worker);
       //console.log(new OpusEncoder());
@@ -184,14 +191,69 @@ export default defineComponent({
 
       //const encoded = encoder.encode(trimmedAudio);
       //console.log(encoded);
+/*
+      console.assert(trimmedAudio.sampleRate == 48000);
+      console.assert(trimmedAudio.numberOfChannels == 1);
+      const encoder = new OpusScript(48000, 1, OpusScript.Application.AUDIO ,{wasm: false});
+      const encodedAudio = encoder.encode(trimmedAudio.getChannelData(0), 48000 * 20 /1000);
+      //console.log(encodedAudio);
+*/
 
+/*      const audioStream = new stream.Readable({objectMode: true}); 
+
+      console.log(audioStream);
+      audioStream._read = function(){
+        this.push(trimmedAudio);
+        this.push(null);
+      }
+      const doSomething = concat(function(buf){
+        const blob = new Blob([buf.toArrayBuffer()]);
+        console.log(blob);
+      });
+      console.log(encode);
+      //audioStream.pipe(encode());//.pipe(doSomething);
+*/
+/*
+      console.log("start");//only works with 44.1kHz, 32kHz, 24kHz. we have 44kHz
+      audioEncoder(trimmedAudio, 128, function onProgress(){console.log("progress");}, function onComplete(blob){
+        console.log(blob);
+      });
+*/
+      const wav = toWav(trimmedAudio);
+      return wav;
+
+      
     };
 
-    const finish = () => {
+    const finish = async () => {
       for (const regionId of regionIds) {
         console.log(regionId);
-        const oggFileData = trimAudio(wavesurfer.regions.list[regionId]);
+        const wavFileData = trimAudio(wavesurfer.regions.list[regionId]);
+        await Filesystem.writeFile({
+          path: "/" + currentUserUID + "/" + props.folderName + "/" + "export.wav",
+          data: wavFileData,
+          directory: Directory.Data,
+          encoding: Encoding.UTF8 
+        });
       }
+      const readRes = await Filesystem.readFile({
+        path: "/" + currentUserUID + "/" + props.folderName + "/" + "export.wav",
+        directory: Directory.Data,
+        encoding: Encoding.UTF8,
+      });
+      console.log("read", readRes.data);
+      console.log(typeof(readRes.data));
+      /*new AudioContext().decodeAudioData(readRes.data, function(buffer){
+        console.log(buffer);
+      })*/
+/*
+      const context = new AudioContext();
+      const source = context.createBufferSource();
+      source.buffer = readRes.data;
+      source.connect(context.destination);
+      source.start();
+*/
+      wavesurfer.load(readRes.data);
     };
 
     const goBack = () => {
