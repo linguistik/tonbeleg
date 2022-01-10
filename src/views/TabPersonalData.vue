@@ -51,13 +51,15 @@
           <ion-label>
             Dialekt
           </ion-label>
-          <ion-input @ionChange="getItems($event)"></ion-input>
+          <ion-input v-model="dialect"></ion-input>
         </ion-item>
         <!-- <ion-item v-for="dialect in dialects" v-bind:key="dialect" v-bind:value="dialect">{{dialect}}</ion-item> -->
-        <ion-item v-for="[short, item] of items" :key="short">
-          <ion-label>
-            {{item}}
-          </ion-label>
+        <ion-item v-if="dialect!=''">
+          <ion-item v-for="item in getItems(dialect)" :key="item">
+            <ion-label>
+              {{item}}
+            </ion-label>
+          </ion-item>
         </ion-item>
           
 
@@ -271,30 +273,24 @@ export default defineComponent({
     /**
      * const searchbar = document.querySelector('ion-input');
     **/
-    
-    let items = [[""]];
-    let isItemAvailable = false;
 
-    const initializeItems = () => {
-      items = [["S", "Sächsisch"], ["SW", "Schwäbisch"], ["H", "Hessisch"]]
-    }
+    let items = ["Sächsisch", "Schwäbisch", "Hessisch", "Fränkisch", "Bayrisch"];
 
-    const getItems = (event: any) => {
-
-      const val = event.target.value;
+    function getItems(input: string){
+      const val = input;
+      items = ["Sächsisch", "Schwäbisch", "Hessisch", "Fränkisch", "Bayrisch"];
       if(val.trim()!=''){
-        initializeItems();
-        isItemAvailable = true;
         items = items.filter((item) => {
           console.log("Entered Lambda");
-          return (item[1].toLowerCase().indexOf(val.toLowerCase()) > -1);
+          return (item.toLowerCase().indexOf(val.toLowerCase()) > -1);
         })
       } else{
         console.log("Entered else-branch");
-        isItemAvailable = false;
-        items=[[""]]
+        items=[""]
       }
       console.log(items);
+
+      return items;
     }
 
     // function handleInput(event) {
@@ -308,7 +304,7 @@ export default defineComponent({
     // }
 
     return { t, safe, job,firstLanguage,secondLanguage,dialect,zipCode,numberType, shownZipCode, dateType,birthday, updateFirstLanguages, updateSecondLanguages, deleteDialect,
-      initializeItems, getItems, isItemAvailable, items}
+      getItems, items}
   }
 })
 </script>
