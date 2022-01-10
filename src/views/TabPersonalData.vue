@@ -46,8 +46,22 @@
           <MultipleElementsParent text="Erstsprache hinzufügen" @valuesChanged="updateFirstLanguages" ref="lng1" />
 
           <MultipleElementsParent text="Zweitsprache hinzufügen" @valuesChanged="updateSecondLanguages" ref="lng2"/>
-
+        
         <ion-item>
+          <ion-label>
+            Dialekt
+          </ion-label>
+          <ion-input @ionChange="getItems($event)"></ion-input>
+        </ion-item>
+        <!-- <ion-item v-for="dialect in dialects" v-bind:key="dialect" v-bind:value="dialect">{{dialect}}</ion-item> -->
+        <ion-item v-for="[short, item] of items" :key="short">
+          <ion-label>
+            {{item}}
+          </ion-label>
+        </ion-item>
+          
+
+        <!-- <ion-item>
           <ion-label>
             Dialekt
           </ion-label>
@@ -59,7 +73,7 @@
              <ion-input v-model="dialect" ionBlur="safe()"
         ></ion-input>
           </ion-label>
-        </ion-item>
+        </ion-item> -->
 
         <ion-list-header>
           <ion-label>
@@ -93,7 +107,7 @@ import { useI18n } from 'vue-i18n';
 import PageHeader from '@/components/layout/PageHeader.vue';
 import {loadUserSettings, setBirthday, setJob,setFirstLanguage,setSecondLanguage,setDialect,setZipCode, getBirthday,getJob,getFirstLanguage,getSecondLanguage,getDialect,getZipCode} from "@/scripts/UserSettingsStorage";
 import { 
-  IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonListHeader, IonLabel, IonInput,IonButton, IonChip
+  IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonListHeader, IonLabel, IonInput,IonButton
 } from '@ionic/vue';
 
 
@@ -107,7 +121,7 @@ export default defineComponent({
   components: { 
     PageHeader, 
     IonHeader, IonToolbar, IonTitle, IonContent, IonPage, IonList, IonItem, IonListHeader, IonLabel, IonInput, IonButton,
-    MultipleElementsParent,IonChip
+    MultipleElementsParent
   },
   methods: {
     //läd geladene Sprachen und setzt die Einträge, bisschen unübersichtliches spaghetti aber seh keinen andere lösung
@@ -253,7 +267,48 @@ export default defineComponent({
       setDialect('')
     }
 
-    return { t, safe, job,firstLanguage,secondLanguage,dialect,zipCode,numberType, shownZipCode, dateType,birthday, updateFirstLanguages, updateSecondLanguages, deleteDialect }
+    
+    /**
+     * const searchbar = document.querySelector('ion-input');
+    **/
+    
+    let items = [[""]];
+    let isItemAvailable = false;
+
+    const initializeItems = () => {
+      items = [["S", "Sächsisch"], ["SW", "Schwäbisch"], ["H", "Hessisch"]]
+    }
+
+    const getItems = (event: any) => {
+
+      const val = event.target.value;
+      if(val.trim()!=''){
+        initializeItems();
+        isItemAvailable = true;
+        items = items.filter((item) => {
+          console.log("Entered Lambda");
+          return (item[1].toLowerCase().indexOf(val.toLowerCase()) > -1);
+        })
+      } else{
+        console.log("Entered else-branch");
+        isItemAvailable = false;
+        items=[[""]]
+      }
+      console.log(items);
+    }
+
+    // function handleInput(event) {
+    //   const query = event.target.value.toLowerCase();
+    //   requestAnimationFrame(() => {
+    //     items.forEach((item) => {
+    //       const shouldShow = item.textContent.toLowerCase().indexOf(query) > -1;
+    //       item.style.display = shouldShow ? 'block' : 'none';
+    //     });
+    //   });
+    // }
+
+    return { t, safe, job,firstLanguage,secondLanguage,dialect,zipCode,numberType, shownZipCode, dateType,birthday, updateFirstLanguages, updateSecondLanguages, deleteDialect,
+      initializeItems, getItems, isItemAvailable, items}
   }
 })
 </script>
