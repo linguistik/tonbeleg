@@ -55,11 +55,13 @@
         </ion-item>
         <!-- <ion-item v-for="dialect in dialects" v-bind:key="dialect" v-bind:value="dialect">{{dialect}}</ion-item> -->
         <ion-item v-if="dialect!=''">
-          <ion-item v-for="item in getItems(dialect)" :key="item">
-            <ion-label>
-              {{item}}
-            </ion-label>
-          </ion-item>
+          <ion-list>
+            <ion-item v-for="item in getItems(dialect)" :key="item">
+              <ion-label>
+                {{item}}
+              </ion-label>
+            </ion-item>
+          </ion-list>
         </ion-item>
           
 
