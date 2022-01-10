@@ -55,13 +55,15 @@
         </ion-item>
         <!-- <ion-item v-for="dialect in dialects" v-bind:key="dialect" v-bind:value="dialect">{{dialect}}</ion-item> -->
         <ion-item v-if="dialect!=''">
-          <ion-list>
-            <ion-item v-for="item in getItems(dialect)" :key="item">
+          <ion-list v-if="getItems(dialect).length!=0">
+            <ion-item  v-for="item in getItems(dialect)" :key="item" button @click="fillDialect(item)">
               <ion-label>
                 {{item}}
               </ion-label>
             </ion-item>
           </ion-list>
+          <ion-button v-else @click="safeNewDialect()">Dialekt Hinzufügen</ion-button>
+
         </ion-item>
           
 
@@ -276,11 +278,10 @@ export default defineComponent({
      * const searchbar = document.querySelector('ion-input');
     **/
 
-    let items = ["Sächsisch", "Schwäbisch", "Hessisch", "Fränkisch", "Bayrisch"];
-
+    const dialects = ["Sächsisch", "Schwäbisch", "Hessisch", "Fränkisch", "Bayrisch"];
+    let items = dialects
     function getItems(input: string){
       const val = input;
-      items = ["Sächsisch", "Schwäbisch", "Hessisch", "Fränkisch", "Bayrisch"];
       if(val.trim()!=''){
         items = items.filter((item) => {
           console.log("Entered Lambda");
@@ -288,13 +289,23 @@ export default defineComponent({
         })
       } else{
         console.log("Entered else-branch");
-        items=[""]
+        items=['']
       }
       console.log(items);
 
       return items;
     }
+    function fillDialect(item: string){
+       dialect.value=item 
+      }
+    function safeNewDialect(){
+        const db = firebase.firestore();
+        dialects[dialects.length]=dialect.value;
+        db.collection("data").doc("dialects").set({
+          dialects: dialects
+      },{merge: true});
 
+    }
     // function handleInput(event) {
     //   const query = event.target.value.toLowerCase();
     //   requestAnimationFrame(() => {
@@ -306,7 +317,7 @@ export default defineComponent({
     // }
 
     return { t, safe, job,firstLanguage,secondLanguage,dialect,zipCode,numberType, shownZipCode, dateType,birthday, updateFirstLanguages, updateSecondLanguages, deleteDialect,
-      getItems, items}
+      getItems, fillDialect, safeNewDialect, items, dialects}
   }
 })
 </script>
