@@ -51,10 +51,6 @@ export default {
       save,
     }
   },
-  methods: {
-    loadDate(){
-      window.location.reload()
-    }
-  }
+  
 }
 </script>
