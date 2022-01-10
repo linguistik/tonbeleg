@@ -4,7 +4,7 @@
       <ion-router-outlet></ion-router-outlet>
       <ion-tab-bar slot="bottom">
 
-        <ion-tab-button tab="saved" href="/tabs/saved" >
+        <ion-tab-button tab="saved" href="/tabs/saved">
           <ion-icon :icon="save" />
           <ion-label>{{t('general.saved') }}</ion-label>
         </ion-tab-button>
