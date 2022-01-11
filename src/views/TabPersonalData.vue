@@ -155,6 +155,7 @@ export default defineComponent({
     const dateType = ref("date");
 
     let dialects: string[] = [];
+    const languages: string[][]=[];
 
     const loadData = async () => {
       const user = firebase.auth().currentUser;
@@ -231,11 +232,21 @@ export default defineComponent({
       const snapshot = await db.collection("data").doc("dialects").get();
       dialects = snapshot.get("dialects");
     };
+    const loadLanguages = async () => {
+      const db = firebase.firestore();
+      const snapshot = await db.collection("data").doc("languages").get();
+      for(let i=0;i<18;i++){
+        
+        languages[i]=snapshot.get(i.toString())
+      }
+      console.log(languages)
+    };
 
     const initData = async () => {
-
-      await loadData();
       await loadDialects();
+      await loadLanguages();
+      await loadData();
+      
       uploadUserSettings();
     };
     initData();
@@ -307,26 +318,7 @@ export default defineComponent({
       safeNewDialect,
       items,
       dialects,
-      languages:[["en","English"],
-                  ["de","Deutsch"],
-                  ["es","español"],
-                  ["fr","français"],
-                  ["zh","Chinesisch"],
-                  ["hi", "हिन्दी"],
-                  ["bn","বাংলা"],
-                  ["ru","русский"],
-                  ["pt","português"],
-                  ["id","Bahasa Indonesia"],
-                  ["ur","اردو"],
-                  ["ja","日本語"],
-                  ["sw","	Kiswahili"],
-                  ["mr","मराठी"],
-                  ["te","తెలుగు"],
-                  ["tr","Türkçe"],
-                  ["ta","தமிழ்"],
-                  ["ko","한국어"],
-
-        ]
+      languages
     };
   },
 });

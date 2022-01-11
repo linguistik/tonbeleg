@@ -13,7 +13,7 @@
     </ion-col>
     <ion-col>
       <ion-select v-model="input" @ionChange="inputChanged" value="English">
-              <ion-select-option v-for="[short,language] in languages" v-bind:key="short" v-bind:value="short">{{language}}</ion-select-option>
+              <ion-select-option v-for="[short,language] in loadLanguages()" v-bind:key="short" v-bind:value="short">{{language}}</ion-select-option>
       </ion-select>
     </ion-col>
     </ion-row>
@@ -27,7 +27,8 @@ import { defineComponent, ref } from "vue";
 import { IonIcon, IonItem, IonSelect, IonGrid, IonRow, IonCol, IonSelectOption } from "@ionic/vue";
 
 import { removeCircle } from "ionicons/icons";
-
+import firebase from '@/backend/firebase-config';
+import 'firebase/firestore';
 
 export default defineComponent({
   components: {
@@ -47,6 +48,16 @@ export default defineComponent({
 
 
   setup(props: any, context: any) {
+    async function loadLanguages() {
+      const languages: string[][]=[];
+      const db = firebase.firestore();
+      const snapshot = await db.collection("data").doc("languages").get();
+      for(let i=0;i<18;i++){
+        languages[i]=snapshot.get(i.toString())
+      }
+      console.log(languages[0])
+      return languages;
+    }
     const input = ref();
     const removeFromParent = () => {
       context.emit("remove", props.id);
@@ -54,7 +65,7 @@ export default defineComponent({
     const inputChanged = () => {
       context.emit("change", input.value, props.id);
     };
-
+    
 
 
     const initName = (name: string, index: number) => {
@@ -64,26 +75,7 @@ export default defineComponent({
 
     };
     return { removeCircle, removeFromParent, inputChanged, input, initName, 
-        languages:[["en","English"],
-                  ["de","Deutsch"],
-                  ["es","español"],
-                  ["fr","français"],
-                  ["zh","Chinesisch"],
-                  ["hi", "हिन्दी"],
-                  ["bn","বাংলা"],
-                  ["ru","русский"],
-                  ["pt","português"],
-                  ["id","Bahasa Indonesia"],
-                  ["ur","اردو"],
-                  ["ja","日本語"],
-                  ["sw","	Kiswahili"],
-                  ["mr","मराठी"],
-                  ["te","తెలుగు"],
-                  ["tr","Türkçe"],
-                  ["ta","தமிழ்"],
-                  ["ko","한국어"],
-
-        ]
+        loadLanguages
     };
   },
 });
