@@ -46,7 +46,7 @@
 
         <ion-item>
           <ion-label> Dialekt </ion-label>
-          <ion-input v-model="dialect"></ion-input>
+          <ion-input v-model="dialect" @ionBlur="safe()"></ion-input>
         </ion-item>
         <!-- <ion-item v-for="dialect in dialects" v-bind:key="dialect" v-bind:value="dialect">{{dialect}}</ion-item> -->
         <ion-item v-if="dialect != '' && getItems(dialect)[0] != dialect">
@@ -66,20 +66,6 @@
             >Dialekt Hinzufügen</ion-button
           >
         </ion-item>
-
-        <!-- <ion-item>
-          <ion-label>
-            Dialekt
-          </ion-label>
-          <ion-chip v-if="dialect!=''" color="dark">
-            <ion-label>{{dialect}}</ion-label>
-            <ion-icon name="close-circle" @click="deleteDialect"></ion-icon>
-          </ion-chip>
-          <ion-label v-if="dialect==''">
-             <ion-input v-model="dialect" ionBlur="safe()"
-        ></ion-input>
-          </ion-label>
-        </ion-item> -->
 
         <ion-list-header>
           <ion-label> Wohnorte </ion-label>
@@ -205,7 +191,7 @@ export default defineComponent({
     const numberType = ref("number");
     const dateType = ref("date");
 
-    const dialects: string[] = [];
+    let dialects: string[] = [];
 
     const loadData = async () => {
       const user = firebase.auth().currentUser;
@@ -279,7 +265,7 @@ export default defineComponent({
     const loadDialects = async () => {
       const db = firebase.firestore();
       const snapshot = await db.collection("data").doc("dialects").get();
-      console.log("Snapshot" + snapshot);
+      dialects = snapshot.get("dialects");
     };
 
     const initData = async () => {
@@ -312,14 +298,12 @@ export default defineComponent({
     let items = dialects;
     function getItems(input: string) {
       const val = input;
-      items = ["Sächsisch", "Schwäbisch", "Hessisch", "Fränkisch", "Bayrisch"];
+      items = dialects;
       if (val.trim() != "") {
         items = items.filter((item) => {
-          console.log("Entered Lambda");
           return item.toLowerCase().indexOf(val.toLowerCase()) > -1;
         });
       } else {
-        console.log("Entered else-branch");
         items = [""];
       }
       console.log(items);
@@ -339,16 +323,6 @@ export default defineComponent({
         { merge: true }
       );
     }
-
-    // function handleInput(event) {
-    //   const query = event.target.value.toLowerCase();
-    //   requestAnimationFrame(() => {
-    //     items.forEach((item) => {
-    //       const shouldShow = item.textContent.toLowerCase().indexOf(query) > -1;
-    //       item.style.display = shouldShow ? 'block' : 'none';
-    //     });
-    //   });
-    // }
 
     return {
       t,
