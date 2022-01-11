@@ -2,70 +2,70 @@
   <ion-page>
     <PageHeader v-bind:title="t('general.appname')" />
 
-
     <ion-content :fullscreen="true">
-      
       <ion-header collapse="condense">
         <ion-toolbar>
           <ion-title size="large">Persönliche Daten</ion-title>
         </ion-toolbar>
       </ion-header>
-    
+
       <ion-list lines="full">
-
         <ion-list-header>
-          <ion-label>
-            Persönliche Daten
-          </ion-label>
+          <ion-label> Persönliche Daten </ion-label>
         </ion-list-header>
 
         <ion-item>
-          <ion-label>
-            Geburtstag
-          </ion-label>
-        <ion-input
-        v-model:type="dateType"
-        v-model="birthday" @ionBlur="safe()"
-        ></ion-input>
+          <ion-label> Geburtstag </ion-label>
+          <ion-input
+            v-model:type="dateType"
+            v-model="birthday"
+            @ionBlur="safe()"
+          ></ion-input>
         </ion-item>
 
         <ion-item>
-          <ion-label>
-            Beruf
-          </ion-label>
-        <ion-input v-model="job" @ionBlur="safe()"
-        ></ion-input>
+          <ion-label> Beruf </ion-label>
+          <ion-input v-model="job" @ionBlur="safe()"></ion-input>
         </ion-item>
 
         <ion-list-header>
-          <ion-label>
-            Sprachen
-          </ion-label>
+          <ion-label> Sprachen </ion-label>
         </ion-list-header>
 
-          <MultipleElementsParent text="Erstsprache hinzufügen" @valuesChanged="updateFirstLanguages" ref="lng1" />
+        <MultipleElementsParent
+          text="Erstsprache hinzufügen"
+          @valuesChanged="updateFirstLanguages"
+          ref="lng1"
+        />
 
-          <MultipleElementsParent text="Zweitsprache hinzufügen" @valuesChanged="updateSecondLanguages" ref="lng2"/>
-        
+        <MultipleElementsParent
+          text="Zweitsprache hinzufügen"
+          @valuesChanged="updateSecondLanguages"
+          ref="lng2"
+        />
+
         <ion-item>
-          <ion-label>
-            Dialekt
-          </ion-label>
+          <ion-label> Dialekt </ion-label>
           <ion-input v-model="dialect"></ion-input>
         </ion-item>
         <!-- <ion-item v-for="dialect in dialects" v-bind:key="dialect" v-bind:value="dialect">{{dialect}}</ion-item> -->
-        <ion-item v-if="dialect!=''">
-          <ion-list v-if="getItems(dialect).length!=0">
-            <ion-item  v-for="item in getItems(dialect)" :key="item" button @click="fillDialect(item)">
+        <ion-item v-if="dialect != '' && getItems(dialect)[0] != dialect">
+          <ion-list v-if="getItems(dialect).length != 0">
+            <ion-item
+              v-for="item in getItems(dialect)"
+              :key="item"
+              button
+              @click="fillDialect(item)"
+            >
               <ion-label>
-                {{item}}
+                {{ item }}
               </ion-label>
             </ion-item>
           </ion-list>
-          <ion-button v-else @click="safeNewDialect()">Dialekt Hinzufügen</ion-button>
-
+          <ion-button v-else @click="safeNewDialect()"
+            >Dialekt Hinzufügen</ion-button
+          >
         </ion-item>
-          
 
         <!-- <ion-item>
           <ion-label>
@@ -82,18 +82,17 @@
         </ion-item> -->
 
         <ion-list-header>
-          <ion-label>
-            Wohnorte
-          </ion-label>
+          <ion-label> Wohnorte </ion-label>
         </ion-list-header>
 
         <ion-item>
-          <ion-label>
-            Postleitzahl
-          </ion-label>
-        <ion-input v-model="shownZipCode"
-            v-model:type="numberType" @ionBlur="safe()">
-        </ion-input>
+          <ion-label> Postleitzahl </ion-label>
+          <ion-input
+            v-model="shownZipCode"
+            v-model:type="numberType"
+            @ionBlur="safe()"
+          >
+          </ion-input>
         </ion-item>
 
         <ion-item>
@@ -102,57 +101,90 @@
         <ion-button @click="triggerChildMethod()">test</ion-button>
       </ion-list>
     </ion-content>
-
   </ion-page>
 </template>
 
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
-import { useI18n } from 'vue-i18n';
-import PageHeader from '@/components/layout/PageHeader.vue';
-import {loadUserSettings, setBirthday, setJob,setFirstLanguage,setSecondLanguage,setDialect,setZipCode, getBirthday,getJob,getFirstLanguage,getSecondLanguage,getDialect,getZipCode} from "@/scripts/UserSettingsStorage";
-import { 
-  IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonListHeader, IonLabel, IonInput,IonButton
-} from '@ionic/vue';
+import { defineComponent, ref } from "vue";
+import { useI18n } from "vue-i18n";
+import PageHeader from "@/components/layout/PageHeader.vue";
+import {
+  loadUserSettings,
+  setBirthday,
+  setJob,
+  setFirstLanguage,
+  setSecondLanguage,
+  setDialect,
+  setZipCode,
+  getBirthday,
+  getJob,
+  getFirstLanguage,
+  getSecondLanguage,
+  getDialect,
+  getZipCode,
+} from "@/scripts/UserSettingsStorage";
+import {
+  IonPage,
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonContent,
+  IonList,
+  IonItem,
+  IonListHeader,
+  IonLabel,
+  IonInput,
+  IonButton,
+} from "@ionic/vue";
 
+import firebase from "@/backend/firebase-config";
 
-import firebase from '@/backend/firebase-config';
-
-import 'firebase/firestore';
-import MultipleElementsParent from '@/components/dynamicElement/MultipleElementsParent.vue';
+import "firebase/firestore";
+import MultipleElementsParent from "@/components/dynamicElement/MultipleElementsParent.vue";
 
 export default defineComponent({
-
-  components: { 
-    PageHeader, 
-    IonHeader, IonToolbar, IonTitle, IonContent, IonPage, IonList, IonItem, IonListHeader, IonLabel, IonInput, IonButton,
-    MultipleElementsParent
+  components: {
+    PageHeader,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonContent,
+    IonPage,
+    IonList,
+    IonItem,
+    IonListHeader,
+    IonLabel,
+    IonInput,
+    IonButton,
+    MultipleElementsParent,
   },
   methods: {
     //läd geladene Sprachen und setzt die Einträge, bisschen unübersichtliches spaghetti aber seh keinen andere lösung
     async setupLanguages() {
       await loadUserSettings(); //läd user settinmg
       await this.$refs.lng1.onInit(getFirstLanguage()); //erstellt kinder erstSprache
-      this.$refs.lng1.itemRefs.forEach((entrys: any, index: number) =>{ //füllt bei kinder die geladenen namen ein
-        entrys.initName(getFirstLanguage()[index],index);
-      })
+      this.$refs.lng1.itemRefs.forEach((entrys: any, index: number) => {
+        //füllt bei kinder die geladenen namen ein
+        entrys.initName(getFirstLanguage()[index], index);
+      });
 
       await this.$refs.lng2.onInit(getSecondLanguage()); //erstellt kinder zweite Sprache
-      this.$refs.lng2.itemRefs.forEach((entrys: any, index: number) =>{ //füllt bei kinder die geladenen namen ein
-        entrys.initName(getSecondLanguage()[index],index);
-      })
-    }
+      this.$refs.lng2.itemRefs.forEach((entrys: any, index: number) => {
+        //füllt bei kinder die geladenen namen ein
+        entrys.initName(getSecondLanguage()[index], index);
+      });
+    },
   },
 
-  mounted() {//kinder erst nach setup laden
+  mounted() {
+    //kinder erst nach setup laden
 
     this.setupLanguages();
-
   },
-//TODO upload data
+  //TODO upload data
 
-  setup(props: any, context: any){
+  setup(props: any, context: any) {
     // multi-lingual support
     const { t } = useI18n();
 
@@ -161,151 +193,153 @@ export default defineComponent({
     const UserUID = currentUser.uid;
     console.log(currentUser.uid);
 
+    const birthday = ref("");
+    const job = ref("");
+    const firstLanguage = ref([""]);
+    const secondLanguage = ref([""]);
+    const dialect = ref("");
+    const zipCode = ref(-1);
 
-    const birthday = ref('');
-    const job=ref('');
-    const firstLanguage =ref(['']);
-    const secondLanguage=ref(['']);
-    const dialect=ref('');
-    const zipCode=ref(-1);
+    const shownZipCode = ref("");
 
-    const shownZipCode=ref("");
+    const numberType = ref("number");
+    const dateType = ref("date");
 
-    const numberType = ref('number');
-    const dateType = ref('date');
+    const dialects: string[] = [];
 
-    const loadData = async () =>{
-
+    const loadData = async () => {
       const user = firebase.auth().currentUser;
       if (user == null) return;
       await loadUserSettings();
-      birthday.value=getBirthday();
+      birthday.value = getBirthday();
 
-      job.value=getJob();
-      firstLanguage.value=getFirstLanguage();
-      secondLanguage.value=getSecondLanguage();
-      dialect.value=getDialect();
-      zipCode.value=getZipCode();
-      if(zipCode.value<0){
-        shownZipCode.value="";
-      }else{
-        shownZipCode.value=zipCode.value.toString();
+      job.value = getJob();
+      firstLanguage.value = getFirstLanguage();
+      secondLanguage.value = getSecondLanguage();
+      dialect.value = getDialect();
+      zipCode.value = getZipCode();
+      if (zipCode.value < 0) {
+        shownZipCode.value = "";
+      } else {
+        shownZipCode.value = zipCode.value.toString();
       }
       //const store = firebase.firestore();
       //const ref = firebase.database();
       //console.log(ref);
-    }
+    };
 
-
-
-
-
-    const uploadUserSettings = ()=>{
-
+    const uploadUserSettings = () => {
       const db = firebase.firestore();
       const currentUser = firebase.auth().currentUser;
       if (currentUser == null) return;
       const userUID = currentUser.uid;
 
-
       console.log("Start uploading");
 
-
-      db.collection("users").doc(userUID).set({
-        birthday: birthday.value,
-        job: job.value,
-        firstLanguage:firstLanguage.value,
-        secondLanguage:secondLanguage.value,
-        dialect:dialect.value,
-        zipCode:zipCode.value
-      },{merge: true});
+      db.collection("users").doc(userUID).set(
+        {
+          birthday: birthday.value,
+          job: job.value,
+          firstLanguage: firstLanguage.value,
+          secondLanguage: secondLanguage.value,
+          dialect: dialect.value,
+          zipCode: zipCode.value,
+        },
+        { merge: true }
+      );
       console.log("wrote to database");
-    }
+    };
 
-    const safe = ()=>{
-      console.log(birthday.value)
+    const safe = () => {
+      console.log(birthday.value);
       const user = firebase.auth().currentUser;
       if (currentUser == null) return;
 
-      if(isNaN(parseInt(shownZipCode.value)) || parseInt(shownZipCode.value)<0) {//zip code legaler wert?
-        if(zipCode.value<0)
-          shownZipCode.value="";
-        else
-          shownZipCode.value=zipCode.value.toString() //reset des alten wertes außer -1 da ungültiger wert
-        console.log("ungültiger zipcode")
-      }
-     else{
+      if (
+        isNaN(parseInt(shownZipCode.value)) ||
+        parseInt(shownZipCode.value) < 0
+      ) {
+        //zip code legaler wert?
+        if (zipCode.value < 0) shownZipCode.value = "";
+        else shownZipCode.value = zipCode.value.toString(); //reset des alten wertes außer -1 da ungültiger wert
+        console.log("ungültiger zipcode");
+      } else {
         setZipCode(parseInt(shownZipCode.value));
-        zipCode.value=parseInt(shownZipCode.value);
+        zipCode.value = parseInt(shownZipCode.value);
       }
 
-      setBirthday(birthday.value)
+      setBirthday(birthday.value);
       setJob(job.value);
       setFirstLanguage(firstLanguage.value); //redundant wird eigentlich automatisch gemacht aber zu testzwecken noch hier
       setSecondLanguage(secondLanguage.value);
       setDialect(dialect.value);
       uploadUserSettings();
+    };
 
-    }
+    const loadDialects = async () => {
+      const db = firebase.firestore();
+      const snapshot = await db.collection("data").doc("dialects").get();
+      console.log("Snapshot" + snapshot);
+    };
 
-
-    const initData = async () =>{
-
+    const initData = async () => {
       await loadData();
+      await loadDialects();
       uploadUserSettings();
-
-    }
+    };
     initData();
 
-    const updateFirstLanguages = (languages: string[])=>{
+    const updateFirstLanguages = (languages: string[]) => {
       console.log(languages);
-      firstLanguage.value=languages;
-      setFirstLanguage(languages)
-    }
+      firstLanguage.value = languages;
+      setFirstLanguage(languages);
+    };
 
-    const updateSecondLanguages = (languages: string[])=>{
+    const updateSecondLanguages = (languages: string[]) => {
       console.log(languages);
-      secondLanguage.value=languages;
+      secondLanguage.value = languages;
       setSecondLanguage(languages);
-    }
-    const deleteDialect =()=>{
-      console.log(dialect.value)
-      setDialect('')
-    }
+    };
+    const deleteDialect = () => {
+      console.log(dialect.value);
+      setDialect("");
+    };
 
-    
     /**
      * const searchbar = document.querySelector('ion-input');
-    **/
+     **/
 
-    const dialects = ["Sächsisch", "Schwäbisch", "Hessisch", "Fränkisch", "Bayrisch"];
-    let items = dialects
-    function getItems(input: string){
+    let items = dialects;
+    function getItems(input: string) {
       const val = input;
-      if(val.trim()!=''){
+      items = ["Sächsisch", "Schwäbisch", "Hessisch", "Fränkisch", "Bayrisch"];
+      if (val.trim() != "") {
         items = items.filter((item) => {
           console.log("Entered Lambda");
-          return (item.toLowerCase().indexOf(val.toLowerCase()) > -1);
-        })
-      } else{
+          return item.toLowerCase().indexOf(val.toLowerCase()) > -1;
+        });
+      } else {
         console.log("Entered else-branch");
-        items=['']
+        items = [""];
       }
       console.log(items);
 
       return items;
     }
-    function fillDialect(item: string){
-       dialect.value=item 
-      }
-    function safeNewDialect(){
-        const db = firebase.firestore();
-        dialects[dialects.length]=dialect.value;
-        db.collection("data").doc("dialects").set({
-          dialects: dialects
-      },{merge: true});
-
+    function fillDialect(item: string) {
+      dialect.value = item;
     }
+    function safeNewDialect() {
+      const db = firebase.firestore();
+      dialects[dialects.length] = dialect.value;
+      db.collection("data").doc("dialects").set(
+        {
+          dialects: dialects,
+        },
+        { merge: true }
+      );
+    }
+
     // function handleInput(event) {
     //   const query = event.target.value.toLowerCase();
     //   requestAnimationFrame(() => {
@@ -316,8 +350,27 @@ export default defineComponent({
     //   });
     // }
 
-    return { t, safe, job,firstLanguage,secondLanguage,dialect,zipCode,numberType, shownZipCode, dateType,birthday, updateFirstLanguages, updateSecondLanguages, deleteDialect,
-      getItems, fillDialect, safeNewDialect, items, dialects}
-  }
-})
+    return {
+      t,
+      safe,
+      job,
+      firstLanguage,
+      secondLanguage,
+      dialect,
+      zipCode,
+      numberType,
+      shownZipCode,
+      dateType,
+      birthday,
+      updateFirstLanguages,
+      updateSecondLanguages,
+      deleteDialect,
+      getItems,
+      fillDialect,
+      safeNewDialect,
+      items,
+      dialects,
+    };
+  },
+});
 </script>
