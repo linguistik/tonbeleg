@@ -10,10 +10,12 @@
       {{ recording.parts.length }}
     </ion-card-content>
     <ion-item>
+    
       <ion-icon
         Left-icon
         :icon="playing ? pause : play"
         @click="playRec()"
+        v-if="provideFunctionality"
       ></ion-icon>
       <ion-icon
         :color="
@@ -21,16 +23,20 @@
         "
         :icon="arrowUp"
         @click="upload()"
+        v-if="provideFunctionality"
       ></ion-icon>
-      <ion-icon :icon="trash" @click="deleteRecording()"></ion-icon>
-      <ion-icon :icon="pencil" @click="rename()"></ion-icon>
-      <ion-icon :icon="cut" @click="edit()"></ion-icon>
-      <ion-icon :icon="help" @click="changeLicense()"></ion-icon>
+      <ion-icon :icon="trash" @click="deleteRecording()" v-if="provideFunctionality"></ion-icon>
+      <ion-icon :icon="pencil" @click="rename()" v-if="provideFunctionality"></ion-icon>
+      <ion-icon :icon="cut" @click="edit()" v-if="provideFunctionality"></ion-icon>
+      <ion-icon :icon="help" @click="changeLicense()" v-if="provideFunctionality"></ion-icon>
+
+
       <ion-icon
         :icon="chevronUpOutline"
         @click="toggleOpen()"
         slot="end"
       ></ion-icon>
+
     </ion-item>
   </ion-card>
 
@@ -69,26 +75,14 @@ import {
 } from "@ionic/vue";
 
 import router from "@/router";
-import { Directory, Encoding, Filesystem } from "@capacitor/filesystem";
 import firebase from "@/backend/firebase-config";
 import { replayAudioData, audioDaten } from "@/scripts/ReplayData";
-import RecordingData from "@/scripts/RecordingData";
-import {
-  RecordingUploadArray,
-  //addToUploadArray,
-  UploadToFirebase,
-  //deleteFromUploadArray,
-} from "@/scripts/RecordingUpload";
 import {
   getRecordingEntryUploadBoolean,
   removeRecordingEntry,
   setRecordingEntryName,
-  setRecordingEntryUploadBoolean,
   setSelectedForUpload,
-  getSelectedForUpload,
-  loadRecordings,
 } from "@/scripts/RecordingStorage";
-import { loadUserSettings } from "@/scripts/UserSettingsStorage";
 
 export default {
   name: "Recording",
@@ -101,7 +95,7 @@ export default {
     IonCardTitle,
   },
 
-  methods: {
+   /*methods: {
     async setEverything() {
       await loadUserSettings();
       await loadRecordings();
@@ -109,10 +103,15 @@ export default {
   },
   mounted() {
     this.setEverything();
-  },
+  },*/
 
   props: {
-    recording: RecordingData,
+    recording: Object,
+    provideFunctionality:{//pass false to disable interative elements. default is true
+      type: Boolean,
+      required: false,
+      default: true
+    }
   },
   //methods & mounted glaube doch nicht
 
@@ -122,9 +121,8 @@ export default {
 
     const currentUser = firebase.auth().currentUser;
     if (currentUser == null) return;
-    const UserUID = currentUser.uid;
-    const alreadyUploaded = ref(props.recording.upload);
 
+    const alreadyUploaded = ref(props.recording.upload);
     let audioString = new Audio();
 
     const isOpen = ref(false);
@@ -287,7 +285,7 @@ export default {
       await alert.present();
     }; //method rename
 
-    const deleteRecording = async (folder: string) => {
+    const deleteRecording = async () => {
       //TODO delete entry in outsourced
       const alert = await alertController.create({
         message: "Do you really want to delete this file?",

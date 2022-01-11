@@ -8,8 +8,9 @@ export default class RecordingData{
     selectedForUpload: boolean;
     license: string;
     userID: string;
+    languages: string[];
 
-    constructor(timestamp: number, name: string, parts: string[], length: number, upload: boolean, selectedForUpload: boolean, license: string, userID: string){
+    constructor(timestamp: number, name: string, parts: string[], length: number, upload: boolean, selectedForUpload: boolean, license: string, userID: string, languages: string[]){
         this.timestamp = timestamp;
         this.name = name;
         this.parts = parts;
@@ -18,5 +19,6 @@ export default class RecordingData{
         this.selectedForUpload = selectedForUpload;
         this.license = license;
         this.userID = userID;
+        this.languages = languages;
     }
 }

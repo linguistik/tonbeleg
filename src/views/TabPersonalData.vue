@@ -32,17 +32,17 @@
           <ion-label> Sprachen </ion-label>
         </ion-list-header>
 
-        <MultipleElementsParent
-          text="Erstsprache hinzufügen"
-          @valuesChanged="updateFirstLanguages"
-          ref="lng1"
-        />
+        <ion-item>
+          <ion-label>
+            Erstsprache wählen
+          </ion-label>
+           <ion-select v-model="firstLanguage" @ionChange="safe()">
+              <ion-select-option v-for="[short,language] in languages" v-bind:key="short" v-bind:value="short">{{language}}</ion-select-option>
+            </ion-select>
+        </ion-item>
 
-        <MultipleElementsParent
-          text="Zweitsprache hinzufügen"
-          @valuesChanged="updateSecondLanguages"
-          ref="lng2"
-        />
+          <MultipleElementsParent text="Zweitsprache hinzufügen" @valuesChanged="updateSecondLanguages" ref="lng2"/>
+
 
         <ion-item>
           <ion-label> Dialekt </ion-label>
@@ -83,7 +83,6 @@
         <ion-item>
           <ion-button @click="safe()">Speichern</ion-button>
         </ion-item>
-        <ion-button @click="triggerChildMethod()">test</ion-button>
       </ion-list>
     </ion-content>
   </ion-page>
@@ -91,75 +90,43 @@
 
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
-import { useI18n } from "vue-i18n";
-import PageHeader from "@/components/layout/PageHeader.vue";
-import {
-  loadUserSettings,
-  setBirthday,
-  setJob,
-  setFirstLanguage,
-  setSecondLanguage,
-  setDialect,
-  setZipCode,
-  getBirthday,
-  getJob,
-  getFirstLanguage,
-  getSecondLanguage,
-  getDialect,
-  getZipCode,
-} from "@/scripts/UserSettingsStorage";
-import {
-  IonPage,
-  IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonContent,
-  IonList,
-  IonItem,
-  IonListHeader,
-  IonLabel,
-  IonInput,
-  IonButton,
-} from "@ionic/vue";
 
-import firebase from "@/backend/firebase-config";
+import { defineComponent, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+import PageHeader from '@/components/layout/PageHeader.vue';
+import {loadUserSettings, setBirthday, setJob,setFirstLanguage,setSecondLanguage,setDialect,setZipCode, getBirthday,getJob,getFirstLanguage,getSecondLanguage,getDialect,getZipCode} from "@/scripts/UserSettingsStorage";
+import { 
+  IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonListHeader, IonLabel, IonInput,IonButton, IonSelect, IonSelectOption,
+} from '@ionic/vue';
 
-import "firebase/firestore";
-import MultipleElementsParent from "@/components/dynamicElement/MultipleElementsParent.vue";
+
+import firebase from '@/backend/firebase-config';
+
+import 'firebase/firestore';
+import MultipleElementsParent from '@/components/dynamicElement/MultipleElementsParent.vue';
 
 export default defineComponent({
-  components: {
-    PageHeader,
-    IonHeader,
-    IonToolbar,
-    IonTitle,
-    IonContent,
-    IonPage,
-    IonList,
-    IonItem,
-    IonListHeader,
-    IonLabel,
-    IonInput,
-    IonButton,
-    MultipleElementsParent,
+
+  components: { 
+    PageHeader, 
+    IonHeader, IonToolbar, IonTitle, IonContent, IonPage, IonList, IonItem, IonListHeader, IonLabel, IonInput, IonButton, IonSelect,IonSelectOption,    MultipleElementsParent
   },
   methods: {
     //läd geladene Sprachen und setzt die Einträge, bisschen unübersichtliches spaghetti aber seh keinen andere lösung
     async setupLanguages() {
       await loadUserSettings(); //läd user settinmg
-      await this.$refs.lng1.onInit(getFirstLanguage()); //erstellt kinder erstSprache
-      this.$refs.lng1.itemRefs.forEach((entrys: any, index: number) => {
-        //füllt bei kinder die geladenen namen ein
-        entrys.initName(getFirstLanguage()[index], index);
-      });
+
+      //await this.$refs.lng1.onInit(getFirstLanguage()); //erstellt kinder erstSprache
+      //this.$refs.lng1.itemRefs.forEach((entrys: any, index: number) =>{ //füllt bei kinder die geladenen namen ein
+       // entrys.initName(getFirstLanguage()[index],index);
+      //})
 
       await this.$refs.lng2.onInit(getSecondLanguage()); //erstellt kinder zweite Sprache
-      this.$refs.lng2.itemRefs.forEach((entrys: any, index: number) => {
-        //füllt bei kinder die geladenen namen ein
-        entrys.initName(getSecondLanguage()[index], index);
-      });
-    },
+      this.$refs.lng2.itemRefs.forEach((entrys: any, index: number) =>{ //füllt bei kinder die geladenen namen ein
+        entrys.initName(getSecondLanguage()[index],index);
+        console.log(index)
+      })
+    }
   },
 
   mounted() {
@@ -174,9 +141,6 @@ export default defineComponent({
     const { t } = useI18n();
 
     const currentUser = firebase.auth().currentUser;
-    if (currentUser == null) return;
-    const UserUID = currentUser.uid;
-    console.log(currentUser.uid);
 
     const birthday = ref("");
     const job = ref("");
@@ -235,9 +199,10 @@ export default defineComponent({
       console.log("wrote to database");
     };
 
-    const safe = () => {
-      console.log(birthday.value);
-      const user = firebase.auth().currentUser;
+    const safe = ()=>{
+      console.log(birthday.value)
+      console.log(firstLanguage.value)
+
       if (currentUser == null) return;
 
       if (
@@ -268,6 +233,7 @@ export default defineComponent({
     };
 
     const initData = async () => {
+
       await loadData();
       await loadDialects();
       uploadUserSettings();
@@ -341,7 +307,28 @@ export default defineComponent({
       safeNewDialect,
       items,
       dialects,
+      languages:[["en","English"],
+                  ["de","Deutsch"],
+                  ["es","español"],
+                  ["fr","français"],
+                  ["zh","Chinesisch"],
+                  ["hi", "हिन्दी"],
+                  ["bn","বাংলা"],
+                  ["ru","русский"],
+                  ["pt","português"],
+                  ["id","Bahasa Indonesia"],
+                  ["ur","اردو"],
+                  ["ja","日本語"],
+                  ["sw","	Kiswahili"],
+                  ["mr","मराठी"],
+                  ["te","తెలుగు"],
+                  ["tr","Türkçe"],
+                  ["ta","தமிழ்"],
+                  ["ko","한국어"],
+
+        ]
     };
   },
 });
+
 </script>

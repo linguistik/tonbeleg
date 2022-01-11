@@ -10,6 +10,7 @@
       color="success"
     ></ion-icon>
   </ion-item>
+
   <MultipleElementsChild
 
       v-for="item in children"
