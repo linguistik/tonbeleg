@@ -48,11 +48,10 @@
           <ion-label> Dialekt </ion-label>
           <ion-input v-model="dialect" @ionBlur="safe()"></ion-input>
         </ion-item>
-        <!-- <ion-item v-for="dialect in dialects" v-bind:key="dialect" v-bind:value="dialect">{{dialect}}</ion-item> -->
-        <ion-item v-if="dialect != '' && getItems(dialect)[0] != dialect">
-          <ion-list v-if="getItems(dialect).length != 0">
+        <ion-item v-if="dialect != '' && getFiveItems(dialect)[0] != dialect">
+          <ion-list v-if="getFiveItems(dialect).length != 0">
             <ion-item
-              v-for="item in getItems(dialect)"
+              v-for="item in getFiveItems(dialect)"
               :key="item"
               button
               @click="fillDialect(item)"
@@ -286,17 +285,9 @@ export default defineComponent({
       secondLanguage.value = languages;
       setSecondLanguage(languages);
     };
-    const deleteDialect = () => {
-      console.log(dialect.value);
-      setDialect("");
-    };
-
-    /**
-     * const searchbar = document.querySelector('ion-input');
-     **/
 
     let items = dialects;
-    function getItems(input: string) {
+    function getFiveItems(input: string) {
       const val = input;
       items = dialects;
       if (val.trim() != "") {
@@ -306,9 +297,16 @@ export default defineComponent({
       } else {
         items = [""];
       }
-      console.log(items);
-
-      return items;
+      let retItems: string[]=[];
+      if (items.length>5){
+        for(let i=0; i<5;i++){
+          retItems[i]=items[i]
+        } 
+      }
+      else{
+        retItems=items
+      }
+      return retItems;
     }
     function fillDialect(item: string) {
       dialect.value = item;
@@ -338,8 +336,7 @@ export default defineComponent({
       birthday,
       updateFirstLanguages,
       updateSecondLanguages,
-      deleteDialect,
-      getItems,
+      getFiveItems,
       fillDialect,
       safeNewDialect,
       items,
