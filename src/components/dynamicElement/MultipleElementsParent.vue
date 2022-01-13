@@ -43,8 +43,7 @@ export default defineComponent({
     text: String,
   },
 
-//ermöglicht auf alle kindelemente mit itemRefs[] zuzugreifen
-
+//allows to call all child elements with itemRefs[]
   data() {
     return {
       itemRefs: []
@@ -66,7 +65,7 @@ export default defineComponent({
   updated() {
     console.log(this.itemRefs)
   },
-// bis hier
+
 
 
   setup(props: any, context: any) {
@@ -112,7 +111,10 @@ export default defineComponent({
         emitChange();
     }
 
-
+    /**
+     * sets inital saved entrys for all child elements
+     * @param languages, saved languages
+     */
      const onInit  = async(languages: string[]) => {
       languages.forEach((value, index)=>{
         addChildElement();

@@ -7,7 +7,9 @@ import router from "@/router";
 
 export let userSettings: UserSettings = new UserSettings("","",[],[],"",-1, "", false);
 
-
+/**
+ * saves user settings local in usersettings.json
+ */
 export async function safeUserSettings() {//call this function on closing or on every change
     const dataString = JSON.stringify(userSettings);
     const currentUser = firebase.auth().currentUser;
@@ -30,6 +32,10 @@ export async function safeUserSettings() {//call this function on closing or on 
     console.log("wrote data");
 }
 
+/**
+ * loads all user settings from usersettings.json
+ * if file doesnt exist do nothing here
+ */
 export async function loadUserSettings() {
     const currentUser = firebase.auth().currentUser;
     if (currentUser == null) {
@@ -53,12 +59,10 @@ export async function loadUserSettings() {
     console.log(userSettings);
     //document.addEventListener('beforeunload', safeRecordings);//does not work
 }
-/*
-export function getUserSettings(): UserSettings {
-    return userSettings;
-}
-*/
 
+/**
+ * deletes all user setting by deleting the usersettings.json file
+ */
 export async function deleteUserSettings() {
     const currentUser = firebase.auth().currentUser;
     if (currentUser == null) {

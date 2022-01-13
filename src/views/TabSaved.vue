@@ -100,7 +100,9 @@ export default defineComponent({
       updateKey.value += 1;
 
     }
-
+    /**
+     * refreshes complete tab
+     */
     const refresh = async () => {
       recordingsRef.value = getRecordings(); 
       forceUpdate();
