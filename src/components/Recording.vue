@@ -271,7 +271,7 @@ export default {
             handler: (data) => {
               const x = data.textField;
               console.log(x);
-              if(x!="" || x.length<=35){ //nur kleine und nicht leere eingaben
+              if(!(x.length === 0) && x.length<=35){ //nur kleine und nicht leere eingaben
                 actualRename(x);
               }
               else{
