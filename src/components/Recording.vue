@@ -135,6 +135,7 @@ export default {
       isOpen.value = !isOpen.value;
     };
 
+
     const getRecordingDate = () => {
       const date = new Date(parseInt(props.recording.timestamp));
       let day = date.getDate().toString();
@@ -227,18 +228,25 @@ export default {
         playing.value = !playing.value;
       }
     };
-
+    /**
+     * actual delete of the entry
+     */
     const actualDelete = async () => {
       removeRecordingEntry(props.recording);
       context.emit("refreshEmit");
     }; //method: deleteFolder
-
+    /**
+     * actual rename of the entry
+     * @param name, new name for the entry
+     */
     const actualRename = (name: string) => {
       //props.recording is just a copy of the real object
       setRecordingEntryName(props.recording.timestamp, name);
       context.emit("refreshEmit");
     }; //method: actualRename
-
+    /**
+     * opens rename message box for entry
+     */
     const rename = async () => {
       //TODO
       const alert = await alertController.create({
@@ -284,7 +292,9 @@ export default {
       }); //create alert
       await alert.present();
     }; //method rename
-
+    /**
+     * opens message box to confirm delete of the entry
+     */
     const deleteRecording = async () => {
       //TODO delete entry in outsourced
       const alert = await alertController.create({
