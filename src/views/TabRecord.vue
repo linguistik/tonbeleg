@@ -380,12 +380,14 @@ export default defineComponent({
     }; //method: stopRecordingTrigger
 
     //Timer
-
+    /**
+     * handles the timer thats shows current recording length
+     */
     const timerHandler = async () => {
       if (recordingStatus.value == recordingStatusEnums.IS_RECORDING) {
         timer.value.setSeconds(timer.value.getSeconds() + 1);
         timerString.value = timer.value.toISOString().substr(11, 8);
-        console.log(timer.value);
+
       }
     };
 
