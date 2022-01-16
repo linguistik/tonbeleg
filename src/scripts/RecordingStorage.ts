@@ -35,6 +35,8 @@ export function safeRecordings() {//call this function on closing or on every ch
     console.log("wrote data");
 }
 
+
+
 export async function loadRecordings() {
     const currentUser = firebase.auth().currentUser;
     if (currentUser == null) {
@@ -187,6 +189,35 @@ export function removeAllRecordingEntry() {
     })
     safeRecordings();
 }
+
+
+
+
+const idToUpdateFunctionMap = new Map<number, Function>()
+/**
+ * inserts a function that should be called on recording entry change into {@link idToUpdateFunctionMap}
+ * 
+ * NOTE: currently only observer can be set
+ * @param {number} id the id to register that id for
+ * @param {Function} updateFunction the function to be called with the changed recordingData
+ */
+export function insertUpdateFunction(id: number, updateFunction: Function){
+    idToUpdateFunctionMap.set(id, updateFunction);
+}
+/**
+ * calls the function in {@link idToUpdateFunctionMap} of the specified recoringData with the changed recordingData 
+ * @param id 
+ */
+export function callUpdateFunction(id: number){
+    const updateFunction = idToUpdateFunctionMap.get(getRecordingEntry(id).timestamp);
+    if(updateFunction != undefined){
+        updateFunction(getRecordingEntry(id));
+    }
+}
+
+
+
+
 /**
  * converts the regionArray to an array of regionData using RegionDataUtils
  * assigns the regionData array to the specified recording
@@ -199,6 +230,7 @@ export function setRecordingEntryRegionDataArray(recordingId: number, regionArra
     const recordingEntry = getRecordingEntry(recordingId);
     recordingEntry.parts = convertToRegionDataArray(regionArray,idToNameMap);
     safeRecordings();
+    callUpdateFunction(recordingId);
 }
 /**
  * 
@@ -209,3 +241,5 @@ export function getRecordingEntryRegionDataArray(recordingId: number){
     const recordingEntry = getRecordingEntry(recordingId);
     return recordingEntry.parts;
 }
+
+
