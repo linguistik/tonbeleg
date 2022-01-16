@@ -9,12 +9,14 @@ class RegionData{
     start: number;
     end: number;
     color: string;
+    name: string;
 
-    constructor(region){
+    constructor(region, name: string){
         this.id = region.id;
         this.start = region.start;
         this.end = region.end;
         this.color = region.color;
+        this.name = name;
     }
 }
 
@@ -22,14 +24,20 @@ class RegionData{
 
 
 /**
- * saves the regions to the filesystem
+ * saves the regions to userId/folderName/regions.json in the data filesystem
  * @param {Region[]} regionArray the array containing the regions to be stored
- * @param {string} folderName 
+ * @param {string} folderName the folder of the recording to set the regions for
+ * @param {Map<string,string>} idToNameMap the map that maps some of the ids to the actual name
  */
-export async function saveRegions(regionArray: Region[], folderName: string){
+export async function saveRegions(regionArray: Region[], folderName: string, idToNameMap: Map<string,string>){
     const regionArrayData: RegionData[] = [];
     for(const region of regionArray){
-        regionArrayData.push(new RegionData(region));
+        let name: string = region.id;
+        const nameOrUndef = idToNameMap.get(region.id);
+        if( nameOrUndef != undefined){
+            name = nameOrUndef;
+        }
+        regionArrayData.push(new RegionData(region, name));
     }
 
     const regionArrayDataString = JSON.stringify(regionArrayData);
@@ -51,11 +59,13 @@ export async function saveRegions(regionArray: Region[], folderName: string){
     }
 }
 /**
- * loads the region data
+ * loads the region data and names into the wavesurfer object and idToNameMap respectivvly
+ * NOTE: idToNameMap only contains names that differ from the regions id
+ * @param wavesurfer the wavesurfer plugin to insert the regions into
+ * @param {Map<string,string>} idToNameMap the Map of the names depending on the id
  * @param {string} folderName the folderName specifying the location of the data
- * @returns {Region[]} the decoded region data
  */
-export async function importRegions(wavesurfer, folderName: string){
+export async function importRegions(wavesurfer, idToNameMap: Map<string,string>, folderName: string){
     const currentUser = firebase.auth().currentUser;
     if (currentUser == null) {
         console.log("\n\nFATAL ERROR: no user logged in, so saving recordings does not work\n\n");
@@ -71,6 +81,9 @@ export async function importRegions(wavesurfer, folderName: string){
         const regionArrayData: RegionData[] = JSON.parse(readFileResult.data);
         for(const regionData of regionArrayData){
             wavesurfer.addRegion(regionData);
+            if(regionData.name != regionData.id){
+                idToNameMap.set(regionData.id, regionData.name);
+            }
         }
 
 

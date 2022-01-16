@@ -38,8 +38,8 @@
             <ColoredIcon :icon="square" size="small" :color="usefulColorMapRef.get(item.color)"></ColoredIcon>
           </ion-col>
           <ion-col>
-            <ion-label class="elementName"> 
-              {{item.id }}
+            <ion-label class="elementName" @click="setNameOfRecordingIdEventHandler(item.id)" :key="updateKey"> 
+              {{ getNameOfRecordingId(item.id) }}
             </ion-label>
           </ion-col>
           <ion-col size="2">
@@ -157,6 +157,14 @@ export default defineComponent({
     if (currentUser == null) return;
     const currentUserUID = currentUser.uid;
 
+    /**
+     * this is used to force an update of the name/id labels on the page to display the new name after being set
+     */
+    const updateKey = ref(0);
+    const forceUpdate = ()=>{
+      updateKey.value += 1;
+    }
+
     let index = 0; //this is the index for determining the next color
     const usefulColorMap = new Map<string, string>([
       ["rgba(255,0,0,0.5)", "red"],
@@ -170,6 +178,71 @@ export default defineComponent({
     ]);
 
     const usefulColorMapRef = ref(usefulColorMap);
+
+    const idToNameMap = new Map<string,string>();
+    
+    /**
+     * returns a name of a recording to display to the screen
+     * @param {string} id the id of the recording
+     * @returns {string} name of that recording if it is set, returns the recording id otherwise
+     */
+    const getNameOfRecordingId = (id: string)=>{
+      if(!idToNameMap.has(id))
+        return id;
+      else
+        return idToNameMap.get(id);
+    }
+
+    /**
+     * opens an alert that asks for a new name for this region 
+     * and forces an update of that element to display the new name
+     * @param {string} id the id of the recording to set a name for
+     */
+    const setNameOfRecordingIdEventHandler = async (id: string)=>{
+      const alert = await alertController.create({
+        message: "Choose a name",
+        inputs: [
+          {
+            name: "textField",
+            id: "textField",
+            type: "text",
+            attributes: {
+              required: true,
+              minlength: 1,
+              maxlength: 20,
+              inputMode: "text",
+            },
+            handler: () => {
+              console.log("texteingabe erfolgt"); //is this handler really necessary? For some reason it is^^
+            },
+          },
+        ], //inputs
+        buttons: [
+          {
+            text: "cancel",
+            handler: () => {
+              console.log("confirm cancel");
+            },
+          },
+          {
+            text: "OK",
+            handler: (data) => {
+              const x = data.textField;
+              console.log(x);
+              if(!(x.length === 0) && x.length<=35){ //nur kleine und nicht leere eingaben
+                idToNameMap.set(id, x);
+                forceUpdate();
+              }
+              else{
+                console.log("not a valid name");
+              }
+
+            },
+          },
+        ], //buttons
+      }); //create alert
+      await alert.present();
+    }
 
     /**
      * creates the wavesurfer
@@ -201,7 +274,7 @@ export default defineComponent({
       wavesurfer.on("ready", async () => {
         console.log("ready");
         wavesurfer.enableDragSelection({});
-        importRegions(wavesurfer, props.folderName);
+        importRegions(wavesurfer, idToNameMap, props.folderName);
         renderedBuffer = await wavesurfer.getRenderedAudioBuffer();
       });
 
@@ -275,7 +348,7 @@ export default defineComponent({
     }; //play audio buffer
 
     const finishAndSaveEventHandler = async () => {
-      saveRegions(regionsRef.value, props.folderName);
+      saveRegions(regionsRef.value, props.folderName, idToNameMap);
       
       //this is still useful code!!!
       /*for (const region of regionsRef.value) {
@@ -337,6 +410,8 @@ export default defineComponent({
       finishAndSaveEventHandler,
       playPauseEventHandler,
       skipEventHandler,
+      getNameOfRecordingId,
+      setNameOfRecordingIdEventHandler,
       regionsRef,
       usefulColorMapRef,
       playSkipForwardCircleOutline,
@@ -345,6 +420,7 @@ export default defineComponent({
       square,
       trashOutline,
       playCircleOutline,
+      updateKey,
     };
   },
 });
