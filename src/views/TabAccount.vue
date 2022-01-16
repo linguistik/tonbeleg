@@ -94,7 +94,7 @@ export default defineComponent({
               new RecordingData(
                 doc.get("timestamp"),
                 doc.get("name"),
-                ["first"], //create array with length = doc.get("data").length();
+                [], //create array with length = doc.get("data").length();
                 doc.get("length"),
                 false,
                 false,

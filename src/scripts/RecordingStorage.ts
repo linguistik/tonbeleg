@@ -4,6 +4,11 @@ import firebase from "@/backend/firebase-config";
 import { Directory, Encoding, Filesystem } from "@capacitor/filesystem";
 import {getLicense} from "@/scripts/UserSettingsStorage";
 
+import { Region } from "wavesurfer.js/src/plugin/regions"
+import RegionData from "@/scripts/editing/RegionData";
+import {convertToRegionDataArray} from "@/scripts/editing/RegionDataUtils";
+import { RecordingUploadArray } from "./RecordingUpload";
+
 //const r = new RecordingData(1,"a", ["a","b"],22);
 
 export let recordings: RecordingData[] = [];
@@ -181,4 +186,26 @@ export function removeAllRecordingEntry() {
         recursive: true
     })
     safeRecordings();
+}
+/**
+ * converts the regionArray to an array of regionData using RegionDataUtils
+ * assigns the regionData array to the specified recording
+ * saves the recordings to the filesystem @see safeRecordings
+ * @param {number} recordingId 
+ * @param {Region[]} regionArray 
+ * @param {Map<string,string>} idToNameMap 
+ */
+export function setRecordingEntryRegionDataArray(recordingId: number, regionArray: Region[], idToNameMap: Map<string,string>){
+    const recordingEntry = getRecordingEntry(recordingId);
+    recordingEntry.parts = convertToRegionDataArray(regionArray,idToNameMap);
+    safeRecordings();
+}
+/**
+ * 
+ * @param {number} recordingId 
+ * @returns {RecordingData[]} the recordingData array of the specified recording
+ */
+export function getRecordingEntryRegionDataArray(recordingId: number){
+    const recordingEntry = getRecordingEntry(recordingId);
+    return recordingEntry.parts;
 }

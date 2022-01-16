@@ -1,5 +1,5 @@
-<template>
-  <ion-card v-if="isOpen">
+<template :key="updateKey">
+  <ion-card v-if="isOpen" >
     <ion-card-header>
       <ion-card-title>{{ recording.name }}</ion-card-title>
     </ion-card-header>

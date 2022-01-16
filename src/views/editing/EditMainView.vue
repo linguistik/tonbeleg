@@ -103,11 +103,9 @@ import ExportAudioPlugin from "wavesurfer-export-audio-plugin"; //MIT ok
 
 import toWav from "audiobuffer-to-wav"; //MIT ok
 
-import { Filesystem, Directory, Encoding } from "@capacitor/filesystem";
-import {saveRegions, importRegions} from "@/scripts/editing/RegionSaver";
-
 import { replayAudioData, getAudioData } from "@/scripts/ReplayData";
 import { Region } from "wavesurfer.js/src/plugin/regions";
+import { setRecordingEntryRegionDataArray,getRecordingEntryRegionDataArray } from "@/scripts/RecordingStorage";
 
 export default defineComponent({
   name: "TabAccount",
@@ -156,6 +154,7 @@ export default defineComponent({
     const currentUser = firebase.auth().currentUser;
     if (currentUser == null) return;
     const currentUserUID = currentUser.uid;
+
 
     /**
      * this is used to force an update of the name/id labels on the page to display the new name after being set
@@ -245,10 +244,12 @@ export default defineComponent({
     }
 
     /**
-     * creates the wavesurfer
+     * creates the {@link wavesurfer}
      * loads the specific audio data
-     * initializes the renferedBuffer with an AudioBuffer of the audio data
-     *
+     * initializes the {@link renderedBuffer} with an AudioBuffer of the audio data
+     * loads the regionData and imports them into {@link wavesurfer}
+     * extracts the names of the regionData and inserts them into {@link idToNameMap}
+     * 
      * NOTE: this cannot be called directly on creation, since wavesurfer needs the specific waveform container in the html
      */
     const load = async () => {
@@ -274,7 +275,14 @@ export default defineComponent({
       wavesurfer.on("ready", async () => {
         console.log("ready");
         wavesurfer.enableDragSelection({});
-        importRegions(wavesurfer, idToNameMap, props.folderName);
+        //importRegions(wavesurfer, idToNameMap, props.folderName);
+        const regionArrayData = getRecordingEntryRegionDataArray(props.folderName);
+        for(const regionData of regionArrayData){
+        wavesurfer.addRegion(regionData);
+        if(regionData.name != regionData.id){
+            idToNameMap.set(regionData.id, regionData.name);
+        }
+    }
         renderedBuffer = await wavesurfer.getRenderedAudioBuffer();
       });
 
@@ -348,8 +356,8 @@ export default defineComponent({
     }; //play audio buffer
 
     const finishAndSaveEventHandler = async () => {
-      saveRegions(regionsRef.value, props.folderName, idToNameMap);
-      
+      setRecordingEntryRegionDataArray(props.folderName, regionsRef.value, idToNameMap);
+
       //this is still useful code!!!
       /*for (const region of regionsRef.value) {
         const wavFileData = trimAudio(region);
