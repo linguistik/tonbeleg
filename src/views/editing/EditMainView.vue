@@ -273,7 +273,7 @@ export default defineComponent({
       wavesurfer.load(audio);
 
       wavesurfer.on("ready", async () => {
-        console.log("ready");
+        console.log("ready", wavesurfer.getDuration());
         wavesurfer.enableDragSelection({});
         //importRegions(wavesurfer, idToNameMap, props.folderName);
         const regionArrayData = getRecordingEntryRegionDataArray(props.folderName);
@@ -296,6 +296,7 @@ export default defineComponent({
 
       wavesurfer.on("region-update-end", (region) => {
         changesApplied = true;
+        console.log("ready2", renderedBuffer);
       });
 
       wavesurfer.on("region-removed", (region) => {
@@ -311,49 +312,8 @@ export default defineComponent({
       window.setTimeout(load,100);
     }
     loadAfterTimeout();
-    /**
-     * copys the specific region of the renderedBuffer and encodes it to a wave file format
-     * @param {Region} region the region, we want the data from
-     * @returns {ArrayBuffer} the encoded data in wave format
-     */
-    const trimAudio = (region: Region) => {
-      console.log("trim", region);
-      //https://github.com/Vinit-Dantkale/AudioFy/blob/master/audio.js
-      const startPoint = Math.floor(
-        (region.start * renderedBuffer.length) / wavesurfer.getDuration()
-      );
-      const endPoint = Math.ceil(
-        (region.end * renderedBuffer.length) / wavesurfer.getDuration()
-      );
-      const audioBufferLength = endPoint - startPoint;
-      const trimmedAudio = new AudioContext().createBuffer(
-        1, //Channels
-        audioBufferLength,
-        renderedBuffer.sampleRate
-      );
-      //copy channel data
-      trimmedAudio.copyToChannel(
-        renderedBuffer.getChannelData(0).slice(startPoint, endPoint),
-        0
-      );
 
-      const wav = toWav(trimmedAudio);
-      return wav;
-    }; //trimAudio
 
-    /**
-     * plays an audio buffer
-     * @param {AudioBuffer} buf the buffer to be played
-     */
-    const playAudioBuffer = (buf) => {
-      new AudioContext().decodeAudioData(buf, function (decodedBuffer) {
-        const context = new AudioContext();
-        const source = context.createBufferSource();
-        source.buffer = decodedBuffer;
-        source.connect(context.destination);
-        source.start();
-      });
-    }; //play audio buffer
 
     const finishAndSaveEventHandler = async () => {
       setRecordingEntryRegionDataArray(props.folderName, regionsRef.value, idToNameMap);
