@@ -1,50 +1,69 @@
-<template>
-  <ion-card v-if="isOpen">
-    <ion-card-header>
-      <ion-card-title>{{ recording.name }}</ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      Aufgenommen am:
-      {{ getRecordingDate() }}<br />
-      Anzahl Aufnahmen:
-      {{ recording.parts.length }}
-    </ion-card-content>
-    <ion-item>
-    
-      <ion-icon
-        Left-icon
-        :icon="playing ? pause : play"
-        @click="playRec()"
-        v-if="provideFunctionality"
-      ></ion-icon>
-      <ion-icon
-        :color="
-          alreadyUploaded ? 'success' : selectedForUpload ? 'warning' : 'black'
-        "
-        :icon="arrowUp"
-        @click="upload()"
-        v-if="provideFunctionality"
-      ></ion-icon>
-      <ion-icon :icon="trash" @click="deleteRecording()" v-if="provideFunctionality"></ion-icon>
-      <ion-icon :icon="pencil" @click="rename()" v-if="provideFunctionality"></ion-icon>
-      <ion-icon :icon="cut" @click="edit()" v-if="provideFunctionality"></ion-icon>
-      <ion-icon :icon="help" @click="changeLicense()" v-if="provideFunctionality"></ion-icon>
+<template :key="updateKey">
+  <div v-if="exists">
+    <ion-card v-if="isOpen">
+      <ion-card-header>
+        <ion-card-title>{{ displayName }}</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        Aufgenommen am:
+        {{ getRecordingDate() }}<br />
+        Anzahl Tonbelege:
+        {{ displayPartsLength }}
+      </ion-card-content>
+      <ion-item>
+        <ion-icon
+          Left-icon
+          :icon="playing ? pause : play"
+          @click="playRec()"
+          v-if="provideFunctionality"
+        ></ion-icon>
+        <ion-icon
+          :color="
+            alreadyUploaded
+              ? 'success'
+              : selectedForUpload
+              ? 'warning'
+              : 'black'
+          "
+          :icon="arrowUp"
+          @click="upload()"
+          v-if="provideFunctionality"
+        ></ion-icon>
+        <ion-icon
+          :icon="trash"
+          @click="deleteRecording()"
+          v-if="provideFunctionality"
+        ></ion-icon>
+        <ion-icon
+          :icon="pencil"
+          @click="rename()"
+          v-if="provideFunctionality"
+        ></ion-icon>
+        <ion-icon
+          :icon="cut"
+          @click="edit()"
+          v-if="provideFunctionality"
+        ></ion-icon>
+        <ion-icon
+          :icon="help"
+          @click="changeLicense()"
+          v-if="provideFunctionality"
+        ></ion-icon>
 
+        <ion-icon
+          :icon="chevronUpOutline"
+          @click="toggleOpen()"
+          slot="end"
+        ></ion-icon>
+      </ion-item>
+    </ion-card>
 
-      <ion-icon
-        :icon="chevronUpOutline"
-        @click="toggleOpen()"
-        slot="end"
-      ></ion-icon>
-
-    </ion-item>
-  </ion-card>
-
-  <ion-card v-else>
-    <ion-card-content @click="toggleOpen()">
-      {{ recording.name }}
-    </ion-card-content>
-  </ion-card>
+    <ion-card v-else>
+      <ion-card-content @click="toggleOpen()">
+        {{ displayName }}
+      </ion-card-content>
+    </ion-card>
+  </div>
 </template>
 
 
@@ -82,7 +101,9 @@ import {
   removeRecordingEntry,
   setRecordingEntryName,
   setSelectedForUpload,
+  insertUpdateFunction,
 } from "@/scripts/RecordingStorage";
+import RecordingData from '@/scripts/RecordingData';
 
 export default {
   name: "Recording",
@@ -95,7 +116,7 @@ export default {
     IonCardTitle,
   },
 
-   /*methods: {
+  /*methods: {
     async setEverything() {
       await loadUserSettings();
       await loadRecordings();
@@ -107,17 +128,31 @@ export default {
 
   props: {
     recording: Object,
-    provideFunctionality:{//pass false to disable interative elements. default is true
+    provideFunctionality: {
+      //pass false to disable interative elements. default is true
       type: Boolean,
       required: false,
-      default: true
-    }
+      default: true,
+    },
   },
   //methods & mounted glaube doch nicht
 
   setup(props: any, context: any) {
     // multi-lingual support
     const { t } = useI18n();
+
+    const displayName = ref(props.recording.name);
+    const displayPartsLength = ref(props.recording.parts.length);
+    const exists = ref(true);
+
+    insertUpdateFunction(props.recording.timestamp, (editedEntry: RecordingData)=>{
+      displayPartsLength.value = editedEntry.parts.length;
+    })
+
+    const updateKey = ref(0);
+    const forceUpdate = () => {
+      updateKey.value += 1;
+    };
 
     const currentUser = firebase.auth().currentUser;
     if (currentUser == null) return;
@@ -134,7 +169,6 @@ export default {
     const toggleOpen = () => {
       isOpen.value = !isOpen.value;
     };
-
 
     const getRecordingDate = () => {
       const date = new Date(parseInt(props.recording.timestamp));
@@ -233,7 +267,9 @@ export default {
      */
     const actualDelete = async () => {
       removeRecordingEntry(props.recording);
-      context.emit("refreshEmit");
+      //context.emit("refreshEmit");
+      exists.value = false;
+      forceUpdate();
     }; //method: deleteFolder
     /**
      * actual rename of the entry
@@ -242,7 +278,9 @@ export default {
     const actualRename = (name: string) => {
       //props.recording is just a copy of the real object
       setRecordingEntryName(props.recording.timestamp, name);
-      context.emit("refreshEmit");
+      displayName.value = name;
+      //context.emit("refreshEmit");
+      forceUpdate();
     }; //method: actualRename
     /**
      * opens rename message box for entry
@@ -279,13 +317,12 @@ export default {
             handler: (data) => {
               const x = data.textField;
               console.log(x);
-              if(!(x.length === 0) && x.length<=35){ //nur kleine und nicht leere eingaben
+              if (!(x.length === 0) && x.length <= 35) {
+                //nur kleine und nicht leere eingaben
                 actualRename(x);
-              }
-              else{
+              } else {
                 console.log("not a valid name");
               }
-
             },
           },
         ], //buttons
@@ -343,6 +380,10 @@ export default {
       audioDaten,
       replayAudioData,
       alreadyUploaded,
+      updateKey,
+      displayName,
+      displayPartsLength,
+      exists,
     }; //return
   }, //setup
 }; //export default
