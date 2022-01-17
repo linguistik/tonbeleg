@@ -10,32 +10,13 @@
       {{ recording.parts.length }}
     </ion-card-content>
     <ion-item>
-    
-      <ion-icon
-        Left-icon
-        :icon="playing ? pause : play"
-        @click="playRec()"
-        v-if="provideFunctionality"
-      ></ion-icon>
-      <ion-icon
-        :color="
-          alreadyUploaded ? 'success' : selectedForUpload ? 'warning' : 'black'
-        "
-        :icon="arrowUp"
-        @click="upload()"
-        v-if="provideFunctionality"
-      ></ion-icon>
+      <ion-icon Left-icon :icon="playing ? pause : play" @click="playRec()" v-if="provideFunctionality"></ion-icon>
+      <ion-icon :color="alreadyUploaded ? 'success' : selectedForUpload ? 'warning' : 'black'" :icon="arrowUp" @click="upload()" v-if="provideFunctionality"></ion-icon>
       <ion-icon :icon="trash" @click="deleteRecording()" v-if="provideFunctionality"></ion-icon>
       <ion-icon :icon="pencil" @click="rename()" v-if="provideFunctionality"></ion-icon>
       <ion-icon :icon="cut" @click="edit()" v-if="provideFunctionality"></ion-icon>
       <ion-icon :icon="help" @click="changeLicense()" v-if="provideFunctionality"></ion-icon>
-
-
-      <ion-icon
-        :icon="chevronUpOutline"
-        @click="toggleOpen()"
-        slot="end"
-      ></ion-icon>
+      <ion-icon :icon="chevronUpOutline" @click="toggleOpen()" slot="end"></ion-icon>
 
     </ion-item>
   </ion-card>
@@ -94,16 +75,6 @@ export default {
     IonCardHeader,
     IonCardTitle,
   },
-
-   /*methods: {
-    async setEverything() {
-      await loadUserSettings();
-      await loadRecordings();
-    },
-  },
-  mounted() {
-    this.setEverything();
-  },*/
 
   props: {
     recording: Object,
@@ -188,20 +159,9 @@ export default {
       //TODO
       const currentUser = firebase.auth().currentUser;
       if (currentUser == null) return;
-
-      console.log("upload this thing", props.recording.upload);
       selectedForUpload.value = !selectedForUpload.value;
       setSelectedForUpload(props.recording.timestamp, selectedForUpload.value);
-      /*if(selectedForUpload.value) {
-        addToUploadArray((await Filesystem.readFile({
-          path: "/" + currentUser.uid + "/" + props.recording.timestamp + "/" + "0.raw",
-          directory: Directory.Data,
-          encoding: Encoding.UTF8,
-        })).data, currentUser.uid, props.recording.timestamp.toString()); //warum nur aaaaaa's
-      }
-      else{
-        deleteFromUploadArray(currentUser.uid.concat(props.recording.timestamp.toString()));
-      }*/
+      console.log("upload this thing", props.recording.upload);
     };
 
     const playRec = async () => {

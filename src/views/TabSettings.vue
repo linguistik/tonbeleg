@@ -23,27 +23,15 @@
             <p>Tonbelege nur im Wlan hochladen.</p>
           </ion-label>
           <ion-toggle
-            slot="start"
+            slot="end"
             name="RecordingWifi"
             v-bind:checked="wifiOnlyActivated"
             @IonChange="optionChanged($event)"
           ></ion-toggle>
         </ion-item>
-        
-        
-    <ion-item>
-      <ion-label text-wrap>
-        <p> Account löschen</p>
-      </ion-label>
-      <ion-button @click="deleteAcc()"></ion-button>
-    </ion-item>
 
-    <ion-item>
-      <ion-label text-wrap>
-        <p> Alle Aufnahmen löschen</p>
-      </ion-label>
-      <ion-button @click="deleteData()"></ion-button>
-    </ion-item>
+      <ion-button expand="block" @click="deleteAcc()">Account löschen</ion-button>
+      <ion-button expand="block" @click="deleteData()">Alle Aufnahmen löschen</ion-button>
         
       </ion-list>
     </ion-content>

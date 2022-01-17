@@ -107,6 +107,17 @@ export function setRecordingEntryUploadBoolean(timestamp: number, uploadBoolean:
     safeRecordings();
 }
 
+export function setRecordingEntryTranscription(timestamp: number, transcription: string){
+    const data = getRecordingEntry(timestamp);
+    data.transcription = transcription;
+    safeRecordings();
+}
+
+export function getRecordingEntryTranscription(timestmap: number): string{
+    const data = getRecordingEntry(timestmap);
+    return data.transcription;
+}
+
 export function getRecordingEntryUploadBoolean(timestamp: number): boolean{
     const data = getRecordingEntry(timestamp);
     return data.upload;
