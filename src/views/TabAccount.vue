@@ -72,29 +72,12 @@ export default defineComponent({
   setup() {
     // multi-lingual support
     const { t } = useI18n();
-    const delay = (ms: number) => {
-      return new Promise((resolve) => setTimeout(resolve, ms));
-    };
-    const updateKey = ref(0);
-    const forceUpdate = () => {
-      updateKey.value += 1;
-    };
+    
     const uploadedRecordings: Ref<RecordingData[]> = ref([]);
     const errorMessage = ref(
       "Du hast auf diesem Account keine gespeicherten Aufnahmen oder du bist nicht mit dem Internet verbunden"
     );
 
-    const f = async()=>{
-      const db = firebase.firestore();
-      const currentUser = firebase.auth().currentUser;
-      if (currentUser == null) return;
-      const userUID = currentUser.uid;
-      const collection2 = await db
-        .collection("users")
-        .doc(userUID)
-        .collection("recordings")
-        .get();
-    }
 
     const loadRecordingsFromDatabase = async () => {
       const buffer: RecordingData[] = [];
@@ -111,11 +94,7 @@ export default defineComponent({
         .get();     
       
       for (const doc of collection.docs) {
-        console.log("try get parts");
       
-        const r = await f(); 
-        
-
         const partsCollection = await db
         .collection("users")
         .doc(userUID)
@@ -146,20 +125,17 @@ export default defineComponent({
           )
         );
 
-      } //foreach odc
-        //await delay(1);
-        //console.log("buffer", buffer);
+      } //foreach doc
         uploadedRecordings.value = buffer;
     };
     const refresh = async (event: any) => {
       await await await loadRecordingsFromDatabase();
       await event.target.complete();
-      console.log("upldRec", uploadedRecordings);
     };
 
     loadRecordingsFromDatabase();
 
-    return { t, refresh, uploadedRecordings, errorMessage, updateKey };
+    return { t, refresh, uploadedRecordings, errorMessage };
   },
 });
 </script>
