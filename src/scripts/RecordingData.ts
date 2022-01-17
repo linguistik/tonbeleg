@@ -11,6 +11,7 @@ export default class RecordingData{
     license: string;
     userID: string;
     languages: string[];
+    transcription: string;
 
     constructor(timestamp: number, name: string, parts: RegionData[], length: number, upload: boolean, selectedForUpload: boolean, license: string, userID: string, languages: string[]){
         this.timestamp = timestamp;
@@ -22,5 +23,6 @@ export default class RecordingData{
         this.license = license;
         this.userID = userID;
         this.languages = languages;
+        this.transcription = "";
     }
 }

@@ -3,9 +3,10 @@
     <PageHeader v-bind:title="t('general.appname')" />
 
     <ion-content :fullscreen="true">
-      <ion-card v-if="openModal"
-        ><!---brauch eig nen modal das kann man nicht wegklicken--->
-        <ion-item>
+      <ion-card-modal v-if="openModal"><!---brauch eig nen modal das kann man nicht wegklicken--->
+        <ion-content fullscreen>
+          <ion-list>
+            <ion-item>
           <ion-label v-model:position="fixed">Name:</ion-label>
           <ion-input
             v-model="newName"
@@ -16,16 +17,98 @@
         </ion-item>
         <ion-item>
           <ion-label>Select Language</ion-label>
-          <ion-select v-model:value="getFirstLanguage()[0]">
-            <!---ion-select-option--->
+          <ion-select v-model="newLanguage" v-model:value="getFirstLanguage()[0]" v-model:placeholder="getFirstLanguage()[0]">
+            <ion-select-option v-for="[short,language] in languages" v-bind:key="short" v-bind:value="short">{{language}}</ion-select-option>
           </ion-select>
         </ion-item>
-        <ion-select>Select license</ion-select>
+
+        <!--<ion-item>
+          <ion-label>Select License</ion-label>
+          <ion-textarea v-model="newLicense" v-model:value="lastRecording.license" v-model:placeholder="lastRecording.license"></ion-textarea>
+          <ion-button @click="selectNewLicense()" v-model:name="licensePTR"></ion-button>
+            <ion-card-modal v-if="openLicenseModal" slot="start" :fullscreen="true">
+              <ion-list>
+              <ion-item>
+                <ion-label text-wrap>
+                  <h2>
+                    Namensnennung
+                  </h2>
+                </ion-label>
+                <ion-toggle
+                    slot="start"
+                    name = "isMentioningActivated"
+                    v-bind:checked="isMentioningActivated"
+                    @IonChange="optionChanged($event)"
+                    v-bind:disabled="isMentioningActivatedDeactivated"
+                ></ion-toggle>
+              </ion-item>
+
+              <ion-item>
+                <ion-label text-wrap>
+                  <h2>
+                    Kommerzielle Nutzung
+                  </h2>
+                </ion-label>
+                <ion-toggle
+                    slot="start"
+                    name = "isComerciallyUseAllowed"
+                    v-bind:checked="isComerciallyUseAllowed"
+                    @IonChange="optionChanged($event)"
+                    v-bind:disabled="isComerciallyUseAllowedDeactivated"
+                ></ion-toggle>
+              </ion-item>
+
+              <ion-item>
+                <ion-label text-wrap>
+                  <h2>
+                    Bearbeitung
+                  </h2>
+                </ion-label>
+                <ion-toggle
+                    slot="start"
+                    name="isRemixingAllowed"
+                    @IonChange="optionChanged($event)"
+                    v-bind:checked="isRemixingAllowed"
+                    v-bind:disabled="isRemixingAllowedDeactivated"
+                ></ion-toggle>
+              </ion-item>
+
+              <ion-item>
+                <ion-label text-wrap>
+                  <h2>
+                    Weitergabe unter beliebigen Bedingungen
+                  </h2>
+                </ion-label>
+                <ion-toggle
+                    slot="start"
+                    name="isSharingAllowed"
+                    v-bind:checked="isSharingAllowed"
+                    @IonChange="optionChanged($event)"
+                    v-bind:disabled="isSharingAllowedDeactivated"
+                ></ion-toggle>
+              </ion-item>
+
+
+              </ion-list>
+              <div id="container">
+                <ion-label text-wrap>
+                  <h2>
+                    Deine Lizenz
+                  </h2>
+                    <strong>{{licensePTR}}</strong>
+                </ion-label>
+              </div>
+
+            </ion-card-modal>
+        </ion-item>-->
+
         <ion-button color="danger" @click="deleteLastRecording()"
           >delete</ion-button
         >
         <ion-button color="success" @click="saveChanges()"> ok</ion-button>
-      </ion-card>
+          </ion-list>
+        </ion-content>
+      </ion-card-modal>
 
       <ion-header collapse="condense">
         <ion-toolbar>
@@ -74,6 +157,7 @@
           <ion-icon :icon="playOutline"></ion-icon>
         </ion-fab-button>
       </ion-fab>
+
       <div id="text">
         <!--  Timer  -->
         <p>Zeit: {{ timerString }}</p>
@@ -107,9 +191,8 @@ import {
   IonInput,
   IonLabel,
   IonItem,
-  IonCard,
   IonSelect,
-  IonButton,
+  IonButton,IonSelectOption,
 } from "@ionic/vue";
 
 import {
@@ -158,9 +241,8 @@ export default defineComponent({
     IonInput,
     IonItem,
     IonLabel,
-    IonCard,
     IonSelect,
-    IonButton,
+    IonSelectOption,
   },
 
   setup() {
@@ -172,9 +254,12 @@ export default defineComponent({
       new RecordingData(0, "", [], 0, false, false, "", "", [])
     );
     const openModal = ref(false);
+    const openLicenseModal = ref(false);
     const newName = ref("");
     const newLanguage = ref("");
     const newLicense = ref("");
+
+    const licensePTR = ref('CC0 1.0');
 
     const timer = ref(new Date(0));
     const timerString = ref(timer.value.toISOString().substr(11, 8));
@@ -215,6 +300,9 @@ export default defineComponent({
       console.log(error);
     }
 
+    const selectNewLicense = () =>{
+     openLicenseModal.value=!openLicenseModal.value;
+    }
     const recordingStatusEnums = {
       NOT_RECORDING: 0,
       IS_RECORDING: 1,
@@ -250,19 +338,21 @@ export default defineComponent({
         });
     };
     const startRecordingTrigger = async () => {
-      timer.value.setSeconds(0);
-      recordingStatus.value = recordingStatusEnums.DOING_SMT;
-      await VoiceRecorder.startRecording()
-        .then((result: GenericResponse) => {
-          console.log(recordingStatus);
-          console.log(result.value);
-        })
-        .catch((error) => {
-          recordingStatus.value = recordingStatusEnums.NOT_RECORDING;
-          // "MISSING_PERMISSION", "ALREADY_RECORDING", "MICROPHONE_BEING_USED", "DEVICE_CANNOT_VOICE_RECORD", or "FAILED_TO_RECORD"
-          console.log(error);
-        });
-      recordingStatus.value = recordingStatusEnums.IS_RECORDING;
+      if(openModal.value==false) {
+        timer.value.setSeconds(0);
+        recordingStatus.value = recordingStatusEnums.DOING_SMT;
+        await VoiceRecorder.startRecording()
+            .then((result: GenericResponse) => {
+              console.log(recordingStatus);
+              console.log(result.value);
+            })
+            .catch((error) => {
+              recordingStatus.value = recordingStatusEnums.NOT_RECORDING;
+              // "MISSING_PERMISSION", "ALREADY_RECORDING", "MICROPHONE_BEING_USED", "DEVICE_CANNOT_VOICE_RECORD", or "FAILED_TO_RECORD"
+              console.log(error);
+            });
+        recordingStatus.value = recordingStatusEnums.IS_RECORDING;
+      }
     };
 
     /*let audioRef = new Audio();
@@ -405,10 +495,12 @@ export default defineComponent({
           newLanguage.value,
         ]);
       }
+      //console.log(lastRecording.value.languages[0])
       if (newLicense.value != "") {
         setRecordingLicense(lastRecording.value.timestamp, newLicense.value);
       }
       openModal.value = !openModal.value;
+      openLicenseModal.value = !openLicenseModal.value;
       clearVariables();
     };
 
@@ -416,6 +508,7 @@ export default defineComponent({
       //TODO
       removeLastRecordingEntry();
       openModal.value = !openModal.value;
+      openLicenseModal.value = !openLicenseModal.value;
     };
 
     setInterval(() => {
@@ -444,10 +537,35 @@ export default defineComponent({
       timerString,
       pauseOutline,
       openModal,
+      openLicenseModal,
+      selectNewLicense,
       saveChanges,
       deleteLastRecording,
       lastRecording,
       newName,
+      newLanguage,
+      newLicense,
+      licensePTR,
+      languages:[["en","English"],
+        ["de","Deutsch"],
+        ["es","español"],
+        ["fr","français"],
+        ["zh","Chinesisch"],
+        ["hi", "हिन्दी"],
+        ["bn","বাংলা"],
+        ["ru","русский"],
+        ["pt","português"],
+        ["id","Bahasa Indonesia"],
+        ["ur","اردو"],
+        ["ja","日本語"],
+        ["sw","	Kiswahili"],
+        ["mr","मराठी"],
+        ["te","తెలుగు"],
+        ["tr","Türkçe"],
+        ["ta","தமிழ்"],
+        ["ko","한국어"],
+
+      ]
     };
   },
 });

@@ -115,17 +115,7 @@ export default {
     IonCardHeader,
     IonCardTitle,
   },
-
-  /*methods: {
-    async setEverything() {
-      await loadUserSettings();
-      await loadRecordings();
-    },
-  },
-  mounted() {
-    this.setEverything();
-  },*/
-
+  
   props: {
     recording: Object,
     provideFunctionality: {
@@ -223,20 +213,9 @@ export default {
       //TODO
       const currentUser = firebase.auth().currentUser;
       if (currentUser == null) return;
-
-      console.log("upload this thing", props.recording.upload);
       selectedForUpload.value = !selectedForUpload.value;
       setSelectedForUpload(props.recording.timestamp, selectedForUpload.value);
-      /*if(selectedForUpload.value) {
-        addToUploadArray((await Filesystem.readFile({
-          path: "/" + currentUser.uid + "/" + props.recording.timestamp + "/" + "0.raw",
-          directory: Directory.Data,
-          encoding: Encoding.UTF8,
-        })).data, currentUser.uid, props.recording.timestamp.toString()); //warum nur aaaaaa's
-      }
-      else{
-        deleteFromUploadArray(currentUser.uid.concat(props.recording.timestamp.toString()));
-      }*/
+      console.log("upload this thing", props.recording.upload);
     };
 
     const playRec = async () => {
