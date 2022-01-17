@@ -2,6 +2,26 @@
 import { Region } from "wavesurfer.js/src/plugin/regions";
 import toWav from "audiobuffer-to-wav"; //MIT ok
 import RegionData from "./RegionData";
+import { resample } from 'wave-resampler';
+
+const SAMPLE_RATE = 24000;
+/**
+ * downsamples the audio to @see SAMPLE_RATE samples
+ * NOTE: uses sinc downsampling. that is the slowest and may be too slow for large data
+ * @param {AudioBuffer} audioBuffer 
+ * @returns {AudioBuffer}
+ */
+export function downSampleAudioBuffer(audioBuffer: AudioBuffer): AudioBuffer{
+    const newSamples = resample(audioBuffer.getChannelData(0), audioBuffer.sampleRate, SAMPLE_RATE, {method: 'sinc'});
+    const floatArray = new Float32Array(newSamples);
+    const newBuffer: AudioBuffer = new AudioContext().createBuffer(
+    1, //Channels
+    audioBuffer.length,
+    SAMPLE_RATE
+    );
+    newBuffer.copyToChannel(floatArray,0);
+    return newBuffer;
+}
 
 /**
  * plays an array buffer
