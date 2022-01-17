@@ -5,7 +5,6 @@
     <ion-content :fullscreen="true">
       <ion-card-modal v-if="openModal"><!---brauch eig nen modal das kann man nicht wegklicken--->
         <ion-content fullscreen>
-          <ion-list>
             <ion-item>
           <ion-label v-model:position="fixed">Name:</ion-label>
           <ion-input
@@ -106,7 +105,6 @@
           >delete</ion-button
         >
         <ion-button color="success" @click="saveChanges()"> ok</ion-button>
-          </ion-list>
         </ion-content>
       </ion-card-modal>
 
@@ -243,7 +241,7 @@ export default defineComponent({
     IonItem,
     IonLabel,
     IonSelect,
-    IonSelectOption,
+    IonSelectOption,IonButton,
   },
 
   setup() {
