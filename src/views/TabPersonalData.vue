@@ -246,10 +246,14 @@ export default defineComponent({
       await loadDialects();
       await loadLanguages();
       await loadData();
+
+      // console.log("Languages in method call: " + languages)
       
       uploadUserSettings();
     };
     initData();
+
+    // console.log("Languages after method call: " + languages)
 
     const updateFirstLanguages = (languages: string[]) => {
       console.log(languages);
@@ -298,6 +302,8 @@ export default defineComponent({
         { merge: true }
       );
     }
+
+    // console.log("Languages at end of setup: " + languages)
 
     return {
       t,

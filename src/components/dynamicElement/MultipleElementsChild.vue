@@ -12,8 +12,13 @@
     ></ion-icon>
     </ion-col>
     <ion-col>
-      <ion-select v-model="input" @ionChange="inputChanged" value="English">
-              <ion-select-option v-for="[short,language] in loadLanguages()" v-bind:key="short" v-bind:value="short">{{language}}</ion-select-option>
+      <ion-select v-model="input" @ionChange="inputChanged()" >
+        <ion-select-option 
+            v-for="[short,language] in languages" 
+            v-bind:key="short" 
+            v-bind:value="short">
+          {{language}}
+        </ion-select-option>
       </ion-select>
     </ion-col>
     </ion-row>
@@ -48,25 +53,35 @@ export default defineComponent({
 
 
   setup(props: any, context: any) {
-    async function loadLanguages() {
-      const languages: string[][]=[];
+    const languages: string[][]=[];
+    const input = ref("");
+    const loadLanguages = async() => {
       const db = firebase.firestore();
       const snapshot = await db.collection("data").doc("languages").get();
       for(let i=0;i<18;i++){
         languages[i]=snapshot.get(i.toString())
       }
-      console.log(languages[0])
-      return languages;
+      console.log("Languages in method call: " + languages)
     }
-    const input = ref();
+
+    const initData = async () => {
+      await loadLanguages();
+      console.log(languages)
+    };
+    initData();
+    console.log("Languages after method call: " + languages)
+    
+    // const input = ref("");
     const removeFromParent = () => {
       context.emit("remove", props.id);
     };
     const inputChanged = () => {
       context.emit("change", input.value, props.id);
+      // context.emit("change", input.value, props.id);
     };
-    
-
+    // removeFromParent();
+    inputChanged();
+    context.emit("change", input.value, props.id);
 
     const initName = (name: string, index: number) => {
 
@@ -75,7 +90,7 @@ export default defineComponent({
 
     };
     return { removeCircle, removeFromParent, inputChanged, input, initName, 
-        loadLanguages
+         languages
     };
   },
 });
