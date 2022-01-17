@@ -178,7 +178,8 @@ import {
   getRecordingEntry,
   setRecordingLicense,
 } from "@/scripts/RecordingStorage";
-
+import {onIonViewDidEnter, onIonViewWillLeave} from "@ionic/vue";
+import {UploadToFirebase} from "@/scripts/RecordingUpload";
 import {
   IonPage,
   IonHeader,
@@ -516,6 +517,11 @@ export default defineComponent({
     }, 1000);
 
     // Abspielen: https://github.com/tchvu3/capacitor-voice-recorder#playback
+
+    onIonViewDidEnter(async () => {
+      console.log('Home page will be left');
+      await UploadToFirebase();
+    });
 
     return {
       t,

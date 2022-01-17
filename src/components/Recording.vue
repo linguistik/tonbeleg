@@ -104,6 +104,7 @@ import {
   insertUpdateFunction,
 } from "@/scripts/RecordingStorage";
 import RecordingData from '@/scripts/RecordingData';
+import {UploadToFirebase} from "@/scripts/RecordingUpload";
 
 export default {
   name: "Recording",
@@ -134,27 +135,29 @@ export default {
     const displayName = ref(props.recording.name);
     const displayPartsLength = ref(props.recording.parts.length);
     const exists = ref(true);
-
-    insertUpdateFunction(props.recording.timestamp, (editedEntry: RecordingData)=>{
-      displayPartsLength.value = editedEntry.parts.length;
-    })
+    const selectedForUpload = ref(props.recording.selectedForUpload);
+    const alreadyUploaded = ref(props.recording.upload);
 
     const updateKey = ref(0);
     const forceUpdate = () => {
       updateKey.value += 1;
     };
 
+    insertUpdateFunction(props.recording.timestamp, (editedEntry: RecordingData)=>{
+      displayPartsLength.value = editedEntry.parts.length;
+      selectedForUpload.value = editedEntry.selectedForUpload;
+      alreadyUploaded.value = editedEntry.upload;
+    })
+
     const currentUser = firebase.auth().currentUser;
     if (currentUser == null) return;
 
-    const alreadyUploaded = ref(props.recording.upload);
     let audioString = new Audio();
 
     const isOpen = ref(false);
     let currentTime = 0;
     let counter = 0;
     const playing = ref(false);
-    const selectedForUpload = ref(props.recording.selectedForUpload);
 
     const toggleOpen = () => {
       isOpen.value = !isOpen.value;
@@ -215,6 +218,7 @@ export default {
       if (currentUser == null) return;
       selectedForUpload.value = !selectedForUpload.value;
       setSelectedForUpload(props.recording.timestamp, selectedForUpload.value);
+      await UploadToFirebase();
       console.log("upload this thing", props.recording.upload);
     };
 
