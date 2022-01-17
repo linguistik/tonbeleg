@@ -454,7 +454,7 @@ export default defineComponent({
         new RecordingData(
           timestamp,
           shownName,
-          ["0.raw"],
+          [],
           timer.value.getSeconds(),
           false,
           false,

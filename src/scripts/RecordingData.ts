@@ -1,8 +1,10 @@
+import RegionData from "./editing/RegionData";
+
 
 export default class RecordingData{
     timestamp: number;
     name: string;
-    parts: string[];
+    parts: RegionData[];
     length: number;
     upload: boolean;
     selectedForUpload: boolean;
@@ -11,7 +13,7 @@ export default class RecordingData{
     languages: string[];
     transcription: string;
 
-    constructor(timestamp: number, name: string, parts: string[], length: number, upload: boolean, selectedForUpload: boolean, license: string, userID: string, languages: string[]){
+    constructor(timestamp: number, name: string, parts: RegionData[], length: number, upload: boolean, selectedForUpload: boolean, license: string, userID: string, languages: string[]){
         this.timestamp = timestamp;
         this.name = name;
         this.parts = parts;

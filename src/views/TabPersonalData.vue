@@ -112,15 +112,11 @@ export default defineComponent({
     IonHeader, IonToolbar, IonTitle, IonContent, IonPage, IonList, IonItem, IonListHeader, IonLabel, IonInput, IonButton, IonSelect,IonSelectOption,    MultipleElementsParent
   },
   methods: {
-    //läd geladene Sprachen und setzt die Einträge, bisschen unübersichtliches spaghetti aber seh keinen andere lösung
+    /**
+     * laods saved languages and sets entrys in child components
+     */
     async setupLanguages() {
       await loadUserSettings(); //läd user settinmg
-
-      //await this.$refs.lng1.onInit(getFirstLanguage()); //erstellt kinder erstSprache
-      //this.$refs.lng1.itemRefs.forEach((entrys: any, index: number) =>{ //füllt bei kinder die geladenen namen ein
-       // entrys.initName(getFirstLanguage()[index],index);
-      //})
-
       await this.$refs.lng2.onInit(getSecondLanguage()); //erstellt kinder zweite Sprache
       this.$refs.lng2.itemRefs.forEach((entrys: any, index: number) =>{ //füllt bei kinder die geladenen namen ein
         entrys.initName(getSecondLanguage()[index],index);
@@ -131,7 +127,6 @@ export default defineComponent({
 
   mounted() {
     //kinder erst nach setup laden
-
     this.setupLanguages();
   },
   //TODO upload data
@@ -155,7 +150,9 @@ export default defineComponent({
     const dateType = ref("date");
 
     let dialects: string[] = [];
-
+    /**
+     * loads data about the user from database
+     */
     const loadData = async () => {
       const user = firebase.auth().currentUser;
       if (user == null) return;
@@ -176,7 +173,9 @@ export default defineComponent({
       //const ref = firebase.database();
       //console.log(ref);
     };
-
+    /**
+     * upload userdata on database
+     */
     const uploadUserSettings = () => {
       const db = firebase.firestore();
       const currentUser = firebase.auth().currentUser;
@@ -198,7 +197,9 @@ export default defineComponent({
       );
       console.log("wrote to database");
     };
-
+    /**
+     * saves userdata local in usersettings.json and upload to firebase
+     */
     const safe = ()=>{
       console.log(birthday.value)
       console.log(firstLanguage.value)
@@ -231,7 +232,9 @@ export default defineComponent({
       const snapshot = await db.collection("data").doc("dialects").get();
       dialects = snapshot.get("dialects");
     };
-
+    /**
+     * loads user settings initially when tab is first opened
+     */
     const initData = async () => {
 
       await loadData();
@@ -239,13 +242,19 @@ export default defineComponent({
       uploadUserSettings();
     };
     initData();
-
+    /**
+     * first language childcomponents call this method when their language is changed,
+     * @param languages, list with all languges from all child compontents with updated entrys
+     */
     const updateFirstLanguages = (languages: string[]) => {
       console.log(languages);
       firstLanguage.value = languages;
       setFirstLanguage(languages);
     };
-
+    /**
+     * second language childcomponents call this method when their language is changed,
+     * @param languages, list with all languges from all child compontents with updated entrys
+     */
     const updateSecondLanguages = (languages: string[]) => {
       console.log(languages);
       secondLanguage.value = languages;
