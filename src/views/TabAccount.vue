@@ -49,6 +49,7 @@ import RecordingData from "@/scripts/RecordingData";
 import Recording from "@/components/Recording.vue";
 
 import firebase from "@/backend/firebase-config";
+import RegionData from "@/scripts/editing/RegionData";
 
 export default defineComponent({
   name: "TabAccount",
@@ -89,12 +90,18 @@ export default defineComponent({
         .collection("recordings")
         .get()
         .then((collection) => {
-          collection.forEach((doc) => {
+          collection.forEach(async(doc) => {
+            console.log("try get parts");
+            const partsCollection = await db.collection("users").doc(userUID).collection("recordings").doc("" + doc.get("timestamp")).collection("parts").get();
+            const partNames: RegionData[] = [];
+            partsCollection.forEach((partDoc)=>{
+              partNames.push(new RegionData(null, partDoc.get("name")));
+            })
             buffer.push(
               new RecordingData(
                 doc.get("timestamp"),
                 doc.get("name"),
-                [], //create array with length = doc.get("data").length();
+                [], 
                 doc.get("length"),
                 false,
                 false,
@@ -103,6 +110,7 @@ export default defineComponent({
                 ["language"]
               )
             );
+            console.log("buffer", buffer);
           });
         });
 
