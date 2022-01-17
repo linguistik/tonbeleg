@@ -55,7 +55,7 @@ export async function UploadToFirebase() {
                 name: RecordingDataArr[i].name,
                 length: RecordingDataArr[i].length,
                 license: RecordingDataArr[i].license,
-            }, { merge: true });
+            }, {merge: true});
 
             const recordingDataI = RecordingDataArr[i];
             getAudioData(RecordingDataArr[i].timestamp, "0.raw", async (completeAudioBuffer) => {
@@ -63,7 +63,7 @@ export async function UploadToFirebase() {
                 //playAudioBuffer(completeAudioBuffer);
                 for (let j = 0; j < recordingDataI.parts.length; j++) {
                     const part = recordingDataI.parts[j];
-                    const cuttedArrayBuffer: ArrayBuffer = trimAudio(part,completeAudioBuffer);
+                    const cuttedArrayBuffer: ArrayBuffer = trimAudio(part, completeAudioBuffer);
                     //https://stackoverflow.com/questions/9267899/arraybuffer-to-base64-encoded-string
                     const base64String = arrayBufferToBase64String(cuttedArrayBuffer);
 
@@ -76,18 +76,18 @@ export async function UploadToFirebase() {
                 RecordingUploadArray.push(recordingDataI);
             });
         }
-    console.log("wrote to database");
-    //deleteAllFromUploadArray();
-    
-    for (i = 0; i < RecordingDataArr.length; i = i + 1) {
-        if (RecordingDataArr[i].upload == false && RecordingDataArr[i].selectedForUpload == true)
-            await setRecordingEntryUploadBoolean(RecordingDataArr[i].timestamp, true);
+        console.log("wrote to database");
+        //deleteAllFromUploadArray();
+
+        for (i = 0; i < RecordingDataArr.length; i = i + 1) {
+            if (RecordingDataArr[i].upload == false && RecordingDataArr[i].selectedForUpload == true)
+                await setRecordingEntryUploadBoolean(RecordingDataArr[i].timestamp, true);
+        }
     }
 }
 
-export async function isConnected() {
-    const Status = await Network.getStatus().then(result => result);
-    console.log("is Connected?:", Status.connected);
-    return Status.connected;
-}
-
+    export async function isConnected() {
+        const Status = await Network.getStatus().then(result => result);
+        console.log("is Connected?:", Status.connected);
+        return Status.connected;
+    }
