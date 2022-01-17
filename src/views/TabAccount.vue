@@ -1,4 +1,4 @@
-<template>
+<template >
   <ion-page>
     <PageHeader v-bind:title="t('general.appname')" />
 
@@ -51,6 +51,8 @@ import Recording from "@/components/Recording.vue";
 import firebase from "@/backend/firebase-config";
 import RegionData from "@/scripts/editing/RegionData";
 
+import router from "@/router";
+
 export default defineComponent({
   name: "TabAccount",
 
@@ -70,11 +72,29 @@ export default defineComponent({
   setup() {
     // multi-lingual support
     const { t } = useI18n();
-
+    const delay = (ms: number) => {
+      return new Promise((resolve) => setTimeout(resolve, ms));
+    };
+    const updateKey = ref(0);
+    const forceUpdate = () => {
+      updateKey.value += 1;
+    };
     const uploadedRecordings: Ref<RecordingData[]> = ref([]);
     const errorMessage = ref(
       "Du hast auf diesem Account keine gespeicherten Aufnahmen oder du bist nicht mit dem Internet verbunden"
     );
+
+    const f = async()=>{
+      const db = firebase.firestore();
+      const currentUser = firebase.auth().currentUser;
+      if (currentUser == null) return;
+      const userUID = currentUser.uid;
+      const collection2 = await db
+        .collection("users")
+        .doc(userUID)
+        .collection("recordings")
+        .get();
+    }
 
     const loadRecordingsFromDatabase = async () => {
       const buffer: RecordingData[] = [];
@@ -83,47 +103,63 @@ export default defineComponent({
       const currentUser = firebase.auth().currentUser;
       if (currentUser == null) return;
       const userUID = currentUser.uid;
-
-      await db
+      //await delay(10000);
+      const collection = await db
         .collection("users")
         .doc(userUID)
         .collection("recordings")
-        .get()
-        .then((collection) => {
-          collection.forEach(async(doc) => {
-            console.log("try get parts");
-            const partsCollection = await db.collection("users").doc(userUID).collection("recordings").doc("" + doc.get("timestamp")).collection("parts").get();
-            const partNames: RegionData[] = [];
-            partsCollection.forEach((partDoc)=>{
-              partNames.push(new RegionData(null, partDoc.get("name")));
-            })
-            buffer.push(
-              new RecordingData(
-                doc.get("timestamp"),
-                doc.get("name"),
-                [], 
-                doc.get("length"),
-                false,
-                false,
-                doc.get("license"),
-                doc.get("userID"),
-                ["language"]
-              )
-            );
-            console.log("buffer", buffer);
-          });
-        });
+        .get();     
+      
+      for (const doc of collection.docs) {
+        console.log("try get parts");
+      
+        const r = await f(); 
+        
 
-      uploadedRecordings.value = buffer;
+        const partsCollection = await db
+        .collection("users")
+        .doc(userUID)
+        .collection("recordings")
+        .doc("" + doc.get("timestamp"))
+        .collection("parts")
+        .get();
+
+        const partNames: RegionData[] = [];
+        partsCollection.forEach(
+          (
+            partDoc: firebase.firestore.QueryDocumentSnapshot<firebase.firestore.DocumentData>
+          ) => {
+            partNames.push(new RegionData(null, partDoc.get("name")));
+          }
+        );
+        buffer.push(
+          new RecordingData(
+            doc.get("timestamp"),
+            doc.get("name"),
+            partNames,
+            doc.get("length"),
+            false,
+            false,
+            doc.get("license"),
+            doc.get("userID"),
+            ["language"]
+          )
+        );
+
+      } //foreach odc
+        //await delay(1);
+        //console.log("buffer", buffer);
+        uploadedRecordings.value = buffer;
     };
     const refresh = async (event: any) => {
-      await loadRecordingsFromDatabase();
-      event.target.complete();
+      await await await loadRecordingsFromDatabase();
+      await event.target.complete();
+      console.log("upldRec", uploadedRecordings);
     };
 
     loadRecordingsFromDatabase();
 
-    return { t, refresh, uploadedRecordings, errorMessage };
+    return { t, refresh, uploadedRecordings, errorMessage, updateKey };
   },
 });
 </script>
