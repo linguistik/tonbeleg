@@ -61,27 +61,22 @@ export default defineComponent({
       for(let i=0;i<18;i++){
         languages[i]=snapshot.get(i.toString())
       }
-      console.log("Languages in method call: " + languages)
     }
-
     const initData = async () => {
       await loadLanguages();
       console.log(languages)
+      input.value=" "
+      context.emit("change", input.value, props.id);
     };
     initData();
-    console.log("Languages after method call: " + languages)
     
-    // const input = ref("");
     const removeFromParent = () => {
       context.emit("remove", props.id);
     };
     const inputChanged = () => {
       context.emit("change", input.value, props.id);
-      // context.emit("change", input.value, props.id);
     };
-    // removeFromParent();
     inputChanged();
-    context.emit("change", input.value, props.id);
 
     const initName = (name: string, index: number) => {
 
@@ -90,7 +85,7 @@ export default defineComponent({
 
     };
     return { removeCircle, removeFromParent, inputChanged, input, initName, 
-         languages
+         languages, initData, loadLanguages
     };
   },
 });
