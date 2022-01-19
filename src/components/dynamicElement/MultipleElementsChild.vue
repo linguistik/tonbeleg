@@ -3,7 +3,7 @@
   <ion-item>
     <ion-grid>
     <ion-row>
-    <ion-col size="2">
+    <ion-col size="1">
     <ion-icon 
       :icon="removeCircle"
       @click="removeFromParent()"
@@ -12,6 +12,10 @@
     ></ion-icon>
     </ion-col>
     <ion-col>
+      <ion-item>
+      <ion-label>
+            Zweitsprache wählen
+          </ion-label>
       <ion-select v-model="input" @ionChange="inputChanged()" >
         <ion-select-option 
             v-for="[short,language] in languages" 
@@ -20,6 +24,7 @@
           {{language}}
         </ion-select-option>
       </ion-select>
+      </ion-item>
     </ion-col>
     </ion-row>
     </ion-grid>
