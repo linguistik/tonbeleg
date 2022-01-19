@@ -55,6 +55,7 @@ export default defineComponent({
   setup(props: any, context: any) {
     const languages: string[][]=[];
     const input = ref("");
+    let tempLang = " ";
     const loadLanguages = async() => {
       const db = firebase.firestore();
       const snapshot = await db.collection("data").doc("languages").get();
@@ -64,9 +65,8 @@ export default defineComponent({
     }
     const initData = async () => {
       await loadLanguages();
-      console.log(languages)
-      input.value=" "
-      context.emit("change", input.value, props.id);
+      input.value=tempLang;
+      // context.emit("change", input.value, props.id);
     };
     initData();
     
@@ -76,7 +76,6 @@ export default defineComponent({
     const inputChanged = () => {
       context.emit("change", input.value, props.id);
     };
-    inputChanged();
 
     /**
      * sets saved name on first load
@@ -86,7 +85,7 @@ export default defineComponent({
     const initName = (name: string, index: number) => {
 
       if(props.id != index){console.log("hier is5t was schief gegangen")}
-      input.value=name;
+      tempLang=name;
 
     };
     return { removeCircle, removeFromParent, inputChanged, input, initName, 

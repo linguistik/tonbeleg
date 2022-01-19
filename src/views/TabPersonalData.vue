@@ -120,7 +120,7 @@ export default defineComponent({
       await this.$refs.lng2.onInit(getSecondLanguage()); //erstellt kinder zweite Sprache
       this.$refs.lng2.itemRefs.forEach((entrys: any, index: number) =>{ //füllt bei kinder die geladenen namen ein
         entrys.initName(getSecondLanguage()[index],index);
-        console.log(index)
+        console.log(index);
       })
     }
   },
