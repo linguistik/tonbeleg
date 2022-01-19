@@ -38,8 +38,8 @@
             <ColoredIcon :icon="square" size="small" :color="usefulColorMapRef.get(item.color)"></ColoredIcon>
           </ion-col>
           <ion-col>
-            <ion-label class="elementName"> 
-              {{item.id }}
+            <ion-label class="elementName" @click="setNameOfRecordingIdEventHandler(item.id)" :key="updateKey"> 
+              {{ getNameOfRecordingId(item.id) }}
             </ion-label>
           </ion-col>
           <ion-col size="2">
@@ -103,11 +103,9 @@ import ExportAudioPlugin from "wavesurfer-export-audio-plugin"; //MIT ok
 
 import toWav from "audiobuffer-to-wav"; //MIT ok
 
-import { Filesystem, Directory, Encoding } from "@capacitor/filesystem";
-import {saveRegions, importRegions} from "@/scripts/editing/RegionSaver";
-
 import { replayAudioData, getAudioData } from "@/scripts/ReplayData";
 import { Region } from "wavesurfer.js/src/plugin/regions";
+import { setRecordingEntryRegionDataArray,getRecordingEntryRegionDataArray } from "@/scripts/RecordingStorage";
 
 export default defineComponent({
   name: "TabAccount",
@@ -157,6 +155,15 @@ export default defineComponent({
     if (currentUser == null) return;
     const currentUserUID = currentUser.uid;
 
+
+    /**
+     * this is used to force an update of the name/id labels on the page to display the new name after being set
+     */
+    const updateKey = ref(0);
+    const forceUpdate = ()=>{
+      updateKey.value += 1;
+    }
+
     let index = 0; //this is the index for determining the next color
     const usefulColorMap = new Map<string, string>([
       ["rgba(255,0,0,0.5)", "red"],
@@ -171,11 +178,78 @@ export default defineComponent({
 
     const usefulColorMapRef = ref(usefulColorMap);
 
+    const idToNameMap = new Map<string,string>();
+    
     /**
-     * creates the wavesurfer
+     * returns a name of a recording to display to the screen
+     * @param {string} id the id of the recording
+     * @returns {string} name of that recording if it is set, returns the recording id otherwise
+     */
+    const getNameOfRecordingId = (id: string)=>{
+      if(!idToNameMap.has(id))
+        return id;
+      else
+        return idToNameMap.get(id);
+    }
+
+    /**
+     * opens an alert that asks for a new name for this region 
+     * and forces an update of that element to display the new name
+     * @param {string} id the id of the recording to set a name for
+     */
+    const setNameOfRecordingIdEventHandler = async (id: string)=>{
+      const alert = await alertController.create({
+        message: "Choose a name",
+        inputs: [
+          {
+            name: "textField",
+            id: "textField",
+            type: "text",
+            attributes: {
+              required: true,
+              minlength: 1,
+              maxlength: 20,
+              inputMode: "text",
+            },
+            handler: () => {
+              console.log("texteingabe erfolgt"); //is this handler really necessary? For some reason it is^^
+            },
+          },
+        ], //inputs
+        buttons: [
+          {
+            text: "cancel",
+            handler: () => {
+              console.log("confirm cancel");
+            },
+          },
+          {
+            text: "OK",
+            handler: (data) => {
+              const x = data.textField;
+              console.log(x);
+              if(!(x.length === 0) && x.length<=35){ //nur kleine und nicht leere eingaben
+                idToNameMap.set(id, x);
+                forceUpdate();
+              }
+              else{
+                console.log("not a valid name");
+              }
+
+            },
+          },
+        ], //buttons
+      }); //create alert
+      await alert.present();
+    }
+
+    /**
+     * creates the {@link wavesurfer}
      * loads the specific audio data
-     * initializes the renferedBuffer with an AudioBuffer of the audio data
-     *
+     * initializes the {@link renderedBuffer} with an AudioBuffer of the audio data
+     * loads the regionData and imports them into {@link wavesurfer}
+     * extracts the names of the regionData and inserts them into {@link idToNameMap}
+     * 
      * NOTE: this cannot be called directly on creation, since wavesurfer needs the specific waveform container in the html
      */
     const load = async () => {
@@ -199,9 +273,16 @@ export default defineComponent({
       wavesurfer.load(audio);
 
       wavesurfer.on("ready", async () => {
-        console.log("ready");
+        console.log("ready", wavesurfer.getDuration());
         wavesurfer.enableDragSelection({});
-        importRegions(wavesurfer, props.folderName);
+        //importRegions(wavesurfer, idToNameMap, props.folderName);
+        const regionArrayData = getRecordingEntryRegionDataArray(props.folderName);
+        for(const regionData of regionArrayData){
+        wavesurfer.addRegion(regionData);
+        if(regionData.name != regionData.id){
+            idToNameMap.set(regionData.id, regionData.name);
+        }
+    }
         renderedBuffer = await wavesurfer.getRenderedAudioBuffer();
       });
 
@@ -215,6 +296,7 @@ export default defineComponent({
 
       wavesurfer.on("region-update-end", (region) => {
         changesApplied = true;
+        console.log("ready2", renderedBuffer);
       });
 
       wavesurfer.on("region-removed", (region) => {
@@ -230,53 +312,12 @@ export default defineComponent({
       window.setTimeout(load,100);
     }
     loadAfterTimeout();
-    /**
-     * copys the specific region of the renderedBuffer and encodes it to a wave file format
-     * @param {Region} region the region, we want the data from
-     * @returns {ArrayBuffer} the encoded data in wave format
-     */
-    const trimAudio = (region: Region) => {
-      console.log("trim", region);
-      //https://github.com/Vinit-Dantkale/AudioFy/blob/master/audio.js
-      const startPoint = Math.floor(
-        (region.start * renderedBuffer.length) / wavesurfer.getDuration()
-      );
-      const endPoint = Math.ceil(
-        (region.end * renderedBuffer.length) / wavesurfer.getDuration()
-      );
-      const audioBufferLength = endPoint - startPoint;
-      const trimmedAudio = new AudioContext().createBuffer(
-        1, //Channels
-        audioBufferLength,
-        renderedBuffer.sampleRate
-      );
-      //copy channel data
-      trimmedAudio.copyToChannel(
-        renderedBuffer.getChannelData(0).slice(startPoint, endPoint),
-        0
-      );
 
-      const wav = toWav(trimmedAudio);
-      return wav;
-    }; //trimAudio
 
-    /**
-     * plays an audio buffer
-     * @param {AudioBuffer} buf the buffer to be played
-     */
-    const playAudioBuffer = (buf) => {
-      new AudioContext().decodeAudioData(buf, function (decodedBuffer) {
-        const context = new AudioContext();
-        const source = context.createBufferSource();
-        source.buffer = decodedBuffer;
-        source.connect(context.destination);
-        source.start();
-      });
-    }; //play audio buffer
 
     const finishAndSaveEventHandler = async () => {
-      saveRegions(regionsRef.value, props.folderName);
-      
+      setRecordingEntryRegionDataArray(props.folderName, regionsRef.value, idToNameMap);
+
       //this is still useful code!!!
       /*for (const region of regionsRef.value) {
         const wavFileData = trimAudio(region);
@@ -337,6 +378,8 @@ export default defineComponent({
       finishAndSaveEventHandler,
       playPauseEventHandler,
       skipEventHandler,
+      getNameOfRecordingId,
+      setNameOfRecordingIdEventHandler,
       regionsRef,
       usefulColorMapRef,
       playSkipForwardCircleOutline,
@@ -345,6 +388,7 @@ export default defineComponent({
       square,
       trashOutline,
       playCircleOutline,
+      updateKey,
     };
   },
 });

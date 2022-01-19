@@ -1,5 +1,5 @@
 <template>
-  <ion-page :key="updateKey">
+  <ion-page :key="updateKey" >
     <PageHeader v-bind:title="t('general.appname')" />
 
     <ion-content :fullscreen="true">
@@ -8,9 +8,9 @@
           <ion-title size="large">Gespeichertes</ion-title>
         </ion-toolbar>
       </ion-header>
-      <ion-button v-on:click="loadEverythingPls()">
+      <!--<ion-button v-on:click="loadEverythingPls()">
         refresh
-      </ion-button>
+      </ion-button>-->
       <ion-list
       lines="full"
       v-if="recordingsRef.length!=0">
@@ -42,24 +42,12 @@ import {
   IonToolbar,
   IonTitle,
   IonContent,
-  IonButton,
   IonList, alertController,
 } from "@ionic/vue";
-/*
-import {
-  Filesystem,
-  Directory,
-  //Encoding,
-  //WriteFileResult,
-  //ReaddirResult,
-} from "@capacitor/filesystem";*/
-
 import Recording from "@/components/Recording.vue";
-
 import {loadRecordings, safeRecordings, getRecordings } from "@/scripts/RecordingStorage";
 import RecordingData from "@/scripts/RecordingData";
-//import {getAlreadyUploadedArray, getUploadArray, getInUploadArrayIdent} from "@/scripts/UserSettingsStorage";
-//import {setUploadArrays} from "@/scripts/RecordingUpload";
+import {onIonViewWillLeave} from "@ionic/vue";
 export default defineComponent({
   name: "TabSaved",
   components: {
@@ -69,20 +57,9 @@ export default defineComponent({
     IonTitle,
     IonContent,
     IonPage,
-    IonButton,
     IonList,
     Recording,
   },
-
-  /*methods:{
-    async setUpUploadArray(){
-      await loadUserSettings();
-      await loadRecordings();
-    }
-  },
-  mounted(){
-    this.setUpUploadArray();
-  },*/
 
   setup() {
     // multi-lingual support
@@ -91,25 +68,25 @@ export default defineComponent({
     const recordingsRef: Ref<RecordingData[]> = ref([]);
     const initialize = async () => {
       await loadRecordings().then(()=>{recordingsRef.value =  getRecordings();});
-
     }
     initialize();
 
     const updateKey = ref(0);
     const forceUpdate = ()=>{
       updateKey.value += 1;
-
     }
-
+    /**
+     * refreshes complete tab
+     */
     const refresh = async () => {
-      recordingsRef.value = getRecordings(); 
+      recordingsRef.value = getRecordings();
       forceUpdate();
     }
 
     const loadEverythingPls = async () => {
       await safeRecordings();
       await UploadToFirebase();
-      await refresh()
+      await refresh();
       if(RecordingUploadArray.length > 0) {
         const alert = await alertController.create({
           message: "Do you want to delete the records you just uploaded from your device?",
@@ -139,6 +116,11 @@ export default defineComponent({
       window.setTimeout(refresh,100);
     }
 
+    /*onIonViewWillLeave(async () => {
+      console.log('Home page will be left');
+      await loadEverythingPls();
+    });*/
+
 
     return { t, 
     recordingsRef, 
@@ -146,8 +128,7 @@ export default defineComponent({
     refresh,
     safeRecordings,
     loadRecordings,
-    updateKey,
-      UploadToFirebase,
+    updateKey, UploadToFirebase,
       loadEverythingPls,
     };
 

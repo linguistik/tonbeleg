@@ -78,6 +78,11 @@ export default defineComponent({
     };
     inputChanged();
 
+    /**
+     * sets saved name on first load
+     * @param name, saved name
+     * @param index, index of child elements to make sure, correct child element gets the name
+     */
     const initName = (name: string, index: number) => {
 
       if(props.id != index){console.log("hier is5t was schief gegangen")}

@@ -1,4 +1,4 @@
-<template>
+<template >
   <ion-page>
     <PageHeader v-bind:title="t('general.appname')" />
 
@@ -49,6 +49,10 @@ import RecordingData from "@/scripts/RecordingData";
 import Recording from "@/components/Recording.vue";
 
 import firebase from "@/backend/firebase-config";
+import RegionData from "@/scripts/editing/RegionData";
+
+import router from "@/router";
+import { ConnectionStatus, Network } from "@capacitor/network";
 
 export default defineComponent({
   name: "TabAccount",
@@ -69,48 +73,79 @@ export default defineComponent({
   setup() {
     // multi-lingual support
     const { t } = useI18n();
-
+    
     const uploadedRecordings: Ref<RecordingData[]> = ref([]);
     const errorMessage = ref(
-      "Du hast auf diesem Account keine gespeicherten Aufnahmen oder du bist nicht mit dem Internet verbunden"
+      "Du hast auf diesem Account keine hochgeladenenen Aufnahmen oder du bist nicht mit dem Internet verbunden"
     );
 
+
     const loadRecordingsFromDatabase = async () => {
+      try{
+        const networkStatus: ConnectionStatus = await Network.getStatus();
+        if(!networkStatus.connected){
+          errorMessage.value = "Du bist nicht mit dem Internet verbunden";
+          return;
+        }
+
+
       const buffer: RecordingData[] = [];
 
       const db = firebase.firestore();
       const currentUser = firebase.auth().currentUser;
       if (currentUser == null) return;
       const userUID = currentUser.uid;
-
-      await db
+      //await delay(10000);
+      const collection = await db
         .collection("users")
         .doc(userUID)
         .collection("recordings")
-        .get()
-        .then((collection) => {
-          collection.forEach((doc) => {
-            buffer.push(
-              new RecordingData(
-                doc.get("timestamp"),
-                doc.get("name"),
-                ["first"], //create array with length = doc.get("data").length();
-                doc.get("length"),
-                false,
-                false,
-                doc.get("license"),
-                doc.get("userID"),
-                ["language"]
-              )
-            );
-          });
-        });
+        .get();     
+      
+      for (const doc of collection.docs) {
+      
+        const partsCollection = await db
+        .collection("users")
+        .doc(userUID)
+        .collection("recordings")
+        .doc("" + doc.get("timestamp"))
+        .collection("parts")
+        .get();
 
-      uploadedRecordings.value = buffer;
+        const partNames: RegionData[] = [];
+        partsCollection.forEach(
+          (
+            partDoc: firebase.firestore.QueryDocumentSnapshot<firebase.firestore.DocumentData>
+          ) => {
+            partNames.push(new RegionData(null, partDoc.get("name")));
+          }
+        );
+        buffer.push(
+          new RecordingData(
+            doc.get("timestamp"),
+            doc.get("name"),
+            partNames,
+            doc.get("length"),
+            false,
+            false,
+            doc.get("license"),
+            doc.get("userID"),
+            ["language"]
+          )
+        );
+
+      } //foreach doc
+        uploadedRecordings.value = buffer;
+        if(buffer.length == 0){
+          errorMessage.value = "Du hast auf diesem Account keine hochgeladenenen Aufnahmen";
+        }
+      }catch(error){
+          errorMessage.value = "Verbindung zur Datenbank konnte nicht aufgebaut werden. Möglicherweise bist du nicht mir dem Internet verbunden";
+      }
     };
     const refresh = async (event: any) => {
-      await loadRecordingsFromDatabase();
-      event.target.complete();
+      await await await loadRecordingsFromDatabase();
+      await event.target.complete();
     };
 
     loadRecordingsFromDatabase();
