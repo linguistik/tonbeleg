@@ -164,7 +164,6 @@
   </ion-page>
 </template>
 
-
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 import { useI18n } from "vue-i18n";
@@ -176,7 +175,7 @@ import {
   getRecordingEntry,
   setRecordingLicense,
 } from "@/scripts/RecordingStorage";
-import {onIonViewDidEnter, onIonViewWillLeave} from "@ionic/vue";
+import {onIonViewDidEnter, toastController} from "@ionic/vue";
 import {UploadToFirebase} from "@/scripts/RecordingUpload";
 import {
   IonPage,
@@ -258,6 +257,8 @@ export default defineComponent({
     const newLanguage = ref("");
     const newLicense = ref("");
 
+    const recordingAllowed = ref(false);
+
     const licensePTR = ref('CC0 1.0');
 
     const timer = ref(new Date(0));
@@ -282,6 +283,7 @@ export default defineComponent({
       VoiceRecorder.requestAudioRecordingPermission()
         .then((result: GenericResponse) => {
           console.log(`Ist das Mic eingeschaltet? ${result.value}`);
+          recordingAllowed.value = result.value;
         })
         .catch((error) => {
           console.log(error);
@@ -339,6 +341,15 @@ export default defineComponent({
     const startRecordingTrigger = async () => {
       if(openModal.value==false) {
         timer.value.setSeconds(0);
+        if(recordingAllowed.value == false){
+          //TODO
+          const toast = await toastController
+              .create({
+                message: 'Website cannot record audio. Make sure to give microphone permission to this website.',
+                duration: 2000
+              })
+          return toast.present();
+        }
         recordingStatus.value = recordingStatusEnums.DOING_SMT;
         await VoiceRecorder.startRecording()
             .then((result: GenericResponse) => {
