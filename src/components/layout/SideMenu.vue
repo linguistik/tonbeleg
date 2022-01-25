@@ -9,9 +9,6 @@
 
     <ion-content>
       <ion-list>
-        <ion-list-header @click="close()">
-          Sub Header
-        </ion-list-header>
 
         <ion-menu-toggle auto-hide="false">
         <ion-item button @click="toPage('/tabs/tabsettings')">
@@ -57,7 +54,7 @@ import {
   IonMenu, 
   menuController, 
   IonHeader, IonTitle, IonToolbar,
-  IonContent, IonList, IonListHeader,
+  IonContent, IonList, 
   IonMenuToggle, IonItem, IonIcon, IonLabel
 } from '@ionic/vue';
 
@@ -70,7 +67,7 @@ export default defineComponent({
   components: {
     IonMenu, 
     IonHeader, IonTitle, IonToolbar,
-    IonContent, IonList, IonListHeader,
+    IonContent, IonList, 
     IonMenuToggle, IonItem, IonIcon, IonLabel
   },
 
