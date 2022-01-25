@@ -61,6 +61,7 @@ import { Capacitor } from "@capacitor/core";
 import { FileSelector } from "capacitor-file-selector";
 import { convertToMp3 } from "@/scripts/editing/AudioUtils";
 import { arrayBufferToBase64String } from "@/scripts/Base64Utils";
+import { ConnectionStatus, Network } from "@capacitor/network";
 
 export default defineComponent({
   name: "TabAccount",
@@ -84,7 +85,7 @@ export default defineComponent({
 
     const uploadedRecordings: Ref<RecordingData[]> = ref([]);
     const errorMessage = ref(
-      "Du hast auf diesem Account keine gespeicherten Aufnahmen oder du bist nicht mit dem Internet verbunden"
+      "Du hast auf diesem Account keine hochgeladenenen Aufnahmen oder du bist nicht mit dem Internet verbunden"
     );
 
     const db = firebase.firestore();
@@ -93,6 +94,14 @@ export default defineComponent({
     const userUID = currentUser.uid;
 
     const loadRecordingsFromDatabase = async () => {
+      try{
+        const networkStatus: ConnectionStatus = await Network.getStatus();
+        if(!networkStatus.connected){
+          errorMessage.value = "Du bist nicht mit dem Internet verbunden";
+          return;
+        }
+
+
       const buffer: RecordingData[] = [];
 
       //await delay(10000);
@@ -133,7 +142,13 @@ export default defineComponent({
           )
         );
       } //foreach doc
-      uploadedRecordings.value = buffer;
+        uploadedRecordings.value = buffer;
+        if(buffer.length == 0){
+          errorMessage.value = "Du hast auf diesem Account keine hochgeladenenen Aufnahmen";
+        }
+      }catch(error){
+          errorMessage.value = "Verbindung zur Datenbank konnte nicht aufgebaut werden. Möglicherweise bist du nicht mir dem Internet verbunden";
+      }
     };
     const refresh = async (event: any) => {
       await await await loadRecordingsFromDatabase();

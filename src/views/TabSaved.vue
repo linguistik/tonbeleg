@@ -68,14 +68,12 @@ export default defineComponent({
     const recordingsRef: Ref<RecordingData[]> = ref([]);
     const initialize = async () => {
       await loadRecordings().then(()=>{recordingsRef.value =  getRecordings();});
-
     }
     initialize();
 
     const updateKey = ref(0);
     const forceUpdate = ()=>{
       updateKey.value += 1;
-
     }
     /**
      * refreshes complete tab
@@ -118,10 +116,11 @@ export default defineComponent({
       window.setTimeout(refresh,100);
     }
 
-    onIonViewWillLeave(async () => {
+    /*onIonViewWillLeave(async () => {
       console.log('Home page will be left');
       await loadEverythingPls();
-    });
+    });*/
+
 
     return { t, 
     recordingsRef, 

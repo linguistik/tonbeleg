@@ -16,7 +16,7 @@ import { trimAudio, playArrayBuffer, playAudioBuffer } from "./editing/AudioUtil
 import { getAudioData } from "@/scripts/ReplayData";
 
 import { arrayBufferToBase64String } from "./Base64Utils";
-
+import {callUpdateFunction} from "@/scripts/RecordingStorage";
 export const RecordingUploadArray: RecordingData[] = [];
 
 let i
@@ -35,15 +35,17 @@ export async function deleteUploadedRecordsFromDevice() {
 
 const db = firebase.firestore();
 export async function UploadToFirebase() {
-    const currentUser = firebase.auth().currentUser;
-    if (currentUser == null) return;
     const networkStatus = await Network.getStatus().then(result => result);
     console.log("network Status:", networkStatus);
 
-    if (getWifi() == true && networkStatus.connectionType != 'wifi') {
+    if ((getWifi() == true && networkStatus.connectionType != 'wifi') || networkStatus.connectionType == "none") {
         console.log("Upload not possible due to wrong Connection Type")
         return;
     }
+
+    const currentUser = firebase.auth().currentUser;
+    if (currentUser == null) return;
+
     const RecordingDataArr = await getRecordings();
     const RecordingUserID = [];
     const RecordingID = [];
@@ -58,8 +60,7 @@ export async function UploadToFirebase() {
             }, {merge: true});
 
             const recordingDataI = RecordingDataArr[i];
-            getAudioData(RecordingDataArr[i].timestamp, "0.raw", async (completeAudioBuffer) => {
-
+            await getAudioData(RecordingDataArr[i].timestamp, "0.raw", async (completeAudioBuffer) => {
                 //playAudioBuffer(completeAudioBuffer);
                 for (let j = 0; j < recordingDataI.parts.length; j++) {
                     const part = recordingDataI.parts[j];
@@ -72,20 +73,20 @@ export async function UploadToFirebase() {
                             data: base64String,
                             name: part.name,
                         })
+                    console.log("wrote to database");
                 }
                 RecordingUploadArray.push(recordingDataI);
             });
         }
-        console.log("wrote to database");
-        //deleteAllFromUploadArray();
+    }
 
-        for (i = 0; i < RecordingDataArr.length; i = i + 1) {
-            if (RecordingDataArr[i].upload == false && RecordingDataArr[i].selectedForUpload == true)
-                await setRecordingEntryUploadBoolean(RecordingDataArr[i].timestamp, true);
+    for (i = 0; i < RecordingDataArr.length; i = i + 1) {
+        if (RecordingDataArr[i].upload == false && RecordingDataArr[i].selectedForUpload == true) {
+            await setRecordingEntryUploadBoolean(RecordingDataArr[i].timestamp, true);
+            callUpdateFunction(RecordingDataArr[i].timestamp);
         }
     }
 }
-
     export async function isConnected() {
         const Status = await Network.getStatus().then(result => result);
         console.log("is Connected?:", Status.connected);
