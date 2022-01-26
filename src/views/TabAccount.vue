@@ -47,6 +47,7 @@ import {
   IonRefresher,
   IonRefresherContent,
   IonList,
+  IonButton,
 } from "@ionic/vue";
 
 import RecordingData from "@/scripts/RecordingData";
@@ -55,16 +56,14 @@ import Recording from "@/components/Recording.vue";
 import firebase from "@/backend/firebase-config";
 import RegionData from "@/scripts/editing/RegionData";
 
-import router from "@/router";
-import { Capacitor } from "@capacitor/core";
-//capacitor-filepicker-plugin
 import { FileSelector } from "capacitor-file-selector";
 import { convertToMp3 } from "@/scripts/editing/AudioUtils";
 import { arrayBufferToBase64String } from "@/scripts/Base64Utils";
 import { ConnectionStatus, Network } from "@capacitor/network";
+import {getLicense} from "@/scripts/UserSettingsStorage";
 
 export default defineComponent({
-  name: "TabAccount",
+  name: "TabUploaded",
 
   components: {
     PageHeader,
@@ -77,6 +76,7 @@ export default defineComponent({
     IonRefresherContent,
     IonList,
     Recording,
+    IonButton,
   },
 
   setup() {
@@ -116,7 +116,7 @@ export default defineComponent({
           .collection("users")
           .doc(userUID)
           .collection("recordings")
-          .doc("" + doc.get("timestamp"))
+          .doc(doc.id)
           .collection("parts")
           .get();
 
@@ -126,6 +126,7 @@ export default defineComponent({
             partDoc: firebase.firestore.QueryDocumentSnapshot<firebase.firestore.DocumentData>
           ) => {
             partNames.push(new RegionData(null, partDoc.get("name")));
+            console.log("partNames", partDoc)
           }
         );
         buffer.push(
@@ -184,16 +185,17 @@ export default defineComponent({
 
     /* eslint-disable @typescript-eslint/camelcase */
     FileSelector.addListener("onFilesSelected", async (data) => {
+      //bei einem doppelklick kann es passieren, dass der eventhandler 2 mal aufgerufen wird!!!
       for (let i = 0; i < data.length; i++) {
         const blob = new Blob([data.item(i)], { type: data.item(i).type });
         const buf = await blob.arrayBuffer();
-        console.log(buf);
-        console.log(data);
         //convert buf to mp3
         new AudioContext().decodeAudioData(buf, function (decodedBuffer) {
           const arrBuffer: ArrayBuffer = convertToMp3(decodedBuffer);
           const uuid = generateUUID();
           //upload metadata
+          const nameWithFileExtension = data.item(i).name;
+          const nameWithout =  nameWithFileExtension.substring(0, nameWithFileExtension.lastIndexOf('.'));
           db.collection("users")
             .doc(currentUser.uid)
             .collection("recordings")
@@ -202,9 +204,9 @@ export default defineComponent({
               {
                 userID: currentUser.uid,
                 timestamp: data.item(i).lastModified,
-                name: "external: " + data.item(i).name,
-                length: decodedBuffer.length,
-                license: "unknown",
+                name: "external: " + nameWithout,
+                length: decodedBuffer.duration,
+                license: getLicense(),
               },
               { merge: true }
             );
