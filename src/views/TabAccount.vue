@@ -126,7 +126,6 @@ export default defineComponent({
             partDoc: firebase.firestore.QueryDocumentSnapshot<firebase.firestore.DocumentData>
           ) => {
             partNames.push(new RegionData(null, partDoc.get("name")));
-            console.log("partNames", partDoc)
           }
         );
         buffer.push(
