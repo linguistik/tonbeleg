@@ -260,7 +260,7 @@ export default defineComponent({
     const newLicense = ref("");
 
     const recordingAllowed = ref(false);
-
+    loadUserSettings();
     const licensePTR = ref(getLicense());
     const firstModalOpen = ref(true);
 
@@ -570,6 +570,8 @@ export default defineComponent({
       );
       openModal.value = !openModal.value;
       openLicenseModal.value = false;
+      await loadUserSettings();
+      licensePTR.value = getLicense();
       await evaluateButtonSettingsFromLicense();
       lastRecording.value = getRecordingEntry(timestamp);
       timer.value = new Date(0);
@@ -586,11 +588,12 @@ export default defineComponent({
       }
     };
 
-    const clearVariables = () => {
+    const clearVariables = async () => {
       newName.value = "";
       newLanguage.value = "";
       newLicense.value = "";
       licensePTR.value = getLicense();
+      await evaluateButtonSettingsFromLicense();
       firstModalOpen.value = true;
     };
 
@@ -598,9 +601,9 @@ export default defineComponent({
     const deleteLastRecording = async () => {
       //TODO
       removeLastRecordingEntry();
+      await clearVariables();
       openModal.value = !openModal.value;
       openLicenseModal.value = !openLicenseModal.value;
-      clearVariables();
     };
 
     setInterval(() => {
@@ -609,8 +612,7 @@ export default defineComponent({
 
     // Abspielen: https://github.com/tchvu3/capacitor-voice-recorder#playback
 
-    const selectNewLicense = () =>{
-      evaluateButtonSettingsFromLicense();
+    const selectNewLicense = async() =>{
       openLicenseModal.value=!openLicenseModal.value;
     }
 
@@ -642,9 +644,9 @@ export default defineComponent({
         newLicense.value = licensePTR.value;
         setRecordingLicense(lastRecording.value.timestamp, newLicense.value);
       }
+      await clearVariables();
       openModal.value = !openModal.value;
       openLicenseModal.value = !openLicenseModal.value;
-      clearVariables();
     };
 
 
