@@ -66,9 +66,9 @@
           >
         </ion-item>
 
-        <ion-list-header>
+        <!--<ion-list-header>
           <ion-label> Wohnorte </ion-label>
-        </ion-list-header>
+        </ion-list-header>-->
 
         <ion-item>
           <ion-label> Postleitzahl </ion-label>
