@@ -12,11 +12,11 @@ import { loadUserSettings } from "@/scripts/UserSettingsStorage";
 import RecordingData from "@/scripts/RecordingData";
 import { ConnectionStatus, Network } from "@capacitor/network";
 
-import { trimAudio, playArrayBuffer, playAudioBuffer } from "./editing/AudioUtils";
+import { trimAudio, playArrayBuffer, playAudioBuffer, convertToMp3 } from "./editing/AudioUtils";
 import { getAudioData } from "@/scripts/ReplayData";
 
 import { arrayBufferToBase64String } from "./Base64Utils";
-import {callUpdateFunction} from "@/scripts/RecordingStorage";
+import { callUpdateFunction } from "@/scripts/RecordingStorage";
 export const RecordingUploadArray: RecordingData[] = [];
 
 let i
@@ -57,23 +57,32 @@ export async function UploadToFirebase() {
                 name: RecordingDataArr[i].name,
                 length: RecordingDataArr[i].length,
                 license: RecordingDataArr[i].license,
-            }, {merge: true});
+            }, { merge: true });
 
             const recordingDataI = RecordingDataArr[i];
             await getAudioData(RecordingDataArr[i].timestamp, "0.raw", async (completeAudioBuffer) => {
                 //playAudioBuffer(completeAudioBuffer);
-                for (let j = 0; j < recordingDataI.parts.length; j++) {
-                    const part = recordingDataI.parts[j];
-                    const cuttedArrayBuffer: ArrayBuffer = trimAudio(part, completeAudioBuffer);
-                    //https://stackoverflow.com/questions/9267899/arraybuffer-to-base64-encoded-string
-                    const base64String = arrayBufferToBase64String(cuttedArrayBuffer);
+                if (recordingDataI.parts.length > 0) {
+                    for (let j = 0; j < recordingDataI.parts.length; j++) {
+                        const part = recordingDataI.parts[j];
+                        const cuttedArrayBuffer: ArrayBuffer = trimAudio(part, completeAudioBuffer);
+                        //https://stackoverflow.com/questions/9267899/arraybuffer-to-base64-encoded-string
+                        const base64String = arrayBufferToBase64String(cuttedArrayBuffer);
 
+                        await db.collection("users").doc(currentUser.uid).collection("recordings")
+                            .doc(recordingDataI.timestamp.toString()).collection("parts").doc(part.id).set({
+                                data: base64String,
+                                name: part.name,
+                            })
+                        console.log("wrote to database");
+                    }
+                } else {
+                    const base64String = arrayBufferToBase64String(convertToMp3(completeAudioBuffer));
                     await db.collection("users").doc(currentUser.uid).collection("recordings")
-                        .doc(recordingDataI.timestamp.toString()).collection("parts").doc(part.id).set({
-                            data: base64String,
-                            name: part.name,
-                        })
-                    console.log("wrote to database");
+                            .doc(recordingDataI.timestamp.toString()).collection("parts").doc("complete").set({
+                                data: base64String,
+                                name: "complete",
+                            });
                 }
                 RecordingUploadArray.push(recordingDataI);
             });
@@ -87,8 +96,8 @@ export async function UploadToFirebase() {
         }
     }
 }
-    export async function isConnected() {
-        const Status = await Network.getStatus().then(result => result);
-        console.log("is Connected?:", Status.connected);
-        return Status.connected;
-    }
+export async function isConnected() {
+    const Status = await Network.getStatus().then(result => result);
+    console.log("is Connected?:", Status.connected);
+    return Status.connected;
+}
