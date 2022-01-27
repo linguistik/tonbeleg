@@ -90,7 +90,7 @@ import {
   IonItem,
   IonCardHeader,
   IonCardTitle,
-  IonCardContent,
+  IonCardContent, toastController,
 } from "@ionic/vue";
 
 import router from "@/router";
@@ -219,6 +219,14 @@ export default {
       selectedForUpload.value = !selectedForUpload.value;
       setSelectedForUpload(props.recording.timestamp, selectedForUpload.value);
       await UploadToFirebase();
+      if(props.recording.upload){
+        const toast = await toastController
+            .create({
+              message: 'Recording was uploaded successfully!',
+              duration: 1000
+            })
+        return toast.present();
+      }
       console.log("upload this thing", props.recording.upload);
     };
 
