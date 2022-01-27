@@ -100,24 +100,23 @@ export default defineComponent({
 
     const deleteAccInDatabase = async () =>{
       //TODO
+      const db = firebase.firestore();
       const currentUser = firebase.auth().currentUser;
       if (currentUser == null) {
         console.log("\n\nFATAL ERROR: no user logged in, so user can be deleted\n\n");
         return;
       }
 
-      try {
-        //await currentUser.delete();
+      /*currentUser.delete().then(() => {
+        // User deleted.
       }
-      catch(error){
-        //TODO
-        //problem ist rauszufinden welche sign in methode
-        const providerId = currentUser.providerId;
-        if(providerId == "www.google.com"){
-         //TODO pls help i cant do it
-        }
+      ).catch((error) => {
+        // An error ocurred
+        // ...
+      });*/
       }
-    }
+
+
 
     const logOut = () => {
       firebase.auth().signOut();

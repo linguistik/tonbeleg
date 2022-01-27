@@ -3,7 +3,7 @@
     <PageHeader v-bind:title="t('general.appname')" />
 
     <ion-content :fullscreen="true">
-      <ion-card-modal v-if="openModal"><!---brauch eig nen modal das kann man nicht wegklicken--->
+      <ion-card-modal v-show="openModal"><!---brauch eig nen modal das kann man nicht wegklicken--->
         <ion-content fullscreen>
             <ion-item>
           <ion-label v-model:position="fixed">Name:</ion-label>
@@ -21,12 +21,12 @@
           </ion-select>
         </ion-item>
 
-        <!--<ion-item>
+        <ion-item>
           <ion-label>Select License</ion-label>
-          <ion-textarea v-model="newLicense" v-model:value="lastRecording.license" v-model:placeholder="lastRecording.license"></ion-textarea>
-          <ion-button @click="selectNewLicense()" v-model:name="licensePTR"></ion-button>
-            <ion-card-modal v-if="openLicenseModal" slot="start" :fullscreen="true">
-              <ion-list>
+          <ion-textarea v-show="!openLicenseModal" v-model="newLicense" v-model:value="lastRecording.license" v-model:placeholder="lastRecording.license" :disabled="true"></ion-textarea>
+          <ion-button v-show="!openLicenseModal" @click="selectNewLicense()" v-model:name="licensePTR">change</ion-button>
+            <ion-card-modal v-show="openLicenseModal" :fullscreen="true">
+              <ion-list slot="end">
               <ion-item>
                 <ion-label text-wrap>
                   <h2>
@@ -36,8 +36,8 @@
                 <ion-toggle
                     slot="start"
                     name = "isMentioningActivated"
+                    @ionChange="optionChanged($event)"
                     v-bind:checked="isMentioningActivated"
-                    @IonChange="optionChanged($event)"
                     v-bind:disabled="isMentioningActivatedDeactivated"
                 ></ion-toggle>
               </ion-item>
@@ -51,8 +51,8 @@
                 <ion-toggle
                     slot="start"
                     name = "isComerciallyUseAllowed"
+                    @ionChange="optionChanged($event)"
                     v-bind:checked="isComerciallyUseAllowed"
-                    @IonChange="optionChanged($event)"
                     v-bind:disabled="isComerciallyUseAllowedDeactivated"
                 ></ion-toggle>
               </ion-item>
@@ -66,7 +66,7 @@
                 <ion-toggle
                     slot="start"
                     name="isRemixingAllowed"
-                    @IonChange="optionChanged($event)"
+                    @ionChange="optionChanged($event)"
                     v-bind:checked="isRemixingAllowed"
                     v-bind:disabled="isRemixingAllowedDeactivated"
                 ></ion-toggle>
@@ -81,14 +81,14 @@
                 <ion-toggle
                     slot="start"
                     name="isSharingAllowed"
+                    @ionChange="optionChanged($event)"
                     v-bind:checked="isSharingAllowed"
-                    @IonChange="optionChanged($event)"
                     v-bind:disabled="isSharingAllowedDeactivated"
                 ></ion-toggle>
               </ion-item>
 
-
               </ion-list>
+
               <div id="container">
                 <ion-label text-wrap>
                   <h2>
@@ -97,9 +97,10 @@
                     <strong>{{licensePTR}}</strong>
                 </ion-label>
               </div>
+              <ion-button @click="evaluateNewLicense()" slot="end">OK</ion-button>
 
             </ion-card-modal>
-        </ion-item>-->
+        </ion-item>
 
         <ion-button color="danger" @click="deleteLastRecording()"
           >delete</ion-button
@@ -114,7 +115,7 @@
         </ion-toolbar>
       </ion-header>
       <!--  Hier ist der Button in der Mitte  -->
-      <ion-fab vertical="center" horizontal="center" slot="fixed">
+      <ion-fab v-show="!openModal" vertical="center" horizontal="center" slot="fixed">
         <ion-fab-button
           v-if="recordingStatus == recordingStatusEnums.NOT_RECORDING"
           color="success"
@@ -156,7 +157,7 @@
         </ion-fab-button>
       </ion-fab>
 
-      <div id="text">
+      <div v-show="!openModal" id="text">
         <!--  Timer  -->
         <p>Zeit: {{ timerString }}</p>
       </div>
@@ -190,7 +191,7 @@ import {
   IonLabel,
   IonItem,
   IonSelect,
-  IonButton,IonSelectOption,
+  IonButton,IonSelectOption,IonToggle,IonList,IonTextarea,
 } from "@ionic/vue";
 
 import {
@@ -221,7 +222,7 @@ import {
 
 import { insertRecordingEntry } from "@/scripts/RecordingStorage";
 import RecordingData from "@/scripts/RecordingData";
-import { getLicense, getFirstLanguage } from "@/scripts/UserSettingsStorage";
+import {getLicense, getFirstLanguage, userSettings} from "@/scripts/UserSettingsStorage";
 import { Encoding } from "@capacitor/filesystem";
 //import router from "@/router";
 
@@ -240,7 +241,7 @@ export default defineComponent({
     IonItem,
     IonLabel,
     IonSelect,
-    IonSelectOption,IonButton,
+    IonSelectOption,IonButton,IonToggle,IonList,IonTextarea,
   },
 
   setup() {
@@ -259,10 +260,102 @@ export default defineComponent({
 
     const recordingAllowed = ref(false);
 
-    const licensePTR = ref('CC0 1.0');
+    const licensePTR = ref(getLicense());
 
     const timer = ref(new Date(0));
     const timerString = ref(timer.value.toISOString().substr(11, 8));
+
+    const options = new Map<string, boolean>([
+      ["isMentioningActivated", false],
+      ["isComerciallyUseAllowed", true],
+      ["isRemixingAllowed", true],
+      ["isSharingAllowed", true],
+    ]);
+
+    const isMentioningActivated = ref(false);
+    const isComerciallyUseAllowed = ref(true);
+    const isRemixingAllowed = ref(true);
+    const isSharingAllowed = ref(true);
+
+    const isMentioningActivatedDeactivated = ref(false);
+    const isComerciallyUseAllowedDeactivated = ref(true);
+    const isRemixingAllowedDeactivated = ref(true);
+    const isSharingAllowedDeactivated = ref(true);
+
+    //7 different licenses
+    const evaluateLicenseAndDeactivations = ()=>{
+      if(options.get("isMentioningActivated")){
+        //user does not want attribution
+        //deactivate all other toggles
+        isComerciallyUseAllowedDeactivated.value = false;
+        isRemixingAllowedDeactivated.value = false;
+        isSharingAllowedDeactivated.value = false;
+        //set license
+        licensePTR.value = "CC BY 4.0";
+
+        //if one of the lower toggles is unchecked, deactivate the top one
+        if(!(options.get("isComerciallyUseAllowed") && options.get("isRemixingAllowed") && options.get("isSharingAllowed"))){
+          isMentioningActivatedDeactivated.value = true;
+
+          licensePTR.value = "something else";
+          //combinations of the last 3 values
+          if(options.get("isComerciallyUseAllowed") && options.get("isRemixingAllowed") && !options.get("isSharingAllowed")){
+            //BY-SA
+            isRemixingAllowedDeactivated.value = true;
+            licensePTR.value = "CC BY-SA 4.0";
+          }else if(options.get("isComerciallyUseAllowed") && !options.get("isRemixingAllowed") && options.get("isSharingAllowed")){
+            //BY-ND
+            isSharingAllowedDeactivated.value = true;
+            licensePTR.value = "CC BY-ND 4.0";
+          }else if(!options.get("isComerciallyUseAllowed") && options.get("isRemixingAllowed") && options.get("isSharingAllowed")){
+            //BY-NC
+            licensePTR.value = "CC BY-NC 4.0";
+          }else if(!options.get("isComerciallyUseAllowed") && options.get("isRemixingAllowed") && !options.get("isSharingAllowed")){
+            //BY-NC-SA
+            isRemixingAllowedDeactivated.value =true;
+            licensePTR.value = "CC BY-NC-SA 4.0";
+          }else if(!options.get("isComerciallyUseAllowed") && !options.get("isRemixingAllowed") && options.get("isSharingAllowed")){
+            //BY-NC-ND
+            isSharingAllowedDeactivated.value = true;
+            licensePTR.value = "CC BY-NC-ND 4.0";
+          }else{
+            console.log("ERROR");
+          }
+        }else{
+          isMentioningActivatedDeactivated.value = false;
+        }
+
+      }else{
+        isComerciallyUseAllowedDeactivated.value = true;
+        isRemixingAllowedDeactivated.value = true;
+        isSharingAllowedDeactivated.value = true;
+        licensePTR.value = "CC0 1.0";
+      }
+
+    }
+
+    const evaluateButtonSettingsFromLicense = ()=>{
+
+      if(licensePTR.value == "CC0 1.0"){
+        return;//leave everything default
+      }
+      options.set("isMentioningActivated", true);
+      isMentioningActivated.value = true;
+      if(licensePTR.value.includes("NC")){
+        options.set("isComerciallyUseAllowed", false);
+        isComerciallyUseAllowed.value = false;
+      }
+      if(licensePTR.value.includes("SA")){
+        options.set("isSharingAllowed", false);
+        isSharingAllowed.value = false;
+      }
+      if(licensePTR.value.includes("ND")){
+        options.set("isRemixingAllowed", false);
+        isRemixingAllowed.value = false;
+      }
+      evaluateLicenseAndDeactivations();
+    }
+
     //https://expertcodeblog.wordpress.com/2018/07/05/typescript-sleep-a-thread/
     //const delay = (ms: number)=>{return new Promise(resolve =>setTimeout(resolve,ms));};
 
@@ -301,9 +394,6 @@ export default defineComponent({
       console.log(error);
     }
 
-    const selectNewLicense = () =>{
-     openLicenseModal.value=!openLicenseModal.value;
-    }
     const recordingStatusEnums = {
       NOT_RECORDING: 0,
       IS_RECORDING: 1,
@@ -342,7 +432,6 @@ export default defineComponent({
       if(openModal.value==false) {
         timer.value.setSeconds(0);
         if(recordingAllowed.value == false){
-          //TODO
           const toast = await toastController
               .create({
                 message: 'Website cannot record audio. Make sure to give microphone permission to this website.',
@@ -474,6 +563,8 @@ export default defineComponent({
         )
       );
       openModal.value = !openModal.value;
+      openLicenseModal.value = false;
+      evaluateButtonSettingsFromLicense();
       lastRecording.value = getRecordingEntry(timestamp);
       timer.value = new Date(0);
       timerString.value = timer.value.toISOString().substr(11, 8);
@@ -493,7 +584,41 @@ export default defineComponent({
       newName.value = "";
       newLanguage.value = "";
       newLicense.value = "";
+      licensePTR.value = getLicense();
     };
+
+
+    const deleteLastRecording = async () => {
+      //TODO
+      removeLastRecordingEntry();
+      openModal.value = !openModal.value;
+      openLicenseModal.value = !openLicenseModal.value;
+      clearVariables();
+    };
+
+    setInterval(() => {
+      timerHandler(); // Now the "this" still references the component
+    }, 1000);
+
+    // Abspielen: https://github.com/tchvu3/capacitor-voice-recorder#playback
+
+    const selectNewLicense = () =>{
+      openLicenseModal.value=!openLicenseModal.value;
+      licensePTR.value = getLicense();
+      evaluateButtonSettingsFromLicense();
+    }
+
+    const evaluateNewLicense = () =>{
+      openLicenseModal.value=!openLicenseModal.value;
+      evaluateLicenseAndDeactivations()
+      newLicense.value = licensePTR.value;
+    }
+
+    const optionChanged = (event: any)=>{
+      options.set(event.target.name, event.target.checked);
+      evaluateLicenseAndDeactivations();
+      console.log("changingLicense");
+    }
 
     const saveChanges = async () => {
       //TODO
@@ -507,6 +632,8 @@ export default defineComponent({
       }
       //console.log(lastRecording.value.languages[0])
       if (newLicense.value != "") {
+        //console.log("changingLicense")
+        newLicense.value = licensePTR.value;
         setRecordingLicense(lastRecording.value.timestamp, newLicense.value);
       }
       openModal.value = !openModal.value;
@@ -514,18 +641,6 @@ export default defineComponent({
       clearVariables();
     };
 
-    const deleteLastRecording = async () => {
-      //TODO
-      removeLastRecordingEntry();
-      openModal.value = !openModal.value;
-      openLicenseModal.value = !openLicenseModal.value;
-    };
-
-    setInterval(() => {
-      timerHandler(); // Now the "this" still references the component
-    }, 1000);
-
-    // Abspielen: https://github.com/tchvu3/capacitor-voice-recorder#playback
 
     onIonViewDidEnter(async () => {
       console.log('Home page will be left');
@@ -554,8 +669,12 @@ export default defineComponent({
       openModal,
       openLicenseModal,
       selectNewLicense,
+      evaluateNewLicense,
       saveChanges,
       deleteLastRecording,
+      evaluateButtonSettingsFromLicense,
+      evaluateLicenseAndDeactivations,
+      optionChanged,
       lastRecording,
       newName,
       newLanguage,
@@ -578,9 +697,16 @@ export default defineComponent({
         ["te","తెలుగు"],
         ["tr","Türkçe"],
         ["ta","தமிழ்"],
-        ["ko","한국어"],
+        ["ko","한국어"],],
+      isMentioningActivated,
+      isComerciallyUseAllowed,
+      isRemixingAllowed,
+      isSharingAllowed,
+      isMentioningActivatedDeactivated,
+      isComerciallyUseAllowedDeactivated,
+      isRemixingAllowedDeactivated,
+      isSharingAllowedDeactivated,
 
-      ]
     };
   },
 });

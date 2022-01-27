@@ -10,7 +10,6 @@
     <ion-content>
       <ion-list>
         <ion-list-header @click="close()">
-          Sub Header
         </ion-list-header>
 
         <ion-menu-toggle auto-hide="false">
