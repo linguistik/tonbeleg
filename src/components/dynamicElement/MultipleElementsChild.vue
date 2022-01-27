@@ -3,7 +3,7 @@
   <ion-item>
     <ion-grid>
     <ion-row>
-    <ion-col size="2">
+    <ion-col size="1">
     <ion-icon 
       :icon="removeCircle"
       @click="removeFromParent()"
@@ -12,9 +12,19 @@
     ></ion-icon>
     </ion-col>
     <ion-col>
-      <ion-select v-model="input" @ionChange="inputChanged" value="English">
-              <ion-select-option v-for="[short,language] in languages" v-bind:key="short" v-bind:value="short">{{language}}</ion-select-option>
+      <ion-item>
+      <ion-label>
+            Zweitsprache wählen
+          </ion-label>
+      <ion-select v-model="input" @ionChange="inputChanged()" >
+        <ion-select-option 
+            v-for="[short,language] in languages" 
+            v-bind:key="short" 
+            v-bind:value="short">
+          {{language}}
+        </ion-select-option>
       </ion-select>
+      </ion-item>
     </ion-col>
     </ion-row>
     </ion-grid>
@@ -27,7 +37,8 @@ import { defineComponent, ref } from "vue";
 import { IonIcon, IonItem, IonSelect, IonGrid, IonRow, IonCol, IonSelectOption } from "@ionic/vue";
 
 import { removeCircle } from "ionicons/icons";
-
+import firebase from '@/backend/firebase-config';
+import 'firebase/firestore';
 
 export default defineComponent({
   components: {
@@ -47,14 +58,29 @@ export default defineComponent({
 
 
   setup(props: any, context: any) {
-    const input = ref();
+    const languages: string[][]=[];
+    const input = ref("");
+    let tempLang = " ";
+    const loadLanguages = async() => {
+      const db = firebase.firestore();
+      const snapshot = await db.collection("data").doc("languages").get();
+      for(let i=0;i<18;i++){
+        languages[i]=snapshot.get(i.toString())
+      }
+    }
+    const initData = async () => {
+      await loadLanguages();
+      input.value=tempLang;
+      // context.emit("change", input.value, props.id);
+    };
+    initData();
+    
     const removeFromParent = () => {
       context.emit("remove", props.id);
     };
     const inputChanged = () => {
       context.emit("change", input.value, props.id);
     };
-
 
     /**
      * sets saved name on first load
@@ -64,30 +90,11 @@ export default defineComponent({
     const initName = (name: string, index: number) => {
 
       if(props.id != index){console.log("hier is5t was schief gegangen")}
-      input.value=name;
+      tempLang=name;
 
     };
     return { removeCircle, removeFromParent, inputChanged, input, initName, 
-        languages:[["en","English"],
-                  ["de","Deutsch"],
-                  ["es","español"],
-                  ["fr","français"],
-                  ["zh","Chinesisch"],
-                  ["hi", "हिन्दी"],
-                  ["bn","বাংলা"],
-                  ["ru","русский"],
-                  ["pt","português"],
-                  ["id","Bahasa Indonesia"],
-                  ["ur","اردو"],
-                  ["ja","日本語"],
-                  ["sw","	Kiswahili"],
-                  ["mr","मराठी"],
-                  ["te","తెలుగు"],
-                  ["tr","Türkçe"],
-                  ["ta","தமிழ்"],
-                  ["ko","한국어"],
-
-        ]
+         languages, initData, loadLanguages
     };
   },
 });

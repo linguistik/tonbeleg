@@ -70,7 +70,7 @@
         </ion-card-content>
 
         <ion-card-content v-if="errorMessage" class="error-message">
-          <ion-text color="danger"> {{errorMessage }}</ion-text>
+          <ion-text color="danger"> {{ errorMessage }}</ion-text>
         </ion-card-content>
 
         <ion-card-content>
@@ -108,6 +108,7 @@ import {
   IonLoading,
   IonCheckbox,
   IonText,
+  alertController,
 } from "@ionic/vue";
 
 export default defineComponent({
@@ -142,6 +143,32 @@ export default defineComponent({
       rememberMe = event.detail.checked;
     };
 
+    const routeToTabs = async () => {
+      const db = firebase.firestore();
+      const currentUser = firebase.auth().currentUser;
+      if (currentUser == null) return;
+      const userUID = currentUser.uid;
+      db.collection("users")
+        .doc(userUID)
+        .get()
+        .then(async (doc) => {
+          if (doc.exists && doc.get("license")) {
+            router.push("/tabs/record");
+          } else {
+            const alert = await alertController.create({
+              message: "Bitte stelle deine Lizenz ein.",
+              buttons: [
+                {
+                  text: "OK",
+                },
+              ],
+            });
+            await alert.present();
+            router.push("/tabs/tabdataprotection");
+          }
+        });
+    };
+
     const waitingForRedirectResult = ref(true);
     firebase
       .auth()
@@ -149,7 +176,7 @@ export default defineComponent({
       .then((results) => {
         console.log("redirect results:", results.user);
         waitingForRedirectResult.value = false;
-        router.push("/tabs/record");
+        routeToTabs();
       });
 
     // other variables
@@ -173,7 +200,9 @@ export default defineComponent({
             firebase
               .auth()
               .signInWithEmailAndPassword(email.value, password.value)
-              .then(() => router.push("/tabs/record"))
+              .then(() => {
+                routeToTabs();
+              })
               .catch((err) => {
                 errorMessage.value = err.message;
               });

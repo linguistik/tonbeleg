@@ -50,6 +50,7 @@ yarn serve
 
 ### Licence
 - [x] The project is licensed under [Apache License 2.0](LICENSE).
+- [x] Contributors sign a CLA on the first PR
 
 ### Firebase Backend
 - [x] SPA Website: [tonbeleg.web.de](https://tonbeleg-9a18f.web.app/)
