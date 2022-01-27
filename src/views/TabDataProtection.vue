@@ -173,7 +173,6 @@ export default defineComponent({
   const isRemixingAllowedDeactivated = ref(true);
   const isSharingAllowedDeactivated = ref(true);
 
-
     //7 different licenses
     const evaluateLicenseAndDeactivations = ()=>{
       if(options.get("isMentioningActivated")){
@@ -223,16 +222,10 @@ export default defineComponent({
         isSharingAllowedDeactivated.value = true;
         licensePTR.value = "CC0 1.0";
       }
-
     }
 
 
     const evaluateButtonSettingsFromLicense = ()=>{
-      /*
-      if(licensePTR.value=="CC0 1.0")
-
-      */
-
       if(licensePTR.value == "CC0 1.0"){
         return;//leave everything default
       }
@@ -251,10 +244,7 @@ export default defineComponent({
         isRemixingAllowed.value = false;
       }
       evaluateLicenseAndDeactivations();
-
-
     }
-
 
     const uploadLicense = ()=>{
 
@@ -263,10 +253,8 @@ export default defineComponent({
       if (currentUser == null) return;
       const userUID = currentUser.uid;
 
-
       console.log("Start uploading");
 
-      
       db.collection("users").doc(userUID).set({
         license: licensePTR.value
       },{merge: true});
@@ -313,22 +301,18 @@ export default defineComponent({
       });
     }
 
-
-
     const loadLocalData = async () =>{
       const user = firebase.auth().currentUser;
       if (user == null) return;
       await loadUserSettings();
       licensePTR.value=getLicense();
       evaluateButtonSettingsFromLicense();
-
     }
 
     const saveLocalData = async () =>{
       const user = firebase.auth().currentUser;
       if (user == null) return;
       setLicense(licensePTR.value);
-
     }
 
     const optionChanged = (event: any)=>{
@@ -338,7 +322,6 @@ export default defineComponent({
       saveLocalData();
       uploadLicense();
     }
-
 
     loadLocalData();
     uploadLicense();//überschreibt datenbank
