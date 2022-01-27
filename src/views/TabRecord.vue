@@ -224,6 +224,7 @@ import { insertRecordingEntry } from "@/scripts/RecordingStorage";
 import RecordingData from "@/scripts/RecordingData";
 import {getLicense, getFirstLanguage, userSettings} from "@/scripts/UserSettingsStorage";
 import { Encoding } from "@capacitor/filesystem";
+import {loadUserSettings} from "@/scripts/UserSettingsStorage";
 //import router from "@/router";
 
 export default defineComponent({
@@ -261,6 +262,7 @@ export default defineComponent({
     const recordingAllowed = ref(false);
 
     const licensePTR = ref(getLicense());
+    const firstModalOpen = ref(true);
 
     const timer = ref(new Date(0));
     const timerString = ref(timer.value.toISOString().substr(11, 8));
@@ -334,8 +336,12 @@ export default defineComponent({
 
     }
 
-    const evaluateButtonSettingsFromLicense = ()=>{
-
+    const evaluateButtonSettingsFromLicense = async ()=>{
+    await loadUserSettings();
+    if(firstModalOpen.value==true) {
+      licensePTR.value = getLicense();
+      firstModalOpen.value = false;
+    }
       if(licensePTR.value == "CC0 1.0"){
         return;//leave everything default
       }
@@ -564,7 +570,7 @@ export default defineComponent({
       );
       openModal.value = !openModal.value;
       openLicenseModal.value = false;
-      evaluateButtonSettingsFromLicense();
+      await evaluateButtonSettingsFromLicense();
       lastRecording.value = getRecordingEntry(timestamp);
       timer.value = new Date(0);
       timerString.value = timer.value.toISOString().substr(11, 8);
@@ -585,6 +591,7 @@ export default defineComponent({
       newLanguage.value = "";
       newLicense.value = "";
       licensePTR.value = getLicense();
+      firstModalOpen.value = true;
     };
 
 
@@ -603,9 +610,8 @@ export default defineComponent({
     // Abspielen: https://github.com/tchvu3/capacitor-voice-recorder#playback
 
     const selectNewLicense = () =>{
-      openLicenseModal.value=!openLicenseModal.value;
-      licensePTR.value = getLicense();
       evaluateButtonSettingsFromLicense();
+      openLicenseModal.value=!openLicenseModal.value;
     }
 
     const evaluateNewLicense = () =>{
