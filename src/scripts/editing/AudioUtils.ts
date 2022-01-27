@@ -145,6 +145,6 @@ export function trimAudio(region: RegionData, audioBuffer: AudioBuffer): ArrayBu
         0
     );
 
-    const wav = toWav(trimmedAudio);
+    const wav = convertToMp3(trimmedAudio);
     return wav;
 } //trimAudio
