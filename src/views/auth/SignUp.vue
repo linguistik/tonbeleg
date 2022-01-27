@@ -74,6 +74,7 @@ import {
   IonItem,
   IonCheckbox,
   IonText,
+  alertController,
 } from "@ionic/vue";
 
 export default defineComponent({
@@ -131,7 +132,17 @@ export default defineComponent({
         if (debugVerbose.value) {
           console.log(username);
         }
-        router.push("/tabs/record");
+        //if a new user is created there is obviously no license set
+        const alert = await alertController.create({
+              message: "Bitte stelle deine Lizenz ein.",
+              buttons: [
+                {
+                  text: "OK",
+                },
+              ],
+            });
+            await alert.present();
+            router.push("/tabs/tabdataprotection");
       } catch (err) {
         errorMessage.value = err.message;
         if (debugVerbose.value) {

@@ -282,6 +282,7 @@ export default {
               minlength: 1,
               maxlength: 20,
               inputMode: "text",
+              value: displayName.value,
             },
             handler: () => {
               console.log("texteingabe erfolgt"); //is this handler really necessary? For some reason it is^^

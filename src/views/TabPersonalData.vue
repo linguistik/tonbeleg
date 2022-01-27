@@ -120,7 +120,7 @@ export default defineComponent({
       await this.$refs.lng2.onInit(getSecondLanguage()); //erstellt kinder zweite Sprache
       this.$refs.lng2.itemRefs.forEach((entrys: any, index: number) =>{ //füllt bei kinder die geladenen namen ein
         entrys.initName(getSecondLanguage()[index],index);
-        console.log(index)
+        console.log(index);
       })
     }
   },
@@ -150,6 +150,8 @@ export default defineComponent({
     const dateType = ref("date");
 
     let dialects: string[] = [];
+    const languages: string[][]=[];
+
     /**
      * loads data about the user from database
      */
@@ -232,16 +234,31 @@ export default defineComponent({
       const snapshot = await db.collection("data").doc("dialects").get();
       dialects = snapshot.get("dialects");
     };
+
+    const loadLanguages = async () => {
+      const db = firebase.firestore();
+      const snapshot = await db.collection("data").doc("languages").get();
+      for(let i=0;i<18;i++){
+        
+        languages[i]=snapshot.get(i.toString())
+      }
+      console.log(languages)
+    };
+
     /**
      * loads user settings initially when tab is first opened
      */
     const initData = async () => {
-
-      await loadData();
       await loadDialects();
+      await loadLanguages();
+      await loadData();
+
+      // console.log("Languages in method call: " + languages)
+      
       uploadUserSettings();
     };
     initData();
+
     /**
      * first language childcomponents call this method when their language is changed,
      * @param languages, list with all languges from all child compontents with updated entrys
@@ -297,6 +314,8 @@ export default defineComponent({
       );
     }
 
+    // console.log("Languages at end of setup: " + languages)
+
     return {
       t,
       safe,
@@ -316,26 +335,7 @@ export default defineComponent({
       safeNewDialect,
       items,
       dialects,
-      languages:[["en","English"],
-                  ["de","Deutsch"],
-                  ["es","español"],
-                  ["fr","français"],
-                  ["zh","Chinesisch"],
-                  ["hi", "हिन्दी"],
-                  ["bn","বাংলা"],
-                  ["ru","русский"],
-                  ["pt","português"],
-                  ["id","Bahasa Indonesia"],
-                  ["ur","اردو"],
-                  ["ja","日本語"],
-                  ["sw","	Kiswahili"],
-                  ["mr","मराठी"],
-                  ["te","తెలుగు"],
-                  ["tr","Türkçe"],
-                  ["ta","தமிழ்"],
-                  ["ko","한국어"],
-
-        ]
+      languages
     };
   },
 });

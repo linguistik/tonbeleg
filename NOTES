@@ -1,0 +1,8 @@
+
+lamejs
+This web application uses lamejs (https://github.com/zhuker/lamejs) what is based on lame (https://lame.sourceforge.io/).
+Further information: https://github.com/zhuker/lamejs/blob/master/LICENSE
+Thanks to @zhuker (https://github.com/zhuker) for writing and maintaining the lamejs library.
+All Changes applied have already been addressed in the following PR: https://github.com/zhuker/lamejs/pull/87
+(18.01.2021)
+
