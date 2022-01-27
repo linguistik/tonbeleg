@@ -55,7 +55,6 @@ import Recording from "@/components/Recording.vue";
 
 import firebase from "@/backend/firebase-config";
 import RegionData from "@/scripts/editing/RegionData";
-
 import { FileSelector } from "capacitor-file-selector";
 import { convertToMp3 } from "@/scripts/editing/AudioUtils";
 import { arrayBufferToBase64String } from "@/scripts/Base64Utils";

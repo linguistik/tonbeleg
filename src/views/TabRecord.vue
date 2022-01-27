@@ -224,6 +224,7 @@ import { insertRecordingEntry } from "@/scripts/RecordingStorage";
 import RecordingData from "@/scripts/RecordingData";
 import {getLicense, getFirstLanguage, userSettings} from "@/scripts/UserSettingsStorage";
 import { Encoding } from "@capacitor/filesystem";
+import {loadUserSettings} from "@/scripts/UserSettingsStorage";
 //import router from "@/router";
 
 export default defineComponent({
@@ -259,8 +260,9 @@ export default defineComponent({
     const newLicense = ref("");
 
     const recordingAllowed = ref(false);
-
+    loadUserSettings();
     const licensePTR = ref(getLicense());
+    const firstModalOpen = ref(true);
 
     const timer = ref(new Date(0));
     const timerString = ref(timer.value.toISOString().substr(11, 8));
@@ -334,8 +336,12 @@ export default defineComponent({
 
     }
 
-    const evaluateButtonSettingsFromLicense = ()=>{
-
+    const evaluateButtonSettingsFromLicense = async ()=>{
+    await loadUserSettings();
+    if(firstModalOpen.value==true) {
+      licensePTR.value = getLicense();
+      firstModalOpen.value = false;
+    }
       if(licensePTR.value == "CC0 1.0"){
         return;//leave everything default
       }
@@ -564,7 +570,9 @@ export default defineComponent({
       );
       openModal.value = !openModal.value;
       openLicenseModal.value = false;
-      evaluateButtonSettingsFromLicense();
+      await loadUserSettings();
+      licensePTR.value = getLicense();
+      await evaluateButtonSettingsFromLicense();
       lastRecording.value = getRecordingEntry(timestamp);
       timer.value = new Date(0);
       timerString.value = timer.value.toISOString().substr(11, 8);
@@ -580,20 +588,22 @@ export default defineComponent({
       }
     };
 
-    const clearVariables = () => {
+    const clearVariables = async () => {
       newName.value = "";
       newLanguage.value = "";
       newLicense.value = "";
       licensePTR.value = getLicense();
+      await evaluateButtonSettingsFromLicense();
+      firstModalOpen.value = true;
     };
 
 
     const deleteLastRecording = async () => {
       //TODO
       removeLastRecordingEntry();
+      await clearVariables();
       openModal.value = !openModal.value;
       openLicenseModal.value = !openLicenseModal.value;
-      clearVariables();
     };
 
     setInterval(() => {
@@ -602,10 +612,8 @@ export default defineComponent({
 
     // Abspielen: https://github.com/tchvu3/capacitor-voice-recorder#playback
 
-    const selectNewLicense = () =>{
+    const selectNewLicense = async() =>{
       openLicenseModal.value=!openLicenseModal.value;
-      licensePTR.value = getLicense();
-      evaluateButtonSettingsFromLicense();
     }
 
     const evaluateNewLicense = () =>{
@@ -636,9 +644,9 @@ export default defineComponent({
         newLicense.value = licensePTR.value;
         setRecordingLicense(lastRecording.value.timestamp, newLicense.value);
       }
+      await clearVariables();
       openModal.value = !openModal.value;
       openLicenseModal.value = !openLicenseModal.value;
-      clearVariables();
     };
 
 
