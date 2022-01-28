@@ -284,6 +284,8 @@ export default defineComponent({
     const isRemixingAllowedDeactivated = ref(true);
     const isSharingAllowedDeactivated = ref(true);
 
+    const languages: string[][]=[];
+
     //7 different licenses
     const evaluateLicenseAndDeactivations = ()=>{
       if(options.get("isMentioningActivated")){
@@ -612,7 +614,27 @@ export default defineComponent({
 
     // Abspielen: https://github.com/tchvu3/capacitor-voice-recorder#playback
 
+    /**
+     * Sprachen für Pop-up Fenster aus DB laden;
+     * Scheint zu funktionieren
+     */
+    const loadLanguages = async () => {
+      const db = firebase.firestore();
+      const snapshot = await db.collection("data").doc("languages").get();
+      for(let i=0;i<18;i++){
+        
+        languages[i]=snapshot.get(i.toString())
+      }
+      console.log(languages)
+    };
+    
+    const initData = async () => {
+      await loadLanguages();
+    }
+    initData();
+
     const selectNewLicense = async() =>{
+
       openLicenseModal.value=!openLicenseModal.value;
     }
 
@@ -688,24 +710,7 @@ export default defineComponent({
       newLanguage,
       newLicense,
       licensePTR,
-      languages:[["en","English"],
-        ["de","Deutsch"],
-        ["es","español"],
-        ["fr","français"],
-        ["zh","Chinesisch"],
-        ["hi", "हिन्दी"],
-        ["bn","বাংলা"],
-        ["ru","русский"],
-        ["pt","português"],
-        ["id","Bahasa Indonesia"],
-        ["ur","اردو"],
-        ["ja","日本語"],
-        ["sw","	Kiswahili"],
-        ["mr","मराठी"],
-        ["te","తెలుగు"],
-        ["tr","Türkçe"],
-        ["ta","தமிழ்"],
-        ["ko","한국어"],],
+      languages,
       isMentioningActivated,
       isComerciallyUseAllowed,
       isRemixingAllowed,
