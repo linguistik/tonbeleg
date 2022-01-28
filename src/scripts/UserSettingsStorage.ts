@@ -53,7 +53,7 @@ export async function loadUserSettings() {
         userSettings = JSON.parse(readFileResult.data);
 
     }catch(error){//ignore error when file does not exist already, this happens on first login
-        if(error.message == "File does not exist."){/**/}
+        if(error.message == "File does not exist.."){/**/}
         console.log("reading error: ", error);
     }
     console.log(userSettings);
