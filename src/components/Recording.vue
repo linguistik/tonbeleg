@@ -1,4 +1,4 @@
-<template :key="updateKey">
+<template :key="updateKey" >
   <div v-if="exists">
     <ion-card v-if="isOpen">
       <ion-card-header>
@@ -184,6 +184,7 @@ export default {
         day = "0" + day;
       }
 
+
       return day + "." + month + "." + year + ", " + hours + ":" + minutes;
     }; //method: getRecordingDate
 
@@ -214,20 +215,30 @@ export default {
 
     const upload = async () => {
       //TODO
-      const currentUser = firebase.auth().currentUser;
-      if (currentUser == null) return;
-      selectedForUpload.value = !selectedForUpload.value;
-      setSelectedForUpload(props.recording.timestamp, selectedForUpload.value);
-      await UploadToFirebase();
       if(props.recording.upload){
         const toast = await toastController
             .create({
-              message: 'Recording was uploaded successfully!',
+              message: 'Recording has been uploaded before!',
               duration: 1000
             })
         return toast.present();
       }
-      console.log("upload this thing", props.recording.upload);
+      else {
+        const currentUser = firebase.auth().currentUser;
+        if (currentUser == null) return;
+        selectedForUpload.value = !selectedForUpload.value;
+        setSelectedForUpload(props.recording.timestamp, selectedForUpload.value);
+        await UploadToFirebase();
+        if (props.recording.upload) {
+          const toast = await toastController
+              .create({
+                message: 'Recording was uploaded successfully!',
+                duration: 1000
+              })
+          return toast.present();
+        }
+        console.log("upload this thing", props.recording.upload);
+      }
     };
 
     const playRec = async () => {
@@ -290,7 +301,7 @@ export default {
               minlength: 1,
               maxlength: 20,
               inputMode: "text",
-              value: displayName.value,
+              placeholder: displayName.value,
             },
             handler: () => {
               console.log("texteingabe erfolgt"); //is this handler really necessary? For some reason it is^^

@@ -15,7 +15,7 @@
         </ion-list-header>
 
         <ion-item>
-          <ion-label> Geburtstag </ion-label>
+          <ion-label> Geburtstag: </ion-label>
           <ion-input
             v-model:type="dateType"
             v-model="birthday"
@@ -24,13 +24,13 @@
         </ion-item>
 
         <ion-item>
-          <ion-label> Beruf </ion-label>
+          <ion-label> Beruf: </ion-label>
           <ion-input v-model="job" @ionBlur="safe()"></ion-input>
         </ion-item>
 
-        <ion-list-header>
+        <!--<ion-list-header>
           <ion-label> Sprachen </ion-label>
-        </ion-list-header>
+        </ion-list-header>-->
 
         <ion-item>
           <ion-label>
@@ -45,7 +45,7 @@
 
 
         <ion-item>
-          <ion-label> Dialekt </ion-label>
+          <ion-label> Dialekt: </ion-label>
           <ion-input v-model="dialect" @ionBlur="safe()"></ion-input>
         </ion-item>
         <ion-item v-if="dialect != '' && getFiveItems(dialect)[0] != dialect">
@@ -71,7 +71,7 @@
         </ion-list-header>-->
 
         <ion-item>
-          <ion-label> Postleitzahl </ion-label>
+          <ion-label> Postleitzahl: </ion-label>
           <ion-input
             v-model="shownZipCode"
             v-model:type="numberType"

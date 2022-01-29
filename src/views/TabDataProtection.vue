@@ -117,8 +117,8 @@ import { defineComponent, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import PageHeader from '@/components/layout/PageHeader.vue';
 
-import { 
-  IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonLabel, IonItem,IonToggle,
+import {
+  IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonLabel, IonItem, IonToggle, toastController,
 } from '@ionic/vue';
 
 import firebase from "@/backend/firebase-config";
@@ -313,6 +313,12 @@ export default defineComponent({
       const user = firebase.auth().currentUser;
       if (user == null) return;
       setLicense(licensePTR.value);
+      const toast = await toastController
+          .create({
+            message: 'Your license Changes have been saved',
+            duration: 1500
+          })
+      return toast.present();
     }
 
     const optionChanged = (event: any)=>{
