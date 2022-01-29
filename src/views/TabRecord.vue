@@ -1,5 +1,5 @@
 <template>
-  <ion-page>
+  <ion-page slot>
     <PageHeader v-bind:title="t('general.appname')" />
 
     <ion-content :fullscreen="true">
@@ -10,6 +10,8 @@
           <ion-input
             v-model="newName"
             placeholder="choose a Name"
+            maxlength="20"
+            minlength="1"
             v-model:inputmode="text"
             v-model:value="lastRecording.name"
           ></ion-input>
@@ -25,7 +27,7 @@
           <ion-label>Select License</ion-label>
           <ion-textarea v-show="!openLicenseModal" v-model="newLicense" v-model:value="lastRecording.license" v-model:placeholder="lastRecording.license" :disabled="true"></ion-textarea>
           <ion-button v-show="!openLicenseModal" @click="selectNewLicense()" v-model:name="licensePTR">change</ion-button>
-            <ion-card-modal v-show="openLicenseModal" :fullscreen="true">
+            <ion-card-modal v-show="openLicenseModal" @focus="evaluateButtonSettingsFromLicense()" :fullscreen="true">
               <ion-list slot="end">
               <ion-item>
                 <ion-label text-wrap>
@@ -176,7 +178,7 @@ import {
   getRecordingEntry,
   setRecordingLicense,
 } from "@/scripts/RecordingStorage";
-import {onIonViewDidEnter, toastController} from "@ionic/vue";
+import {alertController, onIonViewDidEnter, toastController} from "@ionic/vue";
 import {UploadToFirebase} from "@/scripts/RecordingUpload";
 import {
   IonPage,
@@ -219,10 +221,10 @@ import {
   //ReaddirResult,
 } from "@capacitor/filesystem";
 //import { CapacitorException } from "@capacitor/core";
-
+import router from "@/router";
 import { insertRecordingEntry } from "@/scripts/RecordingStorage";
 import RecordingData from "@/scripts/RecordingData";
-import {getLicense, getFirstLanguage, userSettings} from "@/scripts/UserSettingsStorage";
+import {getLicense, getFirstLanguage, userSettings, getFirstStart, setFirstStart} from "@/scripts/UserSettingsStorage";
 import { Encoding } from "@capacitor/filesystem";
 import {loadUserSettings} from "@/scripts/UserSettingsStorage";
 //import router from "@/router";
@@ -261,6 +263,23 @@ export default defineComponent({
 
     const recordingAllowed = ref(false);
     loadUserSettings();
+    const firstStart = async()=> {
+      await loadUserSettings();
+      if (getFirstStart()) {
+        setFirstStart(false);
+        await router.push('tabpersonaldata');
+        const alert = await alertController
+            .create({
+              message: 'Welcome to the app.' +
+                  'The purpose of this application is to gather voice recordings to preserve the languages spoken and make a computer system learn them.' +
+                  'So the more recordings the merrier. Please fill in your personal information and adjust the license to your liking. You can find the license' +
+                  'at Data Security.' +
+                  'Thank you!',
+            })
+        return alert.present();
+      }
+    }
+    firstStart();
     const licensePTR = ref(getLicense());
     const firstModalOpen = ref(true);
 
@@ -663,6 +682,7 @@ export default defineComponent({
       //console.log(lastRecording.value.languages[0])
       if (newLicense.value != "") {
         //console.log("changingLicense")
+        await evaluateLicenseAndDeactivations();
         newLicense.value = licensePTR.value;
         setRecordingLicense(lastRecording.value.timestamp, newLicense.value);
       }
