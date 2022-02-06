@@ -93,11 +93,17 @@ export default defineComponent({
       mail.value = currentUser.email;
     }
 
+    /**
+     *triggered when the user changes his upload via wifi settings
+     */
     const optionChanged = (event: any) => {
       wifiOnlyActivated.value = !wifiOnlyActivated.value;
       setWifi(wifiOnlyActivated.value);
     };
 
+    /**
+     * deletes the users acc in teh database
+     */
     const deleteAccInDatabase = async () =>{
       //TODO
       const db = firebase.firestore();
@@ -130,7 +136,9 @@ export default defineComponent({
     }
 
 
-
+    /**
+     * creates an alert asking the user if he really wants to delete his account
+     */
     const deleteAcc = async () =>{
       const alert = await alertController.create({
         message: 'Do you really want to delete this account along with all the local recordings permanently?',
@@ -149,6 +157,9 @@ export default defineComponent({
       await alert.present();
     }
 
+    /**
+     * creates an alert asking the user if he really wants to delete all his recordings on the device
+     */
     const deleteData = async () =>{
       const alert = await alertController.create({
         message: 'Do you really want to delete all the local recordings permanently?',

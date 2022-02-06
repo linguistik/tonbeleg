@@ -229,12 +229,18 @@ export default defineComponent({
       uploadUserSettings();
     };
 
+    /**
+     * loads the dialects from firebase
+     */
     const loadDialects = async () => {
       const db = firebase.firestore();
       const snapshot = await db.collection("data").doc("dialects").get();
       dialects = snapshot.get("dialects");
     };
 
+    /**
+     * loads the languages from firebase
+     */
     const loadLanguages = async () => {
       const db = firebase.firestore();
       const snapshot = await db.collection("data").doc("languages").get();

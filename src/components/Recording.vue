@@ -289,10 +289,10 @@ export default {
      */
     const rename = async () => {
       //TODO
-      const alert = await alertController.create({
+      const alert = await alertController.create({  //create an alert
         message: "Choose a name",
         inputs: [
-          {
+          {                       //a textarea to write a new Name into
             name: "textField",
             id: "textField",
             type: "text",
@@ -308,7 +308,7 @@ export default {
             },
           },
         ], //inputs
-        buttons: [
+        buttons: [                            //button to cancel the new name operation
           {
             text: "cancel",
             handler: () => {
@@ -316,8 +316,8 @@ export default {
             },
           },
           {
-            text: "OK",
-            handler: (data) => {
+            text: "OK",           //button to confirm the new name
+            handler: (data) => {  //handles the input to the alerts textfield
               const x = data.textField;
               console.log(x);
               if (!(x.length === 0) && x.length <= 35) {
@@ -328,10 +328,11 @@ export default {
               }
             },
           },
-        ], //buttons
-      }); //create alert
-      await alert.present();
-    }; //method rename
+        ],
+      });
+      await alert.present(); //shows the alert described above
+    };
+
     /**
      * opens message box to confirm delete of the entry
      */

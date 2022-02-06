@@ -5,27 +5,39 @@ import firebase from "@/backend/firebase-config";
 import WaveSurfer from "wavesurfer.js"; //BSD-3 ok
 import ExportAudioPlugin from "wavesurfer-export-audio-plugin"; //MIT ok
 
-
+/**
+ * an HTMlAudioElement which can be accessed from everywhere in the application
+ */
 export let audioDaten: HTMLAudioElement = new Audio()
 
+/**
+ * creates an HTMLAudioElement from the recordings data string
+ * @param timestamp used to identify the recording to read
+ * @param userID used to identify which users data to read
+ */
 export async function replayAudioData(timestamp: string, userID: string){
-    const audioRef = await Filesystem.readFile({
+    const audioRef = await Filesystem.readFile({       //reads the recordings data
         path: "/" + userID + "/" + timestamp + "/" + "0.raw",
         directory: Directory.Data,
         encoding: Encoding.UTF8,
     });
-    const audioString = new Audio(audioRef.data);
-    audioDaten = audioString;
-    return audioString;
+    const audioString = new Audio(audioRef.data);  //creates an AudioElement
+    audioDaten = audioString;                      //assigns an AudioElement to the AudioElement which can be accessed anywhere
+    return audioString;                            //returns the AudioElement
 }
 
+/**
+ * reads the recording and returns it as a string
+ * @param timestamp used to identify the recording to read
+ * @param userID used to identify which users data to read
+ */
 export async function getAudioString(timestamp: string, userID: string){
-    const audioRef = await Filesystem.readFile({
+    const audioRef = await Filesystem.readFile({        //reads the recording data
         path: "/" + userID + "/" + timestamp + "/" + "0.raw",
         directory: Directory.Data,
         encoding: Encoding.UTF8,
     });
-    return audioRef.data;
+    return audioRef.data;                                       //returns the recording data as a string
 }
 /**
  * 

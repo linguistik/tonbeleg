@@ -10,18 +10,23 @@ import {convertToRegionDataArray} from "@/scripts/editing/RegionDataUtils";
 import { RecordingUploadArray } from "./RecordingUpload";
 
 //const r = new RecordingData(1,"a", ["a","b"],22);
-
+/**
+ * an array of all recordings
+ */
 export let recordings: RecordingData[] = [];
 
+/**
+ * save the recordings on the device
+ */
 export function safeRecordings() {//call this function on closing or on every change
-    const dataString = JSON.stringify(recordings);
-    const currentUser = firebase.auth().currentUser;
+    const dataString = JSON.stringify(recordings);  //create a string from the recording array
+    const currentUser = firebase.auth().currentUser; //confirm the users identify in firebase
     if (currentUser == null) {
         console.log("\n\nFATAL ERROR: no user logged in, so saving recordings does not work\n\n");
         return;
     }
     const userUID = currentUser.uid;
-    try{
+    try{                                //write the string in the devices storage
         Filesystem.writeFile({
             data: dataString,
             path: userUID + "/recordings.json",
@@ -36,22 +41,24 @@ export function safeRecordings() {//call this function on closing or on every ch
 }
 
 
-
+/**
+ * reads the recordings on the device into an array at the start of the application
+ */
 export async function loadRecordings() {
-    const currentUser = firebase.auth().currentUser;
+    const currentUser = firebase.auth().currentUser;  //confirm the users identity in firebase
     if (currentUser == null) {
         console.log("\n\nFATAL ERROR: no user logged in, so loading recordings does not work\n\n");
         return;
     }
     const userUID = currentUser.uid;
-    try {
+    try {                                                           //read the recording data
         const readFileResult = await Filesystem.readFile({
             path: userUID + "/recordings.json",
             directory: Directory.Data,
             encoding: Encoding.UTF8
         });
         console.log("readData:",readFileResult.data);
-        recordings = JSON.parse(readFileResult.data);
+        recordings = JSON.parse(readFileResult.data);                //store the recording data in an array
 
     }catch(error){//ignore error when file does not exist already, this happens on first login
         if(error.message == "File does not exist."){/**/}
@@ -140,22 +147,26 @@ export function getSelectedForUpload(timestamp: number): boolean{
     return data.selectedForUpload;
 }
 
+/**
+ * removes a specified recording from the device
+ * @param recording the recording to be removed
+ */
 export function removeRecordingEntry(recording: RecordingData) {
-    const index = recordings.indexOf(getRecordingEntry(recording.timestamp), 0);
+    const index = recordings.indexOf(getRecordingEntry(recording.timestamp), 0); //find the index of the recording in the recordings array
     if(index<0){
         console.log("\n\nERROR on deleting. Element could not be found\n\n");
         return;
     }
-    recordings.splice(index,1);
+    recordings.splice(index,1); //remove the recording from the array of recordings
     //delete actual folder
 
-    const currentUser = firebase.auth().currentUser;
+    const currentUser = firebase.auth().currentUser; //confirm the users identity in firebase
     if (currentUser == null) {
         return;
     }
 
     const userUID = currentUser.uid;
-    Filesystem.rmdir({
+    Filesystem.rmdir({                      //delete the recording and its folder from the device
         path: userUID + "/" + recording.timestamp,
         directory: Directory.Data,
         recursive: true
@@ -163,6 +174,10 @@ export function removeRecordingEntry(recording: RecordingData) {
     safeRecordings();
 }
 
+/**
+ * removes the last recording from the device
+ * can probably be removed and done with the function above
+ */
 export function removeLastRecordingEntry() {
     const index = recordings.length-1;
     if(index<0){
@@ -185,14 +200,18 @@ export function removeLastRecordingEntry() {
     safeRecordings();
 }
 
+/**
+ * deletes all recordings on the device
+ */
 export function removeAllRecordingEntry() {
-    recordings.splice(0,);
+    recordings.splice(0,); //clear all recordings from the recordings array
     //delete actual folder
-    const currentUser = firebase.auth().currentUser;
+    const currentUser = firebase.auth().currentUser; //confirm the users identity with firebase
     if (currentUser == null) {
         return;
     }
-    const userUID = currentUser.uid;
+
+    const userUID = currentUser.uid; //delete the recordings folder and therefore all recordings
     Filesystem.rmdir({
         path: userUID,
         directory: Directory.Data,
@@ -200,7 +219,6 @@ export function removeAllRecordingEntry() {
     })
     safeRecordings();
 }
-
 
 
 
