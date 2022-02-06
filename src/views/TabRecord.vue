@@ -455,6 +455,10 @@ export default defineComponent({
           console.log(error);
         });
     };
+
+    /**
+     * starts the recording and tells the user if this is not possible
+     */
     const startRecordingTrigger = async () => {
       if(openModal.value==false) {
         timer.value.setSeconds(0);
@@ -494,11 +498,14 @@ export default defineComponent({
           .catch(error => console.log(error))
     };*/
 
+    /**
+     * stop the recording and save it
+     */
     const stopRecordingTrigger = async () => {
       recordingStatus.value = recordingStatusEnums.DOING_SMT;
       let recordingData;
       console.log(recordingStatus);
-      try {
+      try { //stop the voicerecorder and set the recording Status to "not_recording"
         recordingData = await VoiceRecorder.stopRecording();
         recordingStatus.value = recordingStatusEnums.NOT_RECORDING;
         console.log(recordingData.value);
@@ -512,7 +519,7 @@ export default defineComponent({
       }
 
       //get userUID
-      const currentUser = firebase.auth().currentUser;
+      const currentUser = firebase.auth().currentUser; //authenticate user in firebase
       if (currentUser == null) return;
       const userUID = currentUser.uid;
 
@@ -619,6 +626,9 @@ export default defineComponent({
     };
 
 
+    /**
+     * deletes the last recording in case the user doesnt want it
+     */
     const deleteLastRecording = async () => {
       //TODO
       removeLastRecordingEntry();
@@ -652,23 +662,34 @@ export default defineComponent({
     }
     initData();
 
+    /**
+     * effectively  closes the licenses modal in the popUp
+     */
     const selectNewLicense = async() =>{
-
       openLicenseModal.value=!openLicenseModal.value;
     }
 
+    /**
+     * determines the license chosen by the user
+     */
     const evaluateNewLicense = () =>{
       openLicenseModal.value=!openLicenseModal.value;
       evaluateLicenseAndDeactivations()
       newLicense.value = licensePTR.value;
     }
 
+    /**
+     * determines the license chosen by user at each toggle
+     */
     const optionChanged = (event: any)=>{
       options.set(event.target.name, event.target.checked);
       evaluateLicenseAndDeactivations();
       console.log("changingLicense");
     }
 
+    /**
+     * saves the changes the users makes to a recordings standard values just after recording(in the popUp)
+     */
     const saveChanges = async () => {
       //TODO
       if (newName.value != "") {
@@ -692,6 +713,10 @@ export default defineComponent({
     };
 
 
+    /**
+     * when the RecordTab is entered selected recordings are uploaded to firebase if possible
+     * happens also at each application start since RecordTab is the starting tab
+     */
     onIonViewDidEnter(async () => {
       console.log('Home page will be left');
       await UploadToFirebase();
