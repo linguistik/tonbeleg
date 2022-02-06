@@ -38,7 +38,7 @@
                 <ion-toggle
                     slot="start"
                     name = "isMentioningActivated"
-                    @ionChange="optionChanged($event)"
+                    @ionChange="optionChangedForPopUp($event)"
                     v-bind:checked="isMentioningActivated"
                     v-bind:disabled="isMentioningActivatedDeactivated"
                 ></ion-toggle>
@@ -53,7 +53,7 @@
                 <ion-toggle
                     slot="start"
                     name = "isComerciallyUseAllowed"
-                    @ionChange="optionChanged($event)"
+                    @ionChange="optionChangedForPopUp($event)"
                     v-bind:checked="isComerciallyUseAllowed"
                     v-bind:disabled="isComerciallyUseAllowedDeactivated"
                 ></ion-toggle>
@@ -68,7 +68,7 @@
                 <ion-toggle
                     slot="start"
                     name="isRemixingAllowed"
-                    @ionChange="optionChanged($event)"
+                    @ionChange="optionChangedForPopUp($event)"
                     v-bind:checked="isRemixingAllowed"
                     v-bind:disabled="isRemixingAllowedDeactivated"
                 ></ion-toggle>
@@ -83,7 +83,7 @@
                 <ion-toggle
                     slot="start"
                     name="isSharingAllowed"
-                    @ionChange="optionChanged($event)"
+                    @ionChange="optionChangedForPopUp($event)"
                     v-bind:checked="isSharingAllowed"
                     v-bind:disabled="isSharingAllowedDeactivated"
                 ></ion-toggle>
@@ -96,7 +96,7 @@
                   <h2>
                     Deine Lizenz
                   </h2>
-                    <strong>{{licensePTR}}</strong>
+                    <strong>{{exportedLicensePTR}}</strong>
                 </ion-label>
               </div>
               <ion-button @click="evaluateNewLicense()" slot="end">OK</ion-button>
@@ -227,6 +227,9 @@ import RecordingData from "@/scripts/RecordingData";
 import {getLicense, getFirstLanguage, userSettings, getFirstStart, setFirstStart} from "@/scripts/UserSettingsStorage";
 import { Encoding } from "@capacitor/filesystem";
 import {loadUserSettings} from "@/scripts/UserSettingsStorage";
+import {isSharingAllowed, isSharingAllowedDeactivated, isRemixingAllowedDeactivated, isRemixingAllowed, isMentioningActivatedDeactivated,
+        isMentioningActivated, isComerciallyUseAllowedDeactivated, isComerciallyUseAllowed, exportedLicensePTR, evaluateButtonSettingsFromLicense,
+        evaluateLicenseAndDeactivations, optionChangedForPopUp} from "@/scripts/LicenseSettings";
 //import router from "@/router";
 
 export default defineComponent({
@@ -280,108 +283,12 @@ export default defineComponent({
       }
     }
     firstStart();
-    const licensePTR = ref(getLicense());
     const firstModalOpen = ref(true);
 
     const timer = ref(new Date(0));
     const timerString = ref(timer.value.toISOString().substr(11, 8));
 
-    const options = new Map<string, boolean>([
-      ["isMentioningActivated", false],
-      ["isComerciallyUseAllowed", true],
-      ["isRemixingAllowed", true],
-      ["isSharingAllowed", true],
-    ]);
-
-    const isMentioningActivated = ref(false);
-    const isComerciallyUseAllowed = ref(true);
-    const isRemixingAllowed = ref(true);
-    const isSharingAllowed = ref(true);
-
-    const isMentioningActivatedDeactivated = ref(false);
-    const isComerciallyUseAllowedDeactivated = ref(true);
-    const isRemixingAllowedDeactivated = ref(true);
-    const isSharingAllowedDeactivated = ref(true);
-
     const languages: string[][]=[];
-
-    //7 different licenses
-    const evaluateLicenseAndDeactivations = ()=>{
-      if(options.get("isMentioningActivated")){
-        //user does not want attribution
-        //deactivate all other toggles
-        isComerciallyUseAllowedDeactivated.value = false;
-        isRemixingAllowedDeactivated.value = false;
-        isSharingAllowedDeactivated.value = false;
-        //set license
-        licensePTR.value = "CC BY 4.0";
-
-        //if one of the lower toggles is unchecked, deactivate the top one
-        if(!(options.get("isComerciallyUseAllowed") && options.get("isRemixingAllowed") && options.get("isSharingAllowed"))){
-          isMentioningActivatedDeactivated.value = true;
-
-          licensePTR.value = "something else";
-          //combinations of the last 3 values
-          if(options.get("isComerciallyUseAllowed") && options.get("isRemixingAllowed") && !options.get("isSharingAllowed")){
-            //BY-SA
-            isRemixingAllowedDeactivated.value = true;
-            licensePTR.value = "CC BY-SA 4.0";
-          }else if(options.get("isComerciallyUseAllowed") && !options.get("isRemixingAllowed") && options.get("isSharingAllowed")){
-            //BY-ND
-            isSharingAllowedDeactivated.value = true;
-            licensePTR.value = "CC BY-ND 4.0";
-          }else if(!options.get("isComerciallyUseAllowed") && options.get("isRemixingAllowed") && options.get("isSharingAllowed")){
-            //BY-NC
-            licensePTR.value = "CC BY-NC 4.0";
-          }else if(!options.get("isComerciallyUseAllowed") && options.get("isRemixingAllowed") && !options.get("isSharingAllowed")){
-            //BY-NC-SA
-            isRemixingAllowedDeactivated.value =true;
-            licensePTR.value = "CC BY-NC-SA 4.0";
-          }else if(!options.get("isComerciallyUseAllowed") && !options.get("isRemixingAllowed") && options.get("isSharingAllowed")){
-            //BY-NC-ND
-            isSharingAllowedDeactivated.value = true;
-            licensePTR.value = "CC BY-NC-ND 4.0";
-          }else{
-            console.log("ERROR");
-          }
-        }else{
-          isMentioningActivatedDeactivated.value = false;
-        }
-
-      }else{
-        isComerciallyUseAllowedDeactivated.value = true;
-        isRemixingAllowedDeactivated.value = true;
-        isSharingAllowedDeactivated.value = true;
-        licensePTR.value = "CC0 1.0";
-      }
-
-    }
-
-    const evaluateButtonSettingsFromLicense = async ()=>{
-    await loadUserSettings();
-    if(firstModalOpen.value==true) {
-      licensePTR.value = getLicense();
-      firstModalOpen.value = false;
-    }
-      if(licensePTR.value == "CC0 1.0"){
-        return;//leave everything default
-      }
-      options.set("isMentioningActivated", true);
-      isMentioningActivated.value = true;
-      if(licensePTR.value.includes("NC")){
-        options.set("isComerciallyUseAllowed", false);
-        isComerciallyUseAllowed.value = false;
-      }
-      if(licensePTR.value.includes("SA")){
-        options.set("isSharingAllowed", false);
-        isSharingAllowed.value = false;
-      }
-      if(licensePTR.value.includes("ND")){
-        options.set("isRemixingAllowed", false);
-        isRemixingAllowed.value = false;
-      }
-      evaluateLicenseAndDeactivations();
-    }
 
     //https://expertcodeblog.wordpress.com/2018/07/05/typescript-sleep-a-thread/
     //const delay = (ms: number)=>{return new Promise(resolve =>setTimeout(resolve,ms));};
@@ -599,7 +506,6 @@ export default defineComponent({
       openModal.value = !openModal.value;
       openLicenseModal.value = false;
       await loadUserSettings();
-      licensePTR.value = getLicense();
       await evaluateButtonSettingsFromLicense();
       lastRecording.value = getRecordingEntry(timestamp);
       timer.value = new Date(0);
@@ -620,7 +526,6 @@ export default defineComponent({
       newName.value = "";
       newLanguage.value = "";
       newLicense.value = "";
-      licensePTR.value = getLicense();
       await evaluateButtonSettingsFromLicense();
       firstModalOpen.value = true;
     };
@@ -675,16 +580,7 @@ export default defineComponent({
     const evaluateNewLicense = () =>{
       openLicenseModal.value=!openLicenseModal.value;
       evaluateLicenseAndDeactivations()
-      newLicense.value = licensePTR.value;
-    }
-
-    /**
-     * determines the license chosen by user at each toggle
-     */
-    const optionChanged = (event: any)=>{
-      options.set(event.target.name, event.target.checked);
-      evaluateLicenseAndDeactivations();
-      console.log("changingLicense");
+      newLicense.value = exportedLicensePTR.value;
     }
 
     /**
@@ -704,7 +600,7 @@ export default defineComponent({
       if (newLicense.value != "") {
         //console.log("changingLicense")
         await evaluateLicenseAndDeactivations();
-        newLicense.value = licensePTR.value;
+        newLicense.value = exportedLicensePTR.value;
         setRecordingLicense(lastRecording.value.timestamp, newLicense.value);
       }
       await clearVariables();
@@ -749,12 +645,12 @@ export default defineComponent({
       deleteLastRecording,
       evaluateButtonSettingsFromLicense,
       evaluateLicenseAndDeactivations,
-      optionChanged,
+      optionChangedForPopUp,
       lastRecording,
       newName,
       newLanguage,
       newLicense,
-      licensePTR,
+      exportedLicensePTR,
       languages,
       isMentioningActivated,
       isComerciallyUseAllowed,
