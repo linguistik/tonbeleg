@@ -180,6 +180,7 @@ export default defineComponent({
         }
       );
     }
+    
 
     /* eslint-disable @typescript-eslint/camelcase */
     FileSelector.addListener("onFilesSelected", async (data) => {
