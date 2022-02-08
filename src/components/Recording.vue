@@ -301,7 +301,7 @@ export default {
               minlength: 1,
               maxlength: 20,
               inputMode: "text",
-              placeholder: displayName.value,
+              value: displayName.value,
             },
             handler: () => {
               console.log("texteingabe erfolgt"); //is this handler really necessary? For some reason it is^^
