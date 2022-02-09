@@ -133,7 +133,7 @@ export default {
     const { t } = useI18n();
 
     const displayName = ref(props.recording.name);
-    const displayPartsLength = ref(props.recording.parts.length);
+    const displayPartsLength = ref(props.recording.parts.length==0 ? 1 : props.recording.parts.length);
     const exists = ref(true);
     const selectedForUpload = ref(props.recording.selectedForUpload);
     const alreadyUploaded = ref(props.recording.upload);
