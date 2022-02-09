@@ -1,4 +1,7 @@
+import WaveSurfer from "wavesurfer.js";
 import RegionData from "./editing/RegionData";
+import RegionPlugin from "wavesurfer.js/dist/plugin/wavesurfer.regions.js"; //ok
+import { replayAudioData } from "./ReplayData";
 
 
 export default class RecordingData{
@@ -25,4 +28,6 @@ export default class RecordingData{
         this.languages = languages;
         this.transcription = "";
     }
+    
+
 }

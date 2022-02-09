@@ -9,6 +9,14 @@
         {{ getRecordingDate() }}<br />
         Anzahl Tonbelege:
         {{ displayPartsLength }}
+        <ion-item v-for="i of Array.from(Array(partsRef.length).keys())" v-bind:key="i">
+        <ion-icon class="customPlayIcon"
+          Left-icon
+          :icon="playingPartsRef[i] ? pause : play"
+          @click="playRegion(i)"
+          v-if="provideFunctionality"
+        ></ion-icon>{{partsRef[i].name}}<br/>
+        </ion-item>
       </ion-card-content>
       <ion-item>
         <ion-icon
@@ -68,7 +76,7 @@
 
 
 <script lang="ts">
-import { ref } from "vue";
+import { ref, Ref } from "vue";
 
 import { useI18n } from "vue-i18n";
 
@@ -105,6 +113,11 @@ import {
 } from "@/scripts/RecordingStorage";
 import RecordingData from '@/scripts/RecordingData';
 import {UploadToFirebase} from "@/scripts/RecordingUpload";
+import RegionData from "@/scripts/editing/RegionData";
+
+import WaveSurfer from "wavesurfer.js"; //BSD-3 ok
+import RegionPlugin from "wavesurfer.js/dist/plugin/wavesurfer.regions.js"; //ok
+import RecordingObj from "@/scripts/recording/RecordingObj";
 
 export default {
   name: "Recording",
@@ -118,7 +131,7 @@ export default {
   },
   
   props: {
-    recording: Object,
+    recording: Object,//recordingData
     provideFunctionality: {
       //pass false to disable interative elements. default is true
       type: Boolean,
@@ -143,21 +156,33 @@ export default {
       updateKey.value += 1;
     };
 
+    let recObj = new RecordingObj(props.recording);
+    
+    const partsRef: Ref<RegionData[]> = ref(props.recording.parts);
+    //const partsRef: Ref<RegionData[]> = ref([props.recording.parts]);
+    const playingPartsRef: Ref<boolean[]> = ref(new Array(props.recording.parts.length).fill(false));
     insertUpdateFunction(props.recording.timestamp, (editedEntry: RecordingData)=>{
       displayPartsLength.value = editedEntry.parts.length;
       selectedForUpload.value = editedEntry.selectedForUpload;
       alreadyUploaded.value = editedEntry.upload;
+      partsRef.value = editedEntry.parts;
+      playingPartsRef.value = new Array(props.recording.parts.length).fill(false);
+      recObj.destroy();
+      recObj = new RecordingObj(editedEntry);
     })
 
     const currentUser = firebase.auth().currentUser;
     if (currentUser == null) return;
-
+    const currentUserUID = currentUser.uid;
     let audioString = new Audio();
 
     const isOpen = ref(false);
     let currentTime = 0;
     let counter = 0;
     const playing = ref(false);
+
+
+
 
     const toggleOpen = () => {
       isOpen.value = !isOpen.value;
@@ -240,6 +265,19 @@ export default {
         console.log("upload this thing", props.recording.upload);
       }
     };
+
+    const playRegion = (i: number)=>{
+      if(playingPartsRef.value[i]){
+        //we are already playing!
+        //pause/stop it
+        recObj.stopPlaying();
+      }else{
+        playingPartsRef.value [i]= true;
+        recObj.playRegionByIdInPartsArray(i, ()=>{
+          playingPartsRef.value[i] = false;
+        });
+      }
+    }
 
     const playRec = async () => {
       if (playing.value == false) {
@@ -388,6 +426,9 @@ export default {
       displayName,
       displayPartsLength,
       exists,
+      partsRef,
+      playRegion,
+      playingPartsRef,
     }; //return
   }, //setup
 }; //export default
