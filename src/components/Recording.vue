@@ -9,11 +9,19 @@
         {{ getRecordingDate() }}<br />
         Anzahl Tonbelege:
         {{ displayPartsLength }}
+        <ion-item v-for="i of Array.from(Array(partsRef.length).keys())" v-bind:key="i">
+        <ion-icon class="customPlayIcon"
+          Left-icon
+          :icon="playingPartsRef[i] ? stop : play"
+          @click="playRegion(i)"
+          v-if="provideFunctionality"
+        ></ion-icon>{{partsRef[i].name}}<br/>
+        </ion-item>
       </ion-card-content>
       <ion-item>
         <ion-icon
           Left-icon
-          :icon="playing ? pause : play"
+          :icon="playing ? stop : play"
           @click="playRec()"
           v-if="provideFunctionality"
         ></ion-icon>
@@ -68,7 +76,7 @@
 
 
 <script lang="ts">
-import { ref } from "vue";
+import { ref, Ref } from "vue";
 
 import { useI18n } from "vue-i18n";
 
@@ -81,6 +89,7 @@ import {
   pencil,
   play,
   trash,
+  stop,
 } from "ionicons/icons";
 
 import {
@@ -105,6 +114,11 @@ import {
 } from "@/scripts/RecordingStorage";
 import RecordingData from '@/scripts/RecordingData';
 import {UploadToFirebase} from "@/scripts/RecordingUpload";
+import RegionData from "@/scripts/editing/RegionData";
+
+import WaveSurfer from "wavesurfer.js"; //BSD-3 ok
+import RegionPlugin from "wavesurfer.js/dist/plugin/wavesurfer.regions.js"; //ok
+import RecordingPlayer from "@/scripts/recording/RecordingPlayer";
 
 export default {
   name: "Recording",
@@ -118,7 +132,7 @@ export default {
   },
   
   props: {
-    recording: Object,
+    recording: Object,//recordingData
     provideFunctionality: {
       //pass false to disable interative elements. default is true
       type: Boolean,
@@ -142,22 +156,35 @@ export default {
     const forceUpdate = () => {
       updateKey.value += 1;
     };
+    
+    const playingPartsRef: Ref<boolean[]> = ref(new Array(props.recording.parts.length).fill(false));
+    const playing = ref(false);
 
+    let recObj;
+    if(props.provideFunctionality){
+      recObj= new RecordingPlayer(props.recording,playing,playingPartsRef);
+    }
+
+    const partsRef: Ref<RegionData[]> = ref(props.recording.parts);
+    //const partsRef: Ref<RegionData[]> = ref([props.recording.parts]);
     insertUpdateFunction(props.recording.timestamp, (editedEntry: RecordingData)=>{
       displayPartsLength.value = editedEntry.parts.length;
       selectedForUpload.value = editedEntry.selectedForUpload;
       alreadyUploaded.value = editedEntry.upload;
+      partsRef.value = editedEntry.parts;
+      playingPartsRef.value = new Array(props.recording.parts.length).fill(false);
+      recObj.destroy();
+      recObj = new RecordingPlayer(editedEntry,playing,playingPartsRef);
     })
 
     const currentUser = firebase.auth().currentUser;
     if (currentUser == null) return;
-
-    let audioString = new Audio();
+    const currentUserUID = currentUser.uid;
 
     const isOpen = ref(false);
-    let currentTime = 0;
-    let counter = 0;
-    const playing = ref(false);
+
+
+
 
     const toggleOpen = () => {
       isOpen.value = !isOpen.value;
@@ -241,27 +268,22 @@ export default {
       }
     };
 
+    const playRegion = (i: number)=>{
+      if(playingPartsRef.value[i]){
+        //we are already playing!
+        //pause/stop it
+        recObj.stopPlaying();
+      }else{
+        //playingPartsRef.value [i]= true;
+        recObj.playRegionByIdInPartsArray(i);
+      }
+    }
+
     const playRec = async () => {
-      if (playing.value == false) {
-        //TODO
-        if (counter == 0) {
-          audioString = await replayAudioData(
-            props.recording.timestamp,
-            currentUser.uid
-          );
-          counter++;
-        }
-        if (currentTime != 0) {
-          audioString.currentTime = currentTime;
-        }
-        audioString.oncanplay = () => audioString.play();
-        playing.value = !playing.value;
-        (audioString.onended = () => (playing.value = !playing.value)),
-          (counter = 0);
-      } else {
-        audioString.pause();
-        currentTime = audioString.currentTime;
-        playing.value = !playing.value;
+      if(playing.value){
+        recObj.stopPlaying();
+      }else{
+        recObj.playAllRegions();
       }
     };
     /**
@@ -380,7 +402,6 @@ export default {
       selectedForUpload,
       getRecordingEntryUploadBoolean,
       changeLicense,
-      currentTime,
       audioDaten,
       replayAudioData,
       alreadyUploaded,
@@ -388,6 +409,10 @@ export default {
       displayName,
       displayPartsLength,
       exists,
+      partsRef,
+      playRegion,
+      playingPartsRef,
+      stop,
     }; //return
   }, //setup
 }; //export default
