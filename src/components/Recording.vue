@@ -12,7 +12,7 @@
         <ion-item v-for="i of Array.from(Array(partsRef.length).keys())" v-bind:key="i">
         <ion-icon class="customPlayIcon"
           Left-icon
-          :icon="playingPartsRef[i] ? pause : play"
+          :icon="playingPartsRef[i] ? stop : play"
           @click="playRegion(i)"
           v-if="provideFunctionality"
         ></ion-icon>{{partsRef[i].name}}<br/>
@@ -21,7 +21,7 @@
       <ion-item>
         <ion-icon
           Left-icon
-          :icon="playing ? pause : play"
+          :icon="playing ? stop : play"
           @click="playRec()"
           v-if="provideFunctionality"
         ></ion-icon>
@@ -89,6 +89,7 @@ import {
   pencil,
   play,
   trash,
+  stop,
 } from "ionicons/icons";
 
 import {
@@ -117,7 +118,7 @@ import RegionData from "@/scripts/editing/RegionData";
 
 import WaveSurfer from "wavesurfer.js"; //BSD-3 ok
 import RegionPlugin from "wavesurfer.js/dist/plugin/wavesurfer.regions.js"; //ok
-import RecordingObj from "@/scripts/recording/RecordingObj";
+import RecordingPlayer from "@/scripts/recording/RecordingPlayer";
 
 export default {
   name: "Recording",
@@ -155,12 +156,17 @@ export default {
     const forceUpdate = () => {
       updateKey.value += 1;
     };
-
-    let recObj = new RecordingObj(props.recording);
     
+    const playingPartsRef: Ref<boolean[]> = ref(new Array(props.recording.parts.length).fill(false));
+    const playing = ref(false);
+
+    let recObj;
+    if(props.provideFunctionality){
+      recObj= new RecordingPlayer(props.recording,playing,playingPartsRef);
+    }
+
     const partsRef: Ref<RegionData[]> = ref(props.recording.parts);
     //const partsRef: Ref<RegionData[]> = ref([props.recording.parts]);
-    const playingPartsRef: Ref<boolean[]> = ref(new Array(props.recording.parts.length).fill(false));
     insertUpdateFunction(props.recording.timestamp, (editedEntry: RecordingData)=>{
       displayPartsLength.value = editedEntry.parts.length;
       selectedForUpload.value = editedEntry.selectedForUpload;
@@ -168,18 +174,14 @@ export default {
       partsRef.value = editedEntry.parts;
       playingPartsRef.value = new Array(props.recording.parts.length).fill(false);
       recObj.destroy();
-      recObj = new RecordingObj(editedEntry);
+      recObj = new RecordingPlayer(editedEntry,playing,playingPartsRef);
     })
 
     const currentUser = firebase.auth().currentUser;
     if (currentUser == null) return;
     const currentUserUID = currentUser.uid;
-    let audioString = new Audio();
 
     const isOpen = ref(false);
-    let currentTime = 0;
-    let counter = 0;
-    const playing = ref(false);
 
 
 
@@ -272,34 +274,16 @@ export default {
         //pause/stop it
         recObj.stopPlaying();
       }else{
-        playingPartsRef.value [i]= true;
-        recObj.playRegionByIdInPartsArray(i, ()=>{
-          playingPartsRef.value[i] = false;
-        });
+        //playingPartsRef.value [i]= true;
+        recObj.playRegionByIdInPartsArray(i);
       }
     }
 
     const playRec = async () => {
-      if (playing.value == false) {
-        //TODO
-        if (counter == 0) {
-          audioString = await replayAudioData(
-            props.recording.timestamp,
-            currentUser.uid
-          );
-          counter++;
-        }
-        if (currentTime != 0) {
-          audioString.currentTime = currentTime;
-        }
-        audioString.oncanplay = () => audioString.play();
-        playing.value = !playing.value;
-        (audioString.onended = () => (playing.value = !playing.value)),
-          (counter = 0);
-      } else {
-        audioString.pause();
-        currentTime = audioString.currentTime;
-        playing.value = !playing.value;
+      if(playing.value){
+        recObj.stopPlaying();
+      }else{
+        recObj.playAllRegions();
       }
     };
     /**
@@ -418,7 +402,6 @@ export default {
       selectedForUpload,
       getRecordingEntryUploadBoolean,
       changeLicense,
-      currentTime,
       audioDaten,
       replayAudioData,
       alreadyUploaded,
@@ -429,6 +412,7 @@ export default {
       partsRef,
       playRegion,
       playingPartsRef,
+      stop,
     }; //return
   }, //setup
 }; //export default
