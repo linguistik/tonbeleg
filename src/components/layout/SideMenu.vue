@@ -1,6 +1,6 @@
 <template>
 
-  <ion-menu side="start" menu-id="sidemenu" content-id="sidemenu-content">
+  <ion-menu side="start" menu-id="sidemenu" content-id="sidemenu-content" :swipe-gesture="toggleSwipeMenu">
     <ion-header>
       <ion-toolbar color="primary" @click="close()">
         <ion-title>Menu</ion-title>
@@ -59,7 +59,7 @@ import {
 } from '@ionic/vue';
 
 import { settingsOutline, personOutline, documentLockOutline, bookOutline } from 'ionicons/icons';
-
+import {useMenuSettings} from "@/scripts/ionicVueSettings/menuSettings";
 
 export default defineComponent({
   name: "Menu",
@@ -90,11 +90,12 @@ export default defineComponent({
     }
     // menuController.close('sidemenu');
 
-
+    const {toggleSwipeMenu} = useMenuSettings();
     return {
       openSidemenu,
       toPage,
       close,
+      toggleSwipeMenu,
       // icons
       settingsOutline, personOutline, documentLockOutline, bookOutline
     }
