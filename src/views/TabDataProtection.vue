@@ -118,7 +118,17 @@ import { useI18n } from 'vue-i18n';
 import PageHeader from '@/components/layout/PageHeader.vue';
 
 import {
-  IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonLabel, IonItem, IonToggle, toastController,
+  IonPage,
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonContent,
+  IonList,
+  IonLabel,
+  IonItem,
+  IonToggle,
+  toastController,
+  onIonViewDidEnter,
 } from '@ionic/vue';
 
 import firebase from "@/backend/firebase-config";
@@ -139,6 +149,7 @@ import {evaluateLicenseAndDeactivations, evaluateButtonSettingsFromLicense,
         loadLocalData, options, isComerciallyUseAllowed, isComerciallyUseAllowedDeactivated,
         isMentioningActivated, isMentioningActivatedDeactivated, isRemixingAllowedDeactivated,
         isRemixingAllowed, isSharingAllowed, isSharingAllowedDeactivated, optionChanged} from "@/scripts/LicenseSettings";
+import {UploadToFirebase} from "@/scripts/RecordingUpload";
 export default defineComponent({
 
 
@@ -151,10 +162,15 @@ export default defineComponent({
     // multi-lingual support
     const { t } = useI18n();
 
-
     loadLocalData();
     uploadLicense();//überschreibt datenbank
 
+    onIonViewDidEnter(async () => { //e
+      console.log('Home page will be left');
+      await loadUserSettings();
+      exportedLicensePTR.value = getLicense();
+      evaluateButtonSettingsFromLicense();
+    });
 
 
     return { t, optionChanged,
