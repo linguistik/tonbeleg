@@ -6,10 +6,10 @@
       <ion-card-modal v-show="openModal"><!---brauch eig nen modal das kann man nicht wegklicken--->
         <ion-content fullscreen>
             <ion-item>
-          <ion-label v-model:position="fixed">Name:</ion-label>
+          <ion-label>Name:</ion-label>
           <ion-input
             v-model="newName"
-            placeholder="choose a Name"
+            placeholder="such einen Namen aus"
             maxlength="20"
             minlength="1"
             v-model:inputmode="text"
@@ -17,17 +17,17 @@
           ></ion-input>
         </ion-item>
         <ion-item>
-          <ion-label>Select Language</ion-label>
+          <ion-label>Sprache festlegen</ion-label>
           <ion-select v-model="newLanguage" v-model:value="getFirstLanguage()[0]" v-model:placeholder="getFirstLanguage()[0]">
-            <ion-select-option v-for="[short,language] in languages" v-bind:key="short" v-bind:value="short">{{language}}</ion-select-option>
+            <ion-select-option v-for="[short, language] in languages" v-bind:key="short" v-bind:value="short">{{language}}</ion-select-option>
           </ion-select>
         </ion-item>
 
         <ion-item>
-          <ion-label>Select License</ion-label>
-          <ion-textarea v-show="!openLicenseModal" v-model="newLicense" v-model:value="lastRecording.license" v-model:placeholder="lastRecording.license" :disabled="true"></ion-textarea>
-          <ion-button v-show="!openLicenseModal" @click="selectNewLicense()" v-model:name="licensePTR">change</ion-button>
-            <ion-card-modal v-show="openLicenseModal" @focus="evaluateButtonSettingsFromLicense()" :fullscreen="true">
+          <ion-label>Lizenz bestimmen</ion-label>
+          <ion-textarea v-show="!openLicenseModal" v-model="newLicense" v-model:value="exportedLicensePTR" v-model:placeholder="exportedLicensePTR" :disabled="true"></ion-textarea>
+          <ion-button v-show="!openLicenseModal" @click="selectNewLicense()" v-model:name="exportedLicensePTR">Ändern</ion-button>
+            <ion-card-modal v-show="openLicenseModal" :fullscreen="true">
               <ion-list slot="end">
               <ion-item>
                 <ion-label text-wrap>
@@ -105,9 +105,9 @@
         </ion-item>
 
         <ion-button color="danger" @click="deleteLastRecording()"
-          >delete</ion-button
+          >Löschen</ion-button
         >
-        <ion-button color="success" @click="saveChanges()"> ok</ion-button>
+        <ion-button color="success" @click="saveChanges()"> Speichern</ion-button>
         </ion-content>
       </ion-card-modal>
 
@@ -174,7 +174,6 @@ import PageHeader from "@/components/layout/PageHeader.vue";
 import {
   setRecordingEntryLanguage,
   setRecordingEntryName,
-  removeLastRecordingEntry,
   getRecordingEntry,
   setRecordingLicense,
 } from "@/scripts/RecordingStorage";
@@ -222,14 +221,14 @@ import {
 } from "@capacitor/filesystem";
 //import { CapacitorException } from "@capacitor/core";
 import router from "@/router";
-import { insertRecordingEntry } from "@/scripts/RecordingStorage";
+import { insertRecordingEntry, removeRecordingEntry } from "@/scripts/RecordingStorage";
 import RecordingData from "@/scripts/RecordingData";
 import {getLicense, getFirstLanguage, userSettings, getFirstStart, setFirstStart} from "@/scripts/UserSettingsStorage";
 import { Encoding } from "@capacitor/filesystem";
 import {loadUserSettings} from "@/scripts/UserSettingsStorage";
 import {isSharingAllowed, isSharingAllowedDeactivated, isRemixingAllowedDeactivated, isRemixingAllowed, isMentioningActivatedDeactivated,
         isMentioningActivated, isComerciallyUseAllowedDeactivated, isComerciallyUseAllowed, exportedLicensePTR, evaluateButtonSettingsFromLicense,
-        evaluateLicenseAndDeactivations, optionChangedForPopUp} from "@/scripts/LicenseSettings";
+        evaluateLicenseAndDeactivations, optionChangedForPopUp, restoreDefaultSettings} from "@/scripts/LicenseSettings";
 //import router from "@/router";
 
 export default defineComponent({
@@ -409,6 +408,7 @@ export default defineComponent({
      * stop the recording and save it
      */
     const stopRecordingTrigger = async () => {
+      await loadUserSettings();
       recordingStatus.value = recordingStatusEnums.DOING_SMT;
       let recordingData;
       console.log(recordingStatus);
@@ -506,6 +506,8 @@ export default defineComponent({
       openModal.value = !openModal.value;
       openLicenseModal.value = false;
       await loadUserSettings();
+      exportedLicensePTR.value = getLicense();
+      restoreDefaultSettings();
       await evaluateButtonSettingsFromLicense();
       lastRecording.value = getRecordingEntry(timestamp);
       timer.value = new Date(0);
@@ -526,20 +528,24 @@ export default defineComponent({
       newName.value = "";
       newLanguage.value = "";
       newLicense.value = "";
-      await evaluateButtonSettingsFromLicense();
       firstModalOpen.value = true;
     };
-
 
     /**
      * deletes the last recording in case the user doesnt want it
      */
     const deleteLastRecording = async () => {
       //TODO
-      removeLastRecordingEntry();
+      removeRecordingEntry(lastRecording.value);
       await clearVariables();
       openModal.value = !openModal.value;
       openLicenseModal.value = !openLicenseModal.value;
+      const toast = await toastController
+          .create({
+            message: 'Your recording has been deleted',
+            duration: 1500
+          })
+      return toast.present();
     };
 
     setInterval(() => {
@@ -572,6 +578,7 @@ export default defineComponent({
      */
     const selectNewLicense = async() =>{
       openLicenseModal.value=!openLicenseModal.value;
+      evaluateButtonSettingsFromLicense();
     }
 
     /**
@@ -606,6 +613,13 @@ export default defineComponent({
       await clearVariables();
       openModal.value = !openModal.value;
       openLicenseModal.value = !openLicenseModal.value;
+
+      const toast = await toastController
+          .create({
+            message: 'Your recording has been saved',
+            duration: 1500
+          })
+      return toast.present();
     };
 
 

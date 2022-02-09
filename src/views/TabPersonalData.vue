@@ -25,7 +25,10 @@
 
         <ion-item>
           <ion-label> Beruf: </ion-label>
-          <ion-input v-model="job" @ionBlur="safe()"></ion-input>
+          <ion-input
+              v-model="job"
+              @ionBlur="safe()"
+              placeholder="ihr Beruf"></ion-input>
         </ion-item>
 
         <!--<ion-list-header>
@@ -46,7 +49,10 @@
 
         <ion-item>
           <ion-label> Dialekt: </ion-label>
-          <ion-input v-model="dialect" @ionBlur="safe()"></ion-input>
+          <ion-input
+              v-model="dialect"
+              placeholder="ihr dialect"
+              @ionBlur="safe()"></ion-input>
         </ion-item>
         <ion-item v-if="dialect != '' && getFiveItems(dialect)[0] != dialect">
           <ion-list v-if="getFiveItems(dialect).length != 0">
@@ -74,11 +80,13 @@
           <ion-label> Postleitzahl: </ion-label>
           <ion-input
             v-model="shownZipCode"
-            v-model:type="numberType"
+            v-model:inputmode="numberType"
+            maxlength="3"
+            placeholder="000"
             @ionBlur="safe()"
-          >
-          </ion-input>
+          ></ion-input>
         </ion-item>
+
 
         <ion-item>
           <ion-button @click="safe()">Speichern</ion-button>
@@ -95,8 +103,21 @@ import { defineComponent, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import PageHeader from '@/components/layout/PageHeader.vue';
 import {loadUserSettings, setBirthday, setJob,setFirstLanguage,setSecondLanguage,setDialect,setZipCode, getBirthday,getJob,getFirstLanguage,getSecondLanguage,getDialect,getZipCode} from "@/scripts/UserSettingsStorage";
-import { 
-  IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonListHeader, IonLabel, IonInput,IonButton, IonSelect, IonSelectOption,
+import {
+  IonPage,
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonContent,
+  IonList,
+  IonItem,
+  IonListHeader,
+  IonLabel,
+  IonInput,
+  IonButton,
+  IonSelect,
+  IonSelectOption,
+  toastController,
 } from '@ionic/vue';
 
 
@@ -152,6 +173,8 @@ export default defineComponent({
     let dialects: string[] = [];
     const languages: string[][]=[];
 
+    const firstVisit = ref(true);
+
     /**
      * loads data about the user from database
      */
@@ -202,7 +225,7 @@ export default defineComponent({
     /**
      * saves userdata local in usersettings.json and upload to firebase
      */
-    const safe = ()=>{
+    const safe = async ()=>{
       console.log(birthday.value)
       console.log(firstLanguage.value)
 
@@ -214,7 +237,7 @@ export default defineComponent({
       ) {
         //zip code legaler wert?
         if (zipCode.value < 0) shownZipCode.value = "";
-        else shownZipCode.value = zipCode.value.toString(); //reset des alten wertes außer -1 da ungültiger wert
+        //else shownZipCode.value = zipCode.value.toString(); //reset des alten wertes außer -1 da ungültiger wert
         console.log("ungültiger zipcode");
       } else {
         setZipCode(parseInt(shownZipCode.value));
@@ -227,6 +250,18 @@ export default defineComponent({
       setSecondLanguage(secondLanguage.value);
       setDialect(dialect.value);
       uploadUserSettings();
+
+      if(firstVisit.value==false) {
+        const toast = await toastController
+            .create({
+              message: 'Your personal data has been saved',
+              duration: 1500
+            })
+        return toast.present();
+      }
+      else {
+        firstVisit.value = false;
+      }
     };
 
     /**
@@ -341,7 +376,8 @@ export default defineComponent({
       safeNewDialect,
       items,
       dialects,
-      languages
+      languages,
+      firstVisit,
     };
   },
 });
