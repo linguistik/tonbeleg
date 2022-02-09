@@ -6,10 +6,10 @@
           <ion-title size="large">Schneiden</ion-title>
         </ion-toolbar>
       </ion-header>
-      <ion-button expand="block" @click="finishWithoutSaving">
+      <ion-button expand="block"  @mousedown="finishWithoutSaving()">
         Beenden ohne Speichern</ion-button
       >
-      <ion-button expand="block" @click="finishAndSaveEventHandler()">
+      <ion-button expand="block"  @mousedown="finishAndSaveEventHandler()">
         Beenden und Speichern</ion-button
       >
       <div id="waveform" class="waveform"></div>
@@ -125,6 +125,7 @@ import {
   setRecordingEntryRegionDataArray,
   getRecordingEntryRegionDataArray,
 } from "@/scripts/RecordingStorage";
+import {UploadToFirebase} from "@/scripts/RecordingUpload";
 
 export default defineComponent({
   name: "TabAccount",
@@ -173,6 +174,8 @@ export default defineComponent({
     const currentUser = firebase.auth().currentUser;
     if (currentUser == null) return;
     const currentUserUID = currentUser.uid;
+
+    const clickcounter = ref(0);
 
     /**
      * this is used to force an update of the name/id labels on the page to display the new name after being set
@@ -308,7 +311,6 @@ export default defineComponent({
         newRegion.color = Array.from(usefulColorMap.keys())[
           index % usefulColorMap.size
         ];
-
         index = index + 1;
         regionIdsRef.value.push(newRegion.id);
         regionsRef.value.push(newRegion);
@@ -360,7 +362,6 @@ export default defineComponent({
         });
       }*/
       //playAudioBuffer(await getAudioData(props.folderName, "export.wav"));
-
       router.back();
     }; //finish
 
@@ -399,6 +400,7 @@ export default defineComponent({
         wavesurfer.destroy();
       }
     };
+
 
     const mergeRegionsEventHandler=()=>{
       let changeApplied = false;
@@ -469,7 +471,8 @@ export default defineComponent({
       playCircleOutline,
       pauseCircleOutline,
       updateKey,
-      playing
+      playing,
+      router,
     };
   },
 });
