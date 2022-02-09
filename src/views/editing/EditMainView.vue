@@ -36,6 +36,9 @@
           </ion-col>
         </ion-row>
       </ion-grid>
+      <ion-button expand="block" @mousedown="mergeRegionsEventHandler()">
+        Überlappende Regionen zusammenfügen</ion-button
+      >
       <ion-grid>
         <ion-row v-for="item in regionsRef" v-bind:key="item">
           <ion-col size="1">
@@ -396,6 +399,57 @@ export default defineComponent({
         wavesurfer.destroy();
       }
     };
+
+    const mergeRegionsEventHandler=()=>{
+      let changeApplied = false;
+      do{
+        changeApplied = false;
+        //go throught all regions
+        outerLoop:
+        for(const outerRegionId in wavesurfer.regions.list){
+          const outerRegion: Region = wavesurfer.regions.list[outerRegionId];
+          //compare end with start of all other regions
+          for(const innerRegionId in wavesurfer.regions.list){
+            if(innerRegionId == outerRegionId){
+              continue;
+            }
+            const innerRegion = wavesurfer.regions.list[innerRegionId];
+            if(outerRegion.start<innerRegion.start && outerRegion.end>innerRegion.start){
+              //merge
+              console.log("merge");
+              //outerRegion starts first
+              //correct name
+              let newName = "";
+              if(idToNameMap.has(outerRegionId)){
+                newName += idToNameMap.get(outerRegionId);
+              }
+              if(idToNameMap.has(outerRegionId) && idToNameMap.has(innerRegionId)){
+                newName += " + "
+              }
+              if(idToNameMap.has(innerRegionId)){
+                newName += idToNameMap.get(innerRegionId);
+              }
+              idToNameMap.set(outerRegionId, newName);
+              //set ending of outer region if it is bigger than current ending
+              if(outerRegion.end<innerRegion.end){
+                outerRegion.update({
+                  id: outerRegion.id,
+                  start:outerRegion.start,
+                  end: innerRegion.end,
+                  color: outerRegion.color
+                })
+              }
+              //remove inner region from wavesurfer
+              innerRegion.remove();
+              changeApplied = true;
+              break outerLoop;
+            }
+          }
+        }
+        
+      }while(changeApplied);
+    }
+
     return {
       t,
       finishWithoutSaving,
@@ -404,6 +458,7 @@ export default defineComponent({
       skipEventHandler,
       getNameOfRecordingId,
       setNameOfRecordingIdEventHandler,
+      mergeRegionsEventHandler,
       regionsRef,
       usefulColorMapRef,
       playSkipForwardCircleOutline,
