@@ -91,7 +91,7 @@ import {
   IonGrid,
   IonIcon,
   IonLabel,
-  alertController, onIonViewDidEnter,
+  alertController,
 } from "@ionic/vue";
 
 import {
