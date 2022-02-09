@@ -126,6 +126,8 @@ import {
   getRecordingEntryRegionDataArray,
 } from "@/scripts/RecordingStorage";
 import {UploadToFirebase} from "@/scripts/RecordingUpload";
+import {onIonViewWillLeave, onIonViewDidEnter} from "@ionic/vue";
+import { useMenuSettings } from "@/scripts/ionicVueSettings/menuSettings";
 
 export default defineComponent({
   name: "TabAccount",
@@ -152,6 +154,12 @@ export default defineComponent({
   setup(props: any) {
     // multi-lingual support
     const { t } = useI18n();
+
+    const {toggleSwipeMenu} = useMenuSettings();
+    onIonViewWillLeave(()=>toggleSwipeMenu.value = true);
+    onIonViewDidEnter(()=>toggleSwipeMenu.value = false);
+
+
 
     //https://github.com/mmig/opus-encdec
     //https://github.com/Rillke/opusenc.js
