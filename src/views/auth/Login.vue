@@ -47,11 +47,11 @@
           <form @submit.prevent="onRegister">
             <ion-button
               expand="block"
-              color="primary"
+              color="success"
               class="ion-margin-top"
               type="submit"
             >
-              Registrieren
+              Neues Konto erstellen
             </ion-button>
           </form></ion-card-content
         >
