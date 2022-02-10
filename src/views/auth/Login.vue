@@ -48,6 +48,18 @@
         </ion-card-content>
 
         <ion-card-content>
+          <form @submit.prevent="onForgotPassword">
+            <ion-button
+              expand="block"
+              class="ion-margin-top"
+              type="submit"
+            >
+              Password vergessen?
+            </ion-button>
+          </form></ion-card-content
+        >
+
+        <ion-card-content>
           <form @submit.prevent="onRegister">
             <ion-button
               expand="block"
@@ -69,6 +81,19 @@
               type="submit"
             >
               Google Login
+            </ion-button>
+          </form>
+        </ion-card-content>
+
+        <ion-card-content>
+          <form @submit.prevent="onChangePassword">
+            <ion-button
+              expand="block"
+              color="primary"
+              class="ion-margin-top"
+              type="submit"
+            >
+              Password ändern
             </ion-button>
           </form>
         </ion-card-content>
@@ -245,6 +270,14 @@ export default defineComponent({
       router.push("/signup");
     };
 
+    const onForgotPassword = ()=>{
+      router.push("/forgotPassword");
+    }
+
+    const onChangePassword = ()=>{
+      router.push("/changePassword");
+    }
+
     return {
       t,
       email,
@@ -253,6 +286,8 @@ export default defineComponent({
       onEmailLogin,
       onGoogleLogin,
       onRegister,
+      onForgotPassword,
+      onChangePassword,
       waitingForRedirectResult,
       changeRememberMe,
     };
