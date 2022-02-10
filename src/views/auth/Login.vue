@@ -20,6 +20,10 @@
           <ion-card-subtitle>{{ t("auth.login_cta") }}</ion-card-subtitle>
         </ion-card-header>
 
+        <ion-card-content v-if="errorMessage" class="error-message">
+          <ion-text color="danger"> <h1>{{ errorMessage }}</h1></ion-text>
+        </ion-card-content>
+
         <ion-card-content>
           <form @submit.prevent="onEmailLogin">
             <ion-item>
@@ -67,10 +71,6 @@
               Google Login
             </ion-button>
           </form>
-        </ion-card-content>
-
-        <ion-card-content v-if="errorMessage" class="error-message">
-          <ion-text color="danger"> {{ errorMessage }}</ion-text>
         </ion-card-content>
 
         <ion-card-content>

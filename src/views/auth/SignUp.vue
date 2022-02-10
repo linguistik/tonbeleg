@@ -13,6 +13,10 @@
           <ion-card-subtitle>{{ t("auth.signup_cta") }}</ion-card-subtitle>
         </ion-card-header>
 
+        <ion-card-content v-if="errorMessage" class="error-message" >
+           <ion-text color="danger"><h1> {{errorMessage }}</h1></ion-text>
+        </ion-card-content>
+
         <ion-card-content>
           <form @submit.prevent="onEmailSignUp">
             <ion-item>
@@ -36,9 +40,6 @@
           </form>
         </ion-card-content>
 
-        <ion-card-content v-if="errorMessage" class="error-message" >
-           <ion-text color="danger"> {{errorMessage }}</ion-text>
-        </ion-card-content>
 
         <ion-card-content>
           <ion-checkbox @ionChange="changeRememberMe"> </ion-checkbox>
