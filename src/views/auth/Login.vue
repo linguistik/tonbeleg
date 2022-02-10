@@ -86,6 +86,19 @@
         </ion-card-content>
 
         <ion-card-content>
+          <form @submit.prevent="onChangePassword">
+            <ion-button
+              expand="block"
+              color="primary"
+              class="ion-margin-top"
+              type="submit"
+            >
+              Password ändern
+            </ion-button>
+          </form>
+        </ion-card-content>
+
+        <ion-card-content>
           <ion-checkbox @ionChange="changeRememberMe"> </ion-checkbox>
           <ion-text> Eingeloggt bleiben </ion-text>
         </ion-card-content>
@@ -261,6 +274,10 @@ export default defineComponent({
       router.push("/forgotPassword");
     }
 
+    const onChangePassword = ()=>{
+      router.push("/changePassword");
+    }
+
     return {
       t,
       email,
@@ -270,6 +287,7 @@ export default defineComponent({
       onGoogleLogin,
       onRegister,
       onForgotPassword,
+      onChangePassword,
       waitingForRedirectResult,
       changeRememberMe,
     };
