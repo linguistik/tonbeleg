@@ -25,6 +25,7 @@
           @click="playRec()"
           v-if="provideFunctionality"
         ></ion-icon>
+        <ion-alert-controller></ion-alert-controller>
         <ion-icon
           :color="
             alreadyUploaded
@@ -34,7 +35,7 @@
               : 'black'
           "
           :icon="arrowUp"
-          @click="upload()"
+          @click="showUploadAlert()"
           v-if="provideFunctionality"
         ></ion-icon>
         <ion-icon
@@ -242,31 +243,56 @@ export default {
 
     const upload = async () => {
       //TODO
-      if(props.recording.upload){
+      // if(props.recording.upload){
+      //   const toast = await toastController
+      //       .create({
+      //         message: 'Recording has been uploaded before!',
+      //         duration: 1000
+      //       })
+      //   return toast.present();
+      // }
+      const currentUser = firebase.auth().currentUser;
+      if (currentUser == null) return;
+      selectedForUpload.value = !selectedForUpload.value;
+      setSelectedForUpload(props.recording.timestamp, selectedForUpload.value);
+      await UploadToFirebase();
+      if (props.recording.upload) {
         const toast = await toastController
             .create({
-              message: 'Recording has been uploaded before!',
+              message: 'Tonbeleg erfolgreich hochgeladen!',
               duration: 1000
             })
         return toast.present();
       }
-      else {
-        const currentUser = firebase.auth().currentUser;
-        if (currentUser == null) return;
-        selectedForUpload.value = !selectedForUpload.value;
-        setSelectedForUpload(props.recording.timestamp, selectedForUpload.value);
-        await UploadToFirebase();
-        if (props.recording.upload) {
-          const toast = await toastController
-              .create({
-                message: 'Recording was uploaded successfully!',
-                duration: 1000
-              })
-          return toast.present();
-        }
-        console.log("upload this thing", props.recording.upload);
-      }
+      console.log("upload this thing", props.recording.upload);
     };
+
+    async function showUploadAlert() {
+        if(props.recording.upload){
+        const toast = await toastController
+            .create({
+              message: 'Dieser Tonbeleg wurde bereits hochgeladen!',
+              duration: 1000
+            })
+        return toast.present();
+      }
+      else{
+        const alert = await alertController.create({
+          header: 'Tonbeleg hochladen?',
+          message: 'Wollen Sie den ausgewählten Tonbeleg wirklich zum Hochladen freigeben?',
+          buttons: [
+            'Abbrechen',
+            {
+              text: 'Bestätigen',
+              handler: () => {
+                upload();
+              },
+            },
+          ],
+        });
+        await alert.present();
+      }
+    }
 
     const playRegion = (i: number)=>{
       if(playingPartsRef.value[i]){
@@ -394,6 +420,7 @@ export default {
       toggleOpen,
       getRecordingDate,
       edit,
+      showUploadAlert,
       upload,
       deleteRecording,
       rename,
