@@ -232,6 +232,7 @@ import {isSharingAllowed, isSharingAllowedDeactivated, isRemixingAllowedDeactiva
 //import router from "@/router";
 
 export default defineComponent({
+  name: "TabRecord",
   components: {
     PageHeader,
     IonHeader,

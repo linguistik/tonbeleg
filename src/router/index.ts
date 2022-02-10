@@ -43,7 +43,7 @@ const routes: Array<RouteRecordRaw> = [
       },
       {
         path: 'account',
-        component: () => import('@/views/TabAccount.vue'),
+        component: () => import('@/views/TabUploaded.vue'),
       },
       {
         path: 'tabsettings',
@@ -55,7 +55,7 @@ const routes: Array<RouteRecordRaw> = [
       },
       {
         path: 'tabdataprotection',
-        component: () => import('@/views/TabDataProtection.vue'),
+        component: () => import('@/views/TabLicense.vue'),
       },
       {
         path: 'tabimprint',

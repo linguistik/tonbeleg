@@ -130,7 +130,7 @@ import {onIonViewWillLeave, onIonViewDidEnter} from "@ionic/vue";
 import { useMenuSettings } from "@/scripts/ionicVueSettings/menuSettings";
 
 export default defineComponent({
-  name: "TabAccount",
+  name: "TabEdit",
 
   components: {
     IonHeader,

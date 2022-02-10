@@ -41,6 +41,7 @@ import firebase from '@/backend/firebase-config';
 import 'firebase/firestore';
 
 export default defineComponent({
+  name: "MultipleElementsChild",
   components: {
     IonItem,
     IonIcon,

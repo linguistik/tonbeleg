@@ -27,7 +27,7 @@
         <ion-menu-toggle auto-hide="false">
         <ion-item button @click="toPage('/tabs/tabdataprotection')">
           <ion-icon :icon="documentLockOutline" slot="start"></ion-icon>
-          <ion-label>Datenschutz</ion-label>
+          <ion-label>Lizenz</ion-label>
         </ion-item>
         </ion-menu-toggle>
 
@@ -62,7 +62,7 @@ import { settingsOutline, personOutline, documentLockOutline, bookOutline } from
 import {useMenuSettings} from "@/scripts/ionicVueSettings/menuSettings";
 
 export default defineComponent({
-  name: "Menu",
+  name: "SideMenu",
 
   components: {
     IonMenu, 

@@ -127,7 +127,7 @@ import 'firebase/firestore';
 import MultipleElementsParent from '@/components/dynamicElement/MultipleElementsParent.vue';
 
 export default defineComponent({
-
+  name: "TabPersonalData",
   components: { 
     PageHeader, 
     IonHeader, IonToolbar, IonTitle, IonContent, IonPage, IonList, IonItem, IonListHeader, IonLabel, IonInput, IonButton, IonSelect,IonSelectOption,    MultipleElementsParent

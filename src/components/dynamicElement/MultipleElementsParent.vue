@@ -32,6 +32,7 @@ import { addCircle } from "ionicons/icons";
 import MultipleElementsChild from "@/components/dynamicElement/MultipleElementsChild.vue";
 
 export default defineComponent({
+  name: "MultipleElementsParent",
   components: {
     IonItem,
     IonLabel,
