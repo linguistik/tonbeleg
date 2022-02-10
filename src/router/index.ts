@@ -19,6 +19,10 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('@/views/auth/SignUp.vue')
   },
   {
+    path: '/forgotPassword',
+    component: () => import('@/views/auth/ForgotPassword.vue')
+  },
+  {
     path: '/edit/:folderName',
     component: () => import('@/views/editing/EditMainView.vue'),
     props: true,

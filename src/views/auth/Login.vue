@@ -48,6 +48,18 @@
         </ion-card-content>
 
         <ion-card-content>
+          <form @submit.prevent="onForgotPassword">
+            <ion-button
+              expand="block"
+              class="ion-margin-top"
+              type="submit"
+            >
+              Password vergessen?
+            </ion-button>
+          </form></ion-card-content
+        >
+
+        <ion-card-content>
           <form @submit.prevent="onRegister">
             <ion-button
               expand="block"
@@ -245,6 +257,10 @@ export default defineComponent({
       router.push("/signup");
     };
 
+    const onForgotPassword = ()=>{
+      router.push("/forgotPassword");
+    }
+
     return {
       t,
       email,
@@ -253,6 +269,7 @@ export default defineComponent({
       onEmailLogin,
       onGoogleLogin,
       onRegister,
+      onForgotPassword,
       waitingForRedirectResult,
       changeRememberMe,
     };
