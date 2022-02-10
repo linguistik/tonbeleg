@@ -268,7 +268,7 @@ export default {
     };
 
     async function showUploadAlert() {
-        if(props.recording.upload){
+      if(props.recording.upload){
         const toast = await toastController
             .create({
               message: 'Dieser Tonbeleg wurde bereits hochgeladen!',
@@ -276,10 +276,38 @@ export default {
             })
         return toast.present();
       }
+      if(props.recording.parts.length==0){
+        const alert = await alertController.create({
+          header: 'Tonbeleg hochladen?',
+          message: 'Achtung: Es wurden keine Regionen markiert, deshalb wird die gesamte Aufnahme hochgeladen!',
+          inputs:[
+            {
+              type: 'radio',
+              label: displayName.value,
+            },
+          ],
+          buttons: [
+            'Abbrechen',
+            {
+              text: 'Bestätigen',
+              handler: () => {
+                upload();
+              },
+            },
+          ],
+        });
+        await alert.present();
+      }
       else{
         const alert = await alertController.create({
           header: 'Tonbeleg hochladen?',
-          message: 'Wollen Sie den ausgewählten Tonbeleg wirklich zum Hochladen freigeben?',
+          message: 'Sie haben folgenden Tonbeleg zum Hochladen ausgewählt:',
+          inputs:[
+            {
+              type: 'radio',
+              label: displayName.value,
+            },
+          ],
           buttons: [
             'Abbrechen',
             {
