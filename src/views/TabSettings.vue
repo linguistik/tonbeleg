@@ -65,6 +65,7 @@ import {removeAllRecordingEntry} from "@/scripts/RecordingStorage"
 import {deleteUserSettings} from "@/scripts/UserSettingsStorage";
 
 export default defineComponent({
+  name: "TabSettings",
   components: {
     PageHeader,
     IonHeader,

@@ -2,9 +2,9 @@ import { mount } from '@vue/test-utils';
 import i18n from '@/translations';
 import TabSaved from '@/views/TabSaved.vue';
 import TabRecord from '@/views/TabRecord.vue';
-import TabAccount from '@/views/TabAccount.vue';
+import TabAccount from '@/views/TabUploaded.vue';
 
-import TabDataProtection from '@/views/TabDataProtection.vue';
+import TabDataProtection from '@/views/TabLicense.vue';
 import TabImprint from '@/views/TabImprint.vue';
 import TabPersonalData from '@/views/TabPersonalData.vue';
 import TabSettings from '@/views/TabSettings.vue';

@@ -7,7 +7,7 @@
       
       <ion-header collapse="condense">
         <ion-toolbar>
-          <ion-title size="large">Datenschutz</ion-title>
+          <ion-title size="large">Lizenz</ion-title>
         </ion-toolbar>
       </ion-header>
     <ion-list>
@@ -151,7 +151,7 @@ import {evaluateLicenseAndDeactivations, evaluateButtonSettingsFromLicense,
         isRemixingAllowed, isSharingAllowed, isSharingAllowedDeactivated, optionChanged} from "@/scripts/LicenseSettings";
 import {UploadToFirebase} from "@/scripts/RecordingUpload";
 export default defineComponent({
-
+  name: "TabLicense",
 
   components: { 
     PageHeader, 

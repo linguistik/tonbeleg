@@ -31,7 +31,7 @@ import {
 
 
 export default defineComponent({
-
+  name: "TabImprint",
   components: { 
     PageHeader, 
     IonHeader, IonToolbar, IonTitle, IonContent, IonPage,
