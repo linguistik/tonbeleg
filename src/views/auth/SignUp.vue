@@ -75,7 +75,10 @@ import {
   IonCheckbox,
   IonText,
   alertController,
+  onIonViewWillLeave,
+  onIonViewDidEnter,
 } from "@ionic/vue";
+import { useMenuSettings } from "@/scripts/ionicVueSettings/menuSettings";
 
 export default defineComponent({
   name: "LoginForm",
@@ -102,6 +105,10 @@ export default defineComponent({
   setup() {
     // multi-lingual support
     const { t } = useI18n();
+
+    const {toggleSwipeMenu} = useMenuSettings();
+    onIonViewWillLeave(()=>toggleSwipeMenu.value = true);
+    onIonViewDidEnter(()=>toggleSwipeMenu.value = false);
 
     let rememberMe = false;
     const changeRememberMe = (event: any) => {
