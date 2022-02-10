@@ -18,7 +18,7 @@
         </ion-item>
         <ion-item>
           <ion-label>Sprache festlegen</ion-label>
-          <ion-select v-model="newLanguage" v-model:value="getFirstLanguage()[0]" v-model:placeholder="getFirstLanguage()[0]">
+          <ion-select v-model="newLanguage">
             <ion-select-option v-for="[short, language] in languages" v-bind:key="short" v-bind:value="short">{{language}}</ion-select-option>
           </ion-select>
         </ion-item>
@@ -260,7 +260,7 @@ export default defineComponent({
     const openModal = ref(false);
     const openLicenseModal = ref(false);
     const newName = ref("");
-    const newLanguage = ref("");
+    const newLanguage = ref([""]);
     const newLicense = ref("");
 
     const recordingAllowed = ref(false);
@@ -424,7 +424,6 @@ export default defineComponent({
         //TODO error handling
         return;
       }
-
       //get userUID
       const currentUser = firebase.auth().currentUser; //authenticate user in firebase
       if (currentUser == null) return;
@@ -503,6 +502,7 @@ export default defineComponent({
           getFirstLanguage()
         )
       );
+      newLanguage.value = getFirstLanguage();
       openModal.value = !openModal.value;
       openLicenseModal.value = false;
       await loadUserSettings();
@@ -526,7 +526,7 @@ export default defineComponent({
 
     const clearVariables = async () => {
       newName.value = "";
-      newLanguage.value = "";
+      newLanguage.value = [""];
       newLicense.value = "";
       firstModalOpen.value = true;
     };
@@ -598,10 +598,10 @@ export default defineComponent({
       if (newName.value != "") {
         setRecordingEntryName(lastRecording.value.timestamp, newName.value);
       }
-      if (newLanguage.value != "") {
-        setRecordingEntryLanguage(lastRecording.value.timestamp, [
-          newLanguage.value,
-        ]);
+      if (newLanguage.value != [""]) {
+        setRecordingEntryLanguage(lastRecording.value.timestamp,
+          newLanguage.value
+        );
       }
       //console.log(lastRecording.value.languages[0])
       if (newLicense.value != "") {
