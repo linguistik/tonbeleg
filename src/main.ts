@@ -16,7 +16,7 @@ app.use(router);
 
 /** Ionic */
 import { IonicVue } from '@ionic/vue';
-app.use(IonicVue, {swipeBackEnabled: true});
+app.use(IonicVue, {swipeBackEnabled: false});
 
 /** i18n */
 import i18n from '@/translations';
