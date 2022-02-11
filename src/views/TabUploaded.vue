@@ -47,7 +47,7 @@ import {
   IonRefresher,
   IonRefresherContent,
   IonList,
-  IonButton,
+  IonButton, onIonViewWillEnter, onIonViewDidEnter,
 } from "@ionic/vue";
 
 import RecordingData from "@/scripts/RecordingData";
@@ -60,6 +60,7 @@ import { convertToMp3 } from "@/scripts/editing/AudioUtils";
 import { arrayBufferToBase64String } from "@/scripts/Base64Utils";
 import { ConnectionStatus, Network } from "@capacitor/network";
 import {getLicense} from "@/scripts/UserSettingsStorage";
+import {newUploads, UploadToFirebase} from "@/scripts/RecordingUpload";
 
 export default defineComponent({
   name: "TabUploaded",
@@ -150,7 +151,7 @@ export default defineComponent({
       }
     };
     const refresh = async (event: any) => {
-      await await await loadRecordingsFromDatabase();
+      await loadRecordingsFromDatabase();
       await event.target.complete();
     };
 
@@ -237,6 +238,14 @@ export default defineComponent({
     };
 
     loadRecordingsFromDatabase();
+
+    onIonViewWillEnter(async () => {
+      if(newUploads.value) {
+        console.log('Loading recordings on entering');
+        await loadRecordingsFromDatabase();
+        newUploads.value = false;
+      }
+    });
 
     return { t, refresh, uploadedRecordings, errorMessage, uploadExternal };
   },
