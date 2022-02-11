@@ -25,6 +25,7 @@
           @click="playRec()"
           v-if="provideFunctionality"
         ></ion-icon>
+        <ion-alert-controller></ion-alert-controller>
         <ion-icon
           :color="
             alreadyUploaded
@@ -34,7 +35,7 @@
               : 'black'
           "
           :icon="arrowUp"
-          @click="upload()"
+          @click="showUploadAlert()"
           v-if="provideFunctionality"
         ></ion-icon>
         <ion-icon
@@ -241,32 +242,80 @@ export default {
     };
 
     const upload = async () => {
-      //TODO
-      if(props.recording.upload){
+      const currentUser = firebase.auth().currentUser;
+      if (currentUser == null) return;
+      selectedForUpload.value = !selectedForUpload.value;
+      setSelectedForUpload(props.recording.timestamp, selectedForUpload.value);
+      await UploadToFirebase();
+      if (props.recording.upload) {
         const toast = await toastController
             .create({
-              message: 'Recording has been uploaded before!',
+              message: 'Tonbeleg erfolgreich hochgeladen!',
               duration: 1000
             })
         return toast.present();
       }
-      else {
-        const currentUser = firebase.auth().currentUser;
-        if (currentUser == null) return;
-        selectedForUpload.value = !selectedForUpload.value;
-        setSelectedForUpload(props.recording.timestamp, selectedForUpload.value);
-        await UploadToFirebase();
-        if (props.recording.upload) {
-          const toast = await toastController
-              .create({
-                message: 'Recording was uploaded successfully!',
-                duration: 1000
-              })
-          return toast.present();
-        }
-        console.log("upload this thing", props.recording.upload);
-      }
+      console.log("upload this thing", props.recording.upload);
     };
+
+    /**
+    * Shows an Alert if User wants to upload the recording. 
+    * Shows a warning if he has not cutted the recording
+     */
+    async function showUploadAlert() {
+      if(props.recording.upload){
+        const toast = await toastController
+            .create({
+              message: 'Dieser Tonbeleg wurde bereits hochgeladen!',
+              duration: 1000
+            })
+        return toast.present();
+      }
+      if(props.recording.parts.length==0){
+        const alert = await alertController.create({
+          header: 'Tonbeleg hochladen?',
+          message: 'Achtung: Es wurden keine Regionen markiert, deshalb wird die gesamte Aufnahme hochgeladen!',
+          inputs:[
+            {
+              type: 'radio',
+              label: 'Titel: ' + displayName.value,
+            },
+          ],
+          buttons: [
+            'Abbrechen',
+            {
+              text: 'Bestätigen',
+              handler: () => {
+                upload();
+              },
+            },
+          ],
+        });
+        await alert.present();
+      }
+      else{
+        const alert = await alertController.create({
+          header: 'Tonbeleg hochladen?',
+          message: 'Sie haben folgenden Tonbeleg zum Hochladen ausgewählt:',
+          inputs:[
+            {
+              type: 'radio',
+              label: 'Titel: ' + displayName.value,
+            },
+          ],
+          buttons: [
+            'Abbrechen',
+            {
+              text: 'Bestätigen',
+              handler: () => {
+                upload();
+              },
+            },
+          ],
+        });
+        await alert.present();
+      }
+    }
 
     const playRegion = (i: number)=>{
       if(playingPartsRef.value[i]){
@@ -394,6 +443,7 @@ export default {
       toggleOpen,
       getRecordingDate,
       edit,
+      showUploadAlert,
       upload,
       deleteRecording,
       rename,
