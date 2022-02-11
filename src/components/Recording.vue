@@ -242,15 +242,6 @@ export default {
     };
 
     const upload = async () => {
-      //TODO
-      // if(props.recording.upload){
-      //   const toast = await toastController
-      //       .create({
-      //         message: 'Recording has been uploaded before!',
-      //         duration: 1000
-      //       })
-      //   return toast.present();
-      // }
       const currentUser = firebase.auth().currentUser;
       if (currentUser == null) return;
       selectedForUpload.value = !selectedForUpload.value;
@@ -267,6 +258,10 @@ export default {
       console.log("upload this thing", props.recording.upload);
     };
 
+    /**
+    * Shows an Alert if User wants to upload the recording. 
+    * Shows a warning if he has not cutted the recording
+     */
     async function showUploadAlert() {
       if(props.recording.upload){
         const toast = await toastController
