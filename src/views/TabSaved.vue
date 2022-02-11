@@ -42,12 +42,12 @@ import {
   IonToolbar,
   IonTitle,
   IonContent,
-  IonList, alertController,
+  IonList, alertController, onIonViewWillEnter,
 } from "@ionic/vue";
 import Recording from "@/components/Recording.vue";
 import {loadRecordings, safeRecordings, getRecordings } from "@/scripts/RecordingStorage";
 import RecordingData from "@/scripts/RecordingData";
-import {onIonViewWillLeave} from "@ionic/vue";
+
 export default defineComponent({
   name: "TabSaved",
   components: {
@@ -87,40 +87,11 @@ export default defineComponent({
       await safeRecordings();
       await UploadToFirebase();
       await refresh();
-      if(RecordingUploadArray.length > 0) {
-        const alert = await alertController.create({
-          message: "Do you want to delete the records you just uploaded from your device?",
-          buttons: [
-            {
-              text: "Cancel",
-              handler: () => {
-                deleteAllFromUploadArray();
-                console.log("confirm Cancel");
-                refresh()
-              },
-            },
-            {
-              text: "OK",
-              handler: () => {
-                deleteUploadedRecordsFromDevice();
-                refresh()
-              },
-            },
-          ],
-        });
-        await alert.present();
-      }
     }
 
     const refreshAfterTimeout = async () => {
       window.setTimeout(refresh,100);
     }
-
-    /*onIonViewWillLeave(async () => {
-      console.log('Home page will be left');
-      await loadEverythingPls();
-    });*/
-
 
     return { t, 
     recordingsRef, 
