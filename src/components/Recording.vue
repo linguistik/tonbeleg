@@ -120,6 +120,7 @@ import RegionData from "@/scripts/editing/RegionData";
 import WaveSurfer from "wavesurfer.js"; //BSD-3 ok
 import RegionPlugin from "wavesurfer.js/dist/plugin/wavesurfer.regions.js"; //ok
 import RecordingPlayer from "@/scripts/recording/RecordingPlayer";
+import {loadingController} from "@ionic/vue";
 
 export default {
   name: "Recording",
@@ -184,9 +185,6 @@ export default {
 
     const isOpen = ref(false);
 
-
-
-
     const toggleOpen = () => {
       isOpen.value = !isOpen.value;
     };
@@ -241,6 +239,16 @@ export default {
       await alert.present();
     };
 
+    /**
+     * actual delete of the entry
+     */
+    const actualDelete = async () => {
+      removeRecordingEntry(props.recording);
+      //context.emit("refreshEmit");
+      exists.value = false;
+      forceUpdate();
+    }; //method: deleteFolder
+
     const upload = async () => {
       const currentUser = firebase.auth().currentUser;
       if (currentUser == null) return;
@@ -248,10 +256,18 @@ export default {
       setSelectedForUpload(props.recording.timestamp, selectedForUpload.value);
       await UploadToFirebase();
       if (props.recording.upload) {
+          const loading = await loadingController
+              .create({
+                message: 'Please wait...',
+                duration: 800,
+              });
+
+          await loading.present();
+          await actualDelete();
         const toast = await toastController
             .create({
               message: 'Tonbeleg erfolgreich hochgeladen!',
-              duration: 1000
+              duration: 800
             })
         return toast.present();
       }
@@ -274,7 +290,8 @@ export default {
       if(props.recording.parts.length==0){
         const alert = await alertController.create({
           header: 'Tonbeleg hochladen?',
-          message: 'Achtung: Es wurden keine Regionen markiert, deshalb wird die gesamte Aufnahme hochgeladen!',
+          message: 'Achtung: Es wurden keine Regionen markiert, deshalb wird die gesamte Aufnahme hochgeladen! ' +
+              'Der Tonbeleg wird nach dem Hochladen von ihrem Gerät gelöscht',
           inputs:[
             {
               type: 'radio',
@@ -296,7 +313,8 @@ export default {
       else{
         const alert = await alertController.create({
           header: 'Tonbeleg hochladen?',
-          message: 'Sie haben folgenden Tonbeleg zum Hochladen ausgewählt:',
+          message: 'Sie haben folgenden Tonbeleg zum Hochladen ausgewählt: '+
+              'Der Tonbeleg wird nach dem hochladen auf ihrem Gerät gelöscht',
           inputs:[
             {
               type: 'radio',
@@ -335,15 +353,7 @@ export default {
         recObj.playAllRegions();
       }
     };
-    /**
-     * actual delete of the entry
-     */
-    const actualDelete = async () => {
-      removeRecordingEntry(props.recording);
-      //context.emit("refreshEmit");
-      exists.value = false;
-      forceUpdate();
-    }; //method: deleteFolder
+
     /**
      * actual rename of the entry
      * @param name, new name for the entry
