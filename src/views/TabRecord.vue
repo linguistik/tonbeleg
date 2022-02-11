@@ -177,7 +177,7 @@ import {
   getRecordingEntry,
   setRecordingLicense,
 } from "@/scripts/RecordingStorage";
-import {alertController, onIonViewDidEnter, toastController} from "@ionic/vue";
+import { onIonViewDidEnter, toastController} from "@ionic/vue";
 import {UploadToFirebase} from "@/scripts/RecordingUpload";
 import {
   IonPage,
@@ -192,7 +192,7 @@ import {
   IonLabel,
   IonItem,
   IonSelect,
-  IonButton,IonSelectOption,IonToggle,IonList,IonTextarea,
+  IonButton,IonSelectOption,IonToggle,IonList,IonTextarea,alertController,
 } from "@ionic/vue";
 import {WebPlugin} from "@capacitor/core";
 import {
@@ -247,7 +247,7 @@ export default defineComponent({
     IonItem,
     IonLabel,
     IonSelect,
-    IonSelectOption,IonButton,IonToggle,IonList,IonTextarea,
+    IonSelectOption,IonButton,IonToggle,IonList,IonTextarea
   },
 
   setup() {
@@ -373,6 +373,7 @@ export default defineComponent({
           const toast = await toastController
               .create({
                 message: 'Website cannot record audio. Make sure to give microphone permission to this website.',
+                position: 'middle',
                 duration: 2000
               })
           return toast.present();
@@ -545,6 +546,7 @@ export default defineComponent({
       const toast = await toastController
           .create({
             message: 'Your recording has been deleted',
+            position: 'middle',
             duration: 1500
           })
       return toast.present();
@@ -619,6 +621,7 @@ export default defineComponent({
       const toast = await toastController
           .create({
             message: 'Your recording has been saved',
+            position: 'middle',
             duration: 700
           })
       return toast.present();

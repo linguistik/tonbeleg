@@ -14,12 +14,12 @@ import { ConnectionStatus, Network } from "@capacitor/network";
 
 import { trimAudio, playArrayBuffer, playAudioBuffer, convertToMp3 } from "./editing/AudioUtils";
 import { getAudioData } from "@/scripts/ReplayData";
-
+import {ref} from "vue";
 import { arrayBufferToBase64String } from "./Base64Utils";
 import { callUpdateFunction } from "@/scripts/RecordingStorage";
 
 export const RecordingUploadArray: RecordingData[] = [];//stores the most recently uploaded recordings
-
+export const newUploads = ref(true);
 let i
 
 /**
@@ -63,6 +63,8 @@ export async function UploadToFirebase() {
     const RecordingID = [];
     for (i = 0; i < RecordingDataArr.length; i = i + 1) {
         if (RecordingDataArr[i].upload == false && RecordingDataArr[i].selectedForUpload == true) {//selects the recordings that are not uploaded, but selected for upload
+            newUploads.value = true;
+            console.log("selected");
             await db.collection("users").doc(currentUser.uid).collection("recordings").doc(RecordingDataArr[i].timestamp.toString()).set({//writes the meta data to a recording into firebase
                 userID: RecordingDataArr[i].userID,
                 timestamp: RecordingDataArr[i].timestamp,

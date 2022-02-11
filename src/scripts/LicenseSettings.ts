@@ -208,7 +208,7 @@ export const saveLocalData = async () =>{
     const toast = await toastController
         .create({
             message: 'Your license Changes have been saved',
-            duration: 1500
+            duration: 500
         })
     return toast.present();
 }

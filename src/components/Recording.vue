@@ -25,7 +25,7 @@
           @click="playRec()"
           v-if="provideFunctionality"
         ></ion-icon>
-        <ion-alert-controller></ion-alert-controller>
+        <!---<ion-alert-controller></ion-alert-controller> hat das irgendeinen Sinn?-->
         <ion-icon
           :color="
             alreadyUploaded
@@ -116,7 +116,6 @@ import {
 import RecordingData from '@/scripts/RecordingData';
 import {UploadToFirebase} from "@/scripts/RecordingUpload";
 import RegionData from "@/scripts/editing/RegionData";
-
 import WaveSurfer from "wavesurfer.js"; //BSD-3 ok
 import RegionPlugin from "wavesurfer.js/dist/plugin/wavesurfer.regions.js"; //ok
 import RecordingPlayer from "@/scripts/recording/RecordingPlayer";
@@ -267,7 +266,8 @@ export default {
         const toast = await toastController
             .create({
               message: 'Tonbeleg erfolgreich hochgeladen!',
-              duration: 800
+              position:'bottom',
+              duration: 500
             })
         return toast.present();
       }
@@ -283,7 +283,8 @@ export default {
         const toast = await toastController
             .create({
               message: 'Dieser Tonbeleg wurde bereits hochgeladen!',
-              duration: 1000
+              position:'bottom',
+              duration: 500
             })
         return toast.present();
       }

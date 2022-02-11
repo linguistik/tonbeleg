@@ -47,7 +47,7 @@ import {
 import Recording from "@/components/Recording.vue";
 import {loadRecordings, safeRecordings, getRecordings } from "@/scripts/RecordingStorage";
 import RecordingData from "@/scripts/RecordingData";
-
+import router from "@/router";
 export default defineComponent({
   name: "TabSaved",
   components: {
