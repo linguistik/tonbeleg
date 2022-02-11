@@ -46,7 +46,6 @@
 
           <MultipleElementsParent text="Zweitsprache hinzufügen" @valuesChanged="updateSecondLanguages" ref="lng2"/>
 
-
         <ion-item>
           <ion-label> Dialekt: </ion-label>
           <ion-input
@@ -318,6 +317,7 @@ export default defineComponent({
       secondLanguage.value = languages;
       setSecondLanguage(languages);
     };
+
 
     let items = dialects;
     function getFiveItems(input: string) {
