@@ -283,7 +283,7 @@ export default {
           inputs:[
             {
               type: 'radio',
-              label: displayName.value,
+              label: 'Titel: ' + displayName.value,
             },
           ],
           buttons: [
@@ -305,7 +305,7 @@ export default {
           inputs:[
             {
               type: 'radio',
-              label: displayName.value,
+              label: 'Titel: ' + displayName.value,
             },
           ],
           buttons: [
