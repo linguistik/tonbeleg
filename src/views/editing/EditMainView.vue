@@ -439,7 +439,9 @@ export default defineComponent({
               if(idToNameMap.has(innerRegionId)){
                 newName += idToNameMap.get(innerRegionId);
               }
-              idToNameMap.set(outerRegionId, newName);
+              if(newName!=""){
+                idToNameMap.set(outerRegionId, newName);
+              }
               //set ending of outer region if it is bigger than current ending
               if(outerRegion.end<innerRegion.end){
                 outerRegion.update({
