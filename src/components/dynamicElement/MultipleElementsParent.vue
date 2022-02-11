@@ -80,6 +80,8 @@ export default defineComponent({
       children.value.push(lastIndex++);
     };
 
+    addChildElement();
+
     const emitChange = ()=>{
         const ret: string[] = [];
         data.forEach((value)=>{

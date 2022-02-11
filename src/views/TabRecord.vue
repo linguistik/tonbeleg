@@ -25,7 +25,7 @@
 
         <ion-item>
           <ion-label>Lizenz bestimmen</ion-label>
-          <ion-textarea v-show="!openLicenseModal" v-model="newLicense" v-model:value="exportedLicensePTR" v-model:placeholder="exportedLicensePTR" :disabled="true"></ion-textarea>
+          <ion-textarea v-show="!openLicenseModal" zeigv-model="newLicense" v-model:value="exportedLicensePTR" v-model:placeholder="exportedLicensePTR" :disabled="true"></ion-textarea>
           <ion-button v-show="!openLicenseModal" @click="selectNewLicense()" v-model:name="exportedLicensePTR">Ändern</ion-button>
             <ion-card-modal v-show="openLicenseModal" :fullscreen="true">
               <ion-list slot="end">
@@ -194,7 +194,7 @@ import {
   IonSelect,
   IonButton,IonSelectOption,IonToggle,IonList,IonTextarea,
 } from "@ionic/vue";
-
+import {WebPlugin} from "@capacitor/core";
 import {
   VoiceRecorder,
   GenericResponse,
@@ -530,6 +530,7 @@ export default defineComponent({
       newLanguage.value = [""];
       newLicense.value = "";
       firstModalOpen.value = true;
+      restoreDefaultSettings()
     };
 
     /**
@@ -618,7 +619,7 @@ export default defineComponent({
       const toast = await toastController
           .create({
             message: 'Your recording has been saved',
-            duration: 1500
+            duration: 700
           })
       return toast.present();
     };
