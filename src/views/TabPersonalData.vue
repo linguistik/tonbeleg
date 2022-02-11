@@ -345,14 +345,23 @@ export default defineComponent({
       dialect.value = item;
     }
     function safeNewDialect() {
-      const db = firebase.firestore();
-      dialects[dialects.length] = dialect.value;
-      db.collection("data").doc("dialects").set(
-        {
-          dialects: dialects,
-        },
-        { merge: true }
-      );
+      items = dialects;
+      let isDialectNew = true;
+      items.forEach((item) => {
+        if(item == dialect.value){
+          isDialectNew = false;
+        }
+      });
+      if(isDialectNew){
+        const db = firebase.firestore();
+        dialects[dialects.length] = dialect.value;
+        db.collection("data").doc("dialects").set(
+          {
+            dialects: dialects,
+          },
+          { merge: true }
+        );
+      } 
     }
 
     // console.log("Languages at end of setup: " + languages)
