@@ -416,6 +416,7 @@ export default defineComponent({
 
 
     const mergeRegionsEventHandler=()=>{
+      changesApplied = true;
       let changeApplied = false;
       do{
         changeApplied = false;
@@ -429,7 +430,7 @@ export default defineComponent({
               continue;
             }
             const innerRegion = wavesurfer.regions.list[innerRegionId];
-            if(outerRegion.start<innerRegion.start && outerRegion.end>innerRegion.start){
+            if(outerRegion.start<=innerRegion.start && outerRegion.end>=innerRegion.start){
               //merge
               console.log("merge");
               //outerRegion starts first
@@ -469,6 +470,7 @@ export default defineComponent({
 
     const vadEventHandler =()=>{
       const vad = new VoiceActivityDetector(renderedBuffer,(_start, _end)=>{
+        changesApplied = true;
         wavesurfer.addRegion({start: _start/1000, end: _end/1000});
         });
       vad.extractRegions();
