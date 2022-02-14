@@ -344,7 +344,7 @@ export default defineComponent({
     function fillDialect(item: string) {
       dialect.value = item;
     }
-    function safeNewDialect() {
+    async function safeNewDialect() {
       items = dialects;
       let isDialectNew = true;
       items.forEach((item) => {
@@ -361,6 +361,13 @@ export default defineComponent({
           },
           { merge: true }
         );
+
+        const toast = await toastController
+            .create({
+              message: 'Der Dialekt wurde hinzugefügt',
+              duration: 1500
+            })
+        return toast.present();
       } 
     }
 
