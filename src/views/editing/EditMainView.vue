@@ -39,6 +39,9 @@
       <ion-button expand="block" @mousedown="mergeRegionsEventHandler()">
         Überlappende Regionen zusammenfügen</ion-button
       >
+      <ion-button expand="block" @mousedown="vadEventHandler()">
+        Automatisch Stimmen erkennen</ion-button
+      >
       <ion-grid>
         <ion-row v-for="item in regionsRef" v-bind:key="item">
           <ion-col size="1">
@@ -128,6 +131,8 @@ import {
 import {UploadToFirebase} from "@/scripts/RecordingUpload";
 import {onIonViewWillLeave, onIonViewDidEnter} from "@ionic/vue";
 import { useMenuSettings } from "@/scripts/ionicVueSettings/menuSettings";
+
+import VoiceActivityDetector from "@/scripts/vad/VoiceActivityDetector";
 
 export default defineComponent({
   name: "TabEdit",
@@ -315,7 +320,7 @@ export default defineComponent({
         renderedBuffer = await wavesurfer.getRenderedAudioBuffer();
       });
 
-      wavesurfer.on("region-created", (newRegion) => {
+      wavesurfer.on("region-created", (newRegion) => {console.log("region-created");
         newRegion.color = Array.from(usefulColorMap.keys())[
           index % usefulColorMap.size
         ];
@@ -411,6 +416,7 @@ export default defineComponent({
 
 
     const mergeRegionsEventHandler=()=>{
+      changesApplied = true;
       let changeApplied = false;
       do{
         changeApplied = false;
@@ -424,7 +430,7 @@ export default defineComponent({
               continue;
             }
             const innerRegion = wavesurfer.regions.list[innerRegionId];
-            if(outerRegion.start<innerRegion.start && outerRegion.end>innerRegion.start){
+            if(outerRegion.start<=innerRegion.start && outerRegion.end>=innerRegion.start){
               //merge
               console.log("merge");
               //outerRegion starts first
@@ -462,6 +468,14 @@ export default defineComponent({
       }while(changeApplied);
     }
 
+    const vadEventHandler =()=>{
+      const vad = new VoiceActivityDetector(renderedBuffer,(_start, _end)=>{
+        changesApplied = true;
+        wavesurfer.addRegion({start: _start/1000, end: _end/1000});
+        });
+      vad.extractRegions();
+    }
+
     return {
       t,
       finishWithoutSaving,
@@ -471,6 +485,7 @@ export default defineComponent({
       getNameOfRecordingId,
       setNameOfRecordingIdEventHandler,
       mergeRegionsEventHandler,
+      vadEventHandler,
       regionsRef,
       usefulColorMapRef,
       playSkipForwardCircleOutline,
