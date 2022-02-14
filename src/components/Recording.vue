@@ -120,6 +120,7 @@ import WaveSurfer from "wavesurfer.js"; //BSD-3 ok
 import RegionPlugin from "wavesurfer.js/dist/plugin/wavesurfer.regions.js"; //ok
 import RecordingPlayer from "@/scripts/recording/RecordingPlayer";
 import {loadingController} from "@ionic/vue";
+import {safeRecordings} from "@/scripts/RecordingStorage";
 
 export default {
   name: "Recording",
@@ -243,7 +244,7 @@ export default {
      */
     const actualDelete = async () => {
       removeRecordingEntry(props.recording);
-      //context.emit("refreshEmit");
+      context.emit("refreshEmit");
       exists.value = false;
       forceUpdate();
     }; //method: deleteFolder

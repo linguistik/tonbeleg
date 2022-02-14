@@ -8,12 +8,10 @@
           <ion-title size="large">Gespeichertes</ion-title>
         </ion-toolbar>
       </ion-header>
-      <!--<ion-button v-on:click="loadEverythingPls()">
-        refresh
-      </ion-button>-->
+
       <ion-list
       lines="full"
-      v-if="recordingsRef.length!=0">
+      v-if="recordingsRef.length>0">
           <Recording v-for="item in recordingsRef" v-bind:key="item" v-bind:recording="item" @refreshEmit="refreshAfterTimeout()">
           </Recording>
       </ion-list>
@@ -75,12 +73,14 @@ export default defineComponent({
     const forceUpdate = ()=>{
       updateKey.value += 1;
     }
+
     /**
      * refreshes complete tab
      */
     const refresh = async () => {
-      recordingsRef.value = getRecordings();
-      forceUpdate();
+      if(recordingsRef.value.length==0){
+        forceUpdate();
+      }
     }
 
     const loadEverythingPls = async () => {
@@ -104,7 +104,6 @@ export default defineComponent({
     };
 
   },
-
 }
 
 
