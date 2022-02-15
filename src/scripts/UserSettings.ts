@@ -1,5 +1,5 @@
 
-export default class RecordingData{ //Muss das nicht UserSettings heißen
+export default class UserSettings{
     birthday: string; //the birth date of the user
     job: string;      //area of work of the user
     firstLanguage: string[];//the users first language
