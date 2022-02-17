@@ -50,7 +50,7 @@
           <ion-label> Dialekt: </ion-label>
           <ion-input
               v-model="dialect"
-              placeholder="ihr dialect"
+              placeholder="Ihr Dialekt"
               @ionBlur="safe()"></ion-input>
         </ion-item>
         <ion-item v-if="dialect != '' && getFiveItems(dialect)[0] != dialect">
@@ -66,7 +66,7 @@
               </ion-label>
             </ion-item>
           </ion-list>
-          <ion-button v-else @click="safeNewDialect()"
+          <ion-button v-show="getFiveItems(dialect).length == 0" @click="safeNewDialect()"
             >Dialekt Hinzufügen</ion-button
           >
         </ion-item>
@@ -318,9 +318,9 @@ export default defineComponent({
       setSecondLanguage(languages);
     };
 
-
     let items = dialects;
     function getFiveItems(input: string) {
+      console.log("Called getFiveItems");
       const val = input;
       items = dialects;
       if (val.trim() != "") {
@@ -361,7 +361,6 @@ export default defineComponent({
           },
           { merge: true }
         );
-
         const toast = await toastController
             .create({
               message: 'Der Dialekt wurde hinzugefügt',
@@ -370,8 +369,6 @@ export default defineComponent({
         return toast.present();
       } 
     }
-
-    // console.log("Languages at end of setup: " + languages)
 
     return {
       t,
