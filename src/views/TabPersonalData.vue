@@ -50,7 +50,7 @@
           <ion-label> Dialekt: </ion-label>
           <ion-input
               v-model="dialect"
-              placeholder="ihr dialect"
+              placeholder="Ihr Dialekt"
               @ionBlur="safe()"></ion-input>
         </ion-item>
         <ion-item v-if="dialect != '' && getFiveItems(dialect)[0] != dialect">
@@ -66,7 +66,7 @@
               </ion-label>
             </ion-item>
           </ion-list>
-          <ion-button v-else @click="safeNewDialect()"
+          <ion-button v-show="getFiveItems(dialect).length == 0" @click="safeNewDialect()"
             >Dialekt Hinzufügen</ion-button
           >
         </ion-item>
@@ -318,7 +318,6 @@ export default defineComponent({
       setSecondLanguage(languages);
     };
 
-
     let items = dialects;
     function getFiveItems(input: string) {
       const val = input;
@@ -344,18 +343,38 @@ export default defineComponent({
     function fillDialect(item: string) {
       dialect.value = item;
     }
-    function safeNewDialect() {
-      const db = firebase.firestore();
-      dialects[dialects.length] = dialect.value;
-      db.collection("data").doc("dialects").set(
-        {
-          dialects: dialects,
-        },
-        { merge: true }
-      );
+    async function safeNewDialect() {
+      items = dialects;
+      let isDialectNew = true;
+      items.forEach((item) => {
+        if(item == dialect.value){
+          isDialectNew = false;
+        }
+      });
+      if(isDialectNew){
+        const db = firebase.firestore();
+        dialects[dialects.length] = dialect.value;
+        db.collection("data").doc("dialects").set(
+          {
+            dialects: dialects,
+          },
+          { merge: true }
+        );
+        const toast = await toastController
+            .create({
+              message: 'Der Dialekt wurde hinzugefügt',
+              duration: 1500
+            })
+        return toast.present();
+      }else{
+        const toast = await toastController
+            .create({
+              message: 'Der Dialekt ist bereits vorhanden',
+              duration: 1500
+            })
+        return toast.present();
+      } 
     }
-
-    // console.log("Languages at end of setup: " + languages)
 
     return {
       t,
