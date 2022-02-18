@@ -320,7 +320,6 @@ export default defineComponent({
 
     let items = dialects;
     function getFiveItems(input: string) {
-      console.log("Called getFiveItems");
       const val = input;
       items = dialects;
       if (val.trim() != "") {
@@ -364,6 +363,13 @@ export default defineComponent({
         const toast = await toastController
             .create({
               message: 'Der Dialekt wurde hinzugefügt',
+              duration: 1500
+            })
+        return toast.present();
+      }else{
+        const toast = await toastController
+            .create({
+              message: 'Der Dialekt ist bereits vorhanden',
               duration: 1500
             })
         return toast.present();
