@@ -40,7 +40,7 @@ import {
   IonToolbar,
   IonTitle,
   IonContent,
-  IonList, alertController, onIonViewWillEnter,
+  IonList, alertController,
 } from "@ionic/vue";
 import Recording from "@/components/Recording.vue";
 import {loadRecordings, safeRecordings, getRecordings } from "@/scripts/RecordingStorage";

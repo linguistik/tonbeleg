@@ -55,7 +55,7 @@ import {
   IonLabel,
   IonList,
   IonButton,
-  alertController
+  alertController, toastController
 } from "@ionic/vue";
 
 import { setWifi } from "@/scripts/UserSettingsStorage";
@@ -63,7 +63,7 @@ import firebase from "@/backend/firebase-config";
 import router from "@/router";
 import {removeAllRecordingEntry} from "@/scripts/RecordingStorage"
 import {deleteUserSettings} from "@/scripts/UserSettingsStorage";
-
+import EmailAuthProvider = firebase.auth.EmailAuthProvider;
 export default defineComponent({
   name: "TabSettings",
   components: {
@@ -102,6 +102,11 @@ export default defineComponent({
       setWifi(wifiOnlyActivated.value);
     };
 
+    const logOut = () => {
+      firebase.auth().signOut();
+      router.push("/");
+    };
+
     /**
      * deletes the users acc in teh database
      */
@@ -112,6 +117,50 @@ export default defineComponent({
       if (currentUser == null) {
         console.log("\n\nFATAL ERROR: no user logged in, so user can be deleted\n\n");
         return;
+      }
+      else{
+        try {
+          await currentUser.delete();
+          console.log("deleted")
+          await router.push("/");
+        }
+        catch{
+          let provider ;
+          //await currentUser.delete();
+          const result = await currentUser.getIdTokenResult(false).then((res)=>res.signInProvider);
+          if(result==null){
+            return
+          }
+          console.log("authenticating");
+          let credential;
+          if(result.includes("google.com")){
+            provider = new firebase.auth.GoogleAuthProvider();
+            credential = await currentUser.reauthenticateWithPopup(provider);
+
+            if(credential.credential==null){
+              console.log("credential null")
+              return
+            }
+            console.log("popUpDone")
+            await currentUser.reauthenticateWithCredential(credential.credential);
+            console.log("authenticated")
+            await currentUser.delete();
+            console.log("deleted")
+            await router.push("/");
+          }
+          if(result.includes("password")){
+            console.log("password, so pls sign in again")
+            const toast = await toastController
+                .create({
+                  message: 'Your have not signed in lately, pls sign in again',
+                  position: 'middle',
+                  duration: 1200
+                })
+            await toast.present();
+            logOut();
+          }
+
+        }
       }
 
       /*currentUser.delete().then(() => {
@@ -125,14 +174,12 @@ export default defineComponent({
 
 
 
-    const logOut = () => {
-      firebase.auth().signOut();
-      router.push("/");
-    };
-
     const yesDeleteAcc = () =>{
+      console.log("deletingRecordings")
       removeAllRecordingEntry(); //ich glaube es ist wichtig dass das zuerst passiert
-      deleteUserSettings()
+      //console.log("delete user settings")
+      //eleteUserSettings()
+      console.log("delete acc in database")
       deleteAccInDatabase();
     }
 
