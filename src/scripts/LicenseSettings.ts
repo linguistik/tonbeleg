@@ -7,6 +7,8 @@ import {toastController} from "@ionic/vue";
  * the current license value when configuring the license
  */
 export const exportedLicensePTR = ref('CC0 1.0');
+export const licenseLicenseTab = ref('CC0 1.0');
+export const licensePopUp = ref('CC0 1.0');
 
 /**
  * the options when configuring the license
@@ -223,6 +225,7 @@ export const optionChanged = (event: any)=>{
     options.set(event.target.name, event.target.checked);
     evaluateLicenseAndDeactivations();
     setLicense(exportedLicensePTR.value);
+    licenseLicenseTab.value = exportedLicensePTR.value;
     saveLocalData();
     uploadLicense();
 }
@@ -234,4 +237,5 @@ export const optionChanged = (event: any)=>{
 export const optionChangedForPopUp = (event: any)=>{
     options.set(event.target.name, event.target.checked);
     evaluateLicenseAndDeactivations();
+    licensePopUp.value = exportedLicensePTR.value;
 }

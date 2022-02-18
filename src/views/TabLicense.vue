@@ -94,7 +94,7 @@
           </h2>
           <p>
             Durch die obigen Angaben werden deine Daten unter der folgenden Lizenz gespeichert:
-            <strong>{{exportedLicensePTR}}</strong>
+            <strong>{{licenseLicenseTab}}</strong>
           </p>
         </ion-label>
         </div>
@@ -128,7 +128,7 @@ import {
   IonItem,
   IonToggle,
   toastController,
-  onIonViewDidEnter,
+  onIonViewDidEnter, onIonViewWillEnter,
 } from '@ionic/vue';
 
 import firebase from "@/backend/firebase-config";
@@ -148,7 +148,7 @@ import {evaluateLicenseAndDeactivations, evaluateButtonSettingsFromLicense,
         saveLocalData, uploadLicense,exportedLicensePTR, downloadLicense,
         loadLocalData, options, isComerciallyUseAllowed, isComerciallyUseAllowedDeactivated,
         isMentioningActivated, isMentioningActivatedDeactivated, isRemixingAllowedDeactivated,
-        isRemixingAllowed, isSharingAllowed, isSharingAllowedDeactivated, optionChanged} from "@/scripts/LicenseSettings";
+        isRemixingAllowed, isSharingAllowed, isSharingAllowedDeactivated, optionChanged, licenseLicenseTab} from "@/scripts/LicenseSettings";
 import {UploadToFirebase} from "@/scripts/RecordingUpload";
 export default defineComponent({
   name: "TabLicense",
@@ -166,8 +166,7 @@ export default defineComponent({
     uploadLicense();//überschreibt datenbank
 
     onIonViewDidEnter(async () => { //e
-      console.log('Home page will be left');
-      await loadUserSettings();
+      console.log('Entering license tab');
       exportedLicensePTR.value = getLicense();
       evaluateButtonSettingsFromLicense();
     });
@@ -181,7 +180,7 @@ export default defineComponent({
     isMentioningActivated,
     isComerciallyUseAllowed,
     isRemixingAllowed,
-    isSharingAllowed, exportedLicensePTR,
+    isSharingAllowed, exportedLicensePTR, licenseLicenseTab,
     }
   }
 })

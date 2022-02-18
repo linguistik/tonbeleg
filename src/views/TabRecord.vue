@@ -96,7 +96,7 @@
                   <h2>
                     Deine Lizenz
                   </h2>
-                    <strong>{{exportedLicensePTR}}</strong>
+                    <strong>{{licensePopUp}}</strong>
                 </ion-label>
               </div>
               <ion-button @click="evaluateNewLicense()" slot="end">OK</ion-button>
@@ -226,9 +226,22 @@ import RecordingData from "@/scripts/RecordingData";
 import {getLicense, getFirstLanguage, userSettings, getFirstStart, setFirstStart} from "@/scripts/UserSettingsStorage";
 import { Encoding } from "@capacitor/filesystem";
 import {loadUserSettings} from "@/scripts/UserSettingsStorage";
-import {isSharingAllowed, isSharingAllowedDeactivated, isRemixingAllowedDeactivated, isRemixingAllowed, isMentioningActivatedDeactivated,
-        isMentioningActivated, isComerciallyUseAllowedDeactivated, isComerciallyUseAllowed, exportedLicensePTR, evaluateButtonSettingsFromLicense,
-        evaluateLicenseAndDeactivations, optionChangedForPopUp, restoreDefaultSettings} from "@/scripts/LicenseSettings";
+import {
+  isSharingAllowed,
+  isSharingAllowedDeactivated,
+  isRemixingAllowedDeactivated,
+  isRemixingAllowed,
+  isMentioningActivatedDeactivated,
+  isMentioningActivated,
+  isComerciallyUseAllowedDeactivated,
+  isComerciallyUseAllowed,
+  exportedLicensePTR,
+  evaluateButtonSettingsFromLicense,
+  evaluateLicenseAndDeactivations,
+  optionChangedForPopUp,
+  restoreDefaultSettings,
+    licensePopUp,
+} from "@/scripts/LicenseSettings";
 //import router from "@/router";
 
 export default defineComponent({
@@ -538,7 +551,6 @@ export default defineComponent({
      * deletes the last recording in case the user doesnt want it
      */
     const deleteLastRecording = async () => {
-      //TODO
       removeRecordingEntry(lastRecording.value);
       await clearVariables();
       openModal.value = !openModal.value;
@@ -679,7 +691,7 @@ export default defineComponent({
       isComerciallyUseAllowedDeactivated,
       isRemixingAllowedDeactivated,
       isSharingAllowedDeactivated,
-
+      licensePopUp,
     };
   },
 });
