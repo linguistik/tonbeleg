@@ -223,7 +223,7 @@ import {
 import router from "@/router";
 import { insertRecordingEntry, removeRecordingEntry } from "@/scripts/RecordingStorage";
 import RecordingData from "@/scripts/RecordingData";
-import {getLicense, getFirstLanguage, userSettings, getFirstStart, setFirstStart} from "@/scripts/UserSettingsStorage";
+import {getLicense, getFirstLanguage, userSettings} from "@/scripts/UserSettingsStorage";
 import { Encoding } from "@capacitor/filesystem";
 import {loadUserSettings} from "@/scripts/UserSettingsStorage";
 import {
@@ -279,23 +279,7 @@ export default defineComponent({
 
     const recordingAllowed = ref(false);
     loadUserSettings();
-    const firstStart = async()=> {
-      await loadUserSettings();
-      if (getFirstStart()) {
-        setFirstStart(false);
-        await router.push('tabpersonaldata');
-        const alert = await alertController
-            .create({
-              message: 'Welcome to the app.' +
-                  'The purpose of this application is to gather voice recordings to preserve the languages spoken and make a computer system learn them.' +
-                  'So the more recordings the merrier. Please fill in your personal information and adjust the license to your liking. You can find the license' +
-                  'at Data Security.' +
-                  'Thank you!',
-            })
-        return alert.present();
-      }
-    }
-    firstStart();
+
     const firstModalOpen = ref(true);
 
     const timer = ref(new Date(0));

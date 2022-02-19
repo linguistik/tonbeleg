@@ -8,9 +8,8 @@ export default class UserSettings{
     zipCode: number;//the region where a user lives
     license: string;//the license under which a user provides his recordings
     wifi: boolean;//wether the user wants to upload via wifi only
-    firstStart: boolean;//wether a user has used the app before
 
-    constructor(birthday: string,job: string, firstLanguage: string[], secondLanguage: string[], dialect: string, zipCode: number, license: string, wifi: boolean, firstStart: boolean){
+    constructor(birthday: string,job: string, firstLanguage: string[], secondLanguage: string[], dialect: string, zipCode: number, license: string, wifi: boolean){
         this.birthday = birthday;
         this.job = job;
         this.firstLanguage = firstLanguage;
@@ -19,6 +18,5 @@ export default class UserSettings{
         this.zipCode = zipCode;
         this.license = license;
         this.wifi = wifi;
-        this.firstStart = firstStart;
     }
 }

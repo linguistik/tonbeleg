@@ -5,7 +5,7 @@ import { Directory, Encoding, Filesystem } from "@capacitor/filesystem";
 import router from "@/router";
 //const r = new RecordingData(1,"a", ["a","b"],22);
 
-export let userSettings: UserSettings = new UserSettings("","",[],[],"",-1, "", false, true);
+export let userSettings: UserSettings = new UserSettings("","",[],[],"",-1, "", false);
 
 /**
  * saves user settings local in usersettings.json
@@ -118,11 +118,6 @@ export function setWifi(newWifi: boolean){
     safeUserSettings();
 }
 
-export function setFirstStart(firstStart: boolean){
-    userSettings.firstStart=firstStart;
-    safeUserSettings();
-}
-
 /*export function setUploadArray(uploadArray: string[]){
     userSettings.uploadArray=uploadArray;
     safeUserSettings();
@@ -152,10 +147,6 @@ export function getInUploadArrayIdent(): string[][]{
 
 export function getWifi(): boolean{
     return userSettings.wifi;
-}
-
-export function getFirstStart(): boolean{
-    return userSettings.firstStart;
 }
 
 export function getBirthday(): string{
