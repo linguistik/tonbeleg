@@ -3,16 +3,14 @@ import firebase from "@/backend/firebase-config";
 import {
     setRecordingEntryUploadBoolean,
     getRecordings,
-    loadRecordings,
     removeRecordingEntry
 } from "@/scripts/RecordingStorage";
 import { getWifi } from "@/scripts/UserSettingsStorage";
-import { Filesystem, Directory, Encoding } from "@capacitor/filesystem";
-import { loadUserSettings } from "@/scripts/UserSettingsStorage";
-import RecordingData from "@/scripts/RecordingData";
-import { ConnectionStatus, Network } from "@capacitor/network";
 
-import { trimAudio, playArrayBuffer, playAudioBuffer, convertToMp3 } from "./editing/AudioUtils";
+import RecordingData from "@/scripts/RecordingData";
+import { Network } from "@capacitor/network";
+
+import { trimAudio, convertToMp3 } from "./editing/AudioUtils";
 import { getAudioData } from "@/scripts/ReplayData";
 import {ref} from "vue";
 import { arrayBufferToBase64String } from "./Base64Utils";
@@ -59,8 +57,8 @@ export async function UploadToFirebase() {
     if (currentUser == null) return;
 
     const RecordingDataArr = await getRecordings();
-    const RecordingUserID = [];
-    const RecordingID = [];
+    //const RecordingUserID = [];
+    //const RecordingID = [];
     for (i = 0; i < RecordingDataArr.length; i = i + 1) {
         if (RecordingDataArr[i].upload == false && RecordingDataArr[i].selectedForUpload == true) {//selects the recordings that are not uploaded, but selected for upload
             newUploads.value = true;

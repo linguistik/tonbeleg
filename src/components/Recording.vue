@@ -116,11 +116,8 @@ import {
 import RecordingData from '@/scripts/RecordingData';
 import {UploadToFirebase} from "@/scripts/RecordingUpload";
 import RegionData from "@/scripts/editing/RegionData";
-import WaveSurfer from "wavesurfer.js"; //BSD-3 ok
-import RegionPlugin from "wavesurfer.js/dist/plugin/wavesurfer.regions.js"; //ok
 import RecordingPlayer from "@/scripts/recording/RecordingPlayer";
 import {loadingController} from "@ionic/vue";
-import {safeRecordings} from "@/scripts/RecordingStorage";
 
 export default {
   name: "Recording",
@@ -181,7 +178,6 @@ export default {
 
     const currentUser = firebase.auth().currentUser;
     if (currentUser == null) return;
-    const currentUserUID = currentUser.uid;
 
     const isOpen = ref(false);
 

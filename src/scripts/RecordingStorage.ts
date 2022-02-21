@@ -5,9 +5,8 @@ import { Directory, Encoding, Filesystem } from "@capacitor/filesystem";
 import {getLicense} from "@/scripts/UserSettingsStorage";
 
 import { Region } from "wavesurfer.js/src/plugin/regions"
-import RegionData from "@/scripts/editing/RegionData";
 import {convertToRegionDataArray} from "@/scripts/editing/RegionDataUtils";
-import { RecordingUploadArray } from "./RecordingUpload";
+
 
 //const r = new RecordingData(1,"a", ["a","b"],22);
 /**

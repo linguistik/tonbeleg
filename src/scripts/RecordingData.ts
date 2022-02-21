@@ -1,8 +1,5 @@
-import WaveSurfer from "wavesurfer.js";
-import RegionData from "./editing/RegionData";
-import RegionPlugin from "wavesurfer.js/dist/plugin/wavesurfer.regions.js"; //ok
-import { replayAudioData } from "./ReplayData";
 
+import RegionData from "./editing/RegionData";
 
 export default class RecordingData{
     timestamp: number;
