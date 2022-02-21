@@ -71,7 +71,7 @@ export async function deleteUserSettings() {
     }
     const userUID = currentUser.uid;
     try {
-        const deletePersonalData = await Filesystem.deleteFile({
+        await Filesystem.deleteFile({
             path: userUID + "/usersettings.json",
             directory: Directory.Data,
         });

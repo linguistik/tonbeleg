@@ -163,16 +163,7 @@ export default defineComponent({
         }
       }
 
-      /*currentUser.delete().then(() => {
-        // User deleted.
       }
-      ).catch((error) => {
-        // An error ocurred
-        // ...
-      });*/
-      }
-
-
 
     const yesDeleteAcc = () =>{
       console.log("deletingRecordings")

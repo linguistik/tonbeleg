@@ -51,10 +51,14 @@
           <ion-input
               v-model="dialect"
               placeholder="Ihr Dialekt"
+              @input = "justAddedDialect = false"
               @ionBlur="safe()"></ion-input>
+          <ion-button v-show="( justAddedDialect==false) && dialect != '' && getFiveItems(dialect)[0] != dialect" @click="safeNewDialect()"
+          >Dialekt Hinzufügen</ion-button
+          >
         </ion-item>
-        <ion-item v-if="dialect != '' && getFiveItems(dialect)[0] != dialect">
-          <ion-list v-if="getFiveItems(dialect).length != 0">
+        <ion-item v-if="dialect != '' && getFiveItems(dialect)[0] != dialect && getFiveItems(dialect).length != 0">
+          <ion-list v-show="getFiveItems(dialect).length > 0">
             <ion-item
               v-for="item in getFiveItems(dialect)"
               :key="item"
@@ -66,9 +70,7 @@
               </ion-label>
             </ion-item>
           </ion-list>
-          <ion-button v-show="getFiveItems(dialect).length == 0" @click="safeNewDialect()"
-            >Dialekt Hinzufügen</ion-button
-          >
+
         </ion-item>
 
         <!--<ion-list-header>
@@ -151,7 +153,7 @@ export default defineComponent({
   },
   //TODO upload data
 
-  setup(props: any, context: any) {
+  setup() {
     // multi-lingual support
     const { t } = useI18n();
 
@@ -173,6 +175,8 @@ export default defineComponent({
     const languages: string[][]=[];
 
     const firstVisit = ref(true);
+
+    const justAddedDialect = ref(false);
 
     /**
      * loads data about the user from database
@@ -327,7 +331,7 @@ export default defineComponent({
           return item.toLowerCase().indexOf(val.toLowerCase()) > -1;
         });
       } else {
-        items = [""];
+        items.splice(0,);
       }
       let retItems: string[]=[];
       if (items.length>5){
@@ -340,9 +344,13 @@ export default defineComponent({
       }
       return retItems;
     }
+
+
     function fillDialect(item: string) {
       dialect.value = item;
+      console.log("filling Dialect");
     }
+
     async function safeNewDialect() {
       items = dialects;
       let isDialectNew = true;
@@ -353,6 +361,7 @@ export default defineComponent({
       });
       if(isDialectNew){
         const db = firebase.firestore();
+        justAddedDialect.value = true;
         dialects[dialects.length] = dialect.value;
         db.collection("data").doc("dialects").set(
           {
@@ -397,6 +406,7 @@ export default defineComponent({
       dialects,
       languages,
       firstVisit,
+      justAddedDialect,
     };
   },
 });

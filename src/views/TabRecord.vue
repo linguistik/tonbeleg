@@ -192,9 +192,8 @@ import {
   IonLabel,
   IonItem,
   IonSelect,
-  IonButton,IonSelectOption,IonToggle,IonList,IonTextarea,alertController,
+  IonButton,IonSelectOption,IonToggle,IonList,IonTextarea,
 } from "@ionic/vue";
-import {WebPlugin} from "@capacitor/core";
 import {
   VoiceRecorder,
   GenericResponse,
@@ -215,15 +214,10 @@ import firebase from "@/backend/firebase-config";
 import {
   Filesystem,
   Directory,
-  //Encoding,
-  //WriteFileResult,
-  //ReaddirResult,
 } from "@capacitor/filesystem";
-//import { CapacitorException } from "@capacitor/core";
-import router from "@/router";
 import { insertRecordingEntry, removeRecordingEntry } from "@/scripts/RecordingStorage";
 import RecordingData from "@/scripts/RecordingData";
-import {getLicense, getFirstLanguage, userSettings} from "@/scripts/UserSettingsStorage";
+import {getLicense, getFirstLanguage} from "@/scripts/UserSettingsStorage";
 import { Encoding } from "@capacitor/filesystem";
 import {loadUserSettings} from "@/scripts/UserSettingsStorage";
 import {
@@ -242,7 +236,6 @@ import {
   restoreDefaultSettings,
     licensePopUp,
 } from "@/scripts/LicenseSettings";
-//import router from "@/router";
 
 export default defineComponent({
   name: "TabRecord",
