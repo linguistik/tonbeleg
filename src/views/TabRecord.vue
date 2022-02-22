@@ -3,7 +3,7 @@
     <PageHeader v-bind:title="t('general.appname')" />
 
     <ion-content :fullscreen="true">
-      <ion-card-modal v-show="openModal"><!---brauch eig nen modal das kann man nicht wegklicken--->
+      <ion-card-modal v-show="openModal" scrollable="false"><!---brauch eig nen modal das kann man nicht wegklicken--->
         <ion-content fullscreen>
             <ion-item>
           <ion-label>Name:</ion-label>
