@@ -17,10 +17,10 @@
       <ion-grid>
         <ion-row>
           <ion-col>
-            <ion-icon
-              :icon="playBackCircleOutline"
+            <ion-text
+              class="css-icon"
               @click="skipEventHandler(-10)"
-            ></ion-icon>
+            >-10</ion-text>
           </ion-col>
           <ion-col>
             <ion-icon
@@ -29,10 +29,10 @@
             ></ion-icon>
           </ion-col>
           <ion-col>
-            <ion-icon
-              :icon="playForwardCircleOutline"
+            <ion-text
+              class="css-icon"
               @click="skipEventHandler(10)"
-            ></ion-icon>
+            >+10</ion-text>
           </ion-col>
         </ion-row>
       </ion-grid>
@@ -98,6 +98,7 @@ import {
   IonIcon,
   IonLabel,
   alertController,
+  IonText
 } from "@ionic/vue";
 
 import {
@@ -150,6 +151,7 @@ export default defineComponent({
     IonIcon,
     ColoredIcon,
     IonLabel,
+    IonText,
   },
 
   props: {
@@ -515,6 +517,17 @@ export default defineComponent({
 
 .controlElements {
   font-size: 32px;
+}
+
+.css-icon{
+  font-size: 32px;
+  border-style: solid;
+  border-width: thick;
+  border-radius: 999px;
+  height: 2.5em;
+  width: 2.5em;
+  padding: 16px;
+  position: relative;
 }
 
 ion-icon {
