@@ -63,7 +63,6 @@ import firebase from "@/backend/firebase-config";
 import router from "@/router";
 import {removeAllRecordingEntry} from "@/scripts/RecordingStorage"
 import {deleteUserSettings} from "@/scripts/UserSettingsStorage";
-import EmailAuthProvider = firebase.auth.EmailAuthProvider;
 export default defineComponent({
   name: "TabSettings",
   components: {
@@ -112,7 +111,6 @@ export default defineComponent({
      */
     const deleteAccInDatabase = async () =>{
       //TODO
-      const db = firebase.firestore();
       const currentUser = firebase.auth().currentUser;
       if (currentUser == null) {
         console.log("\n\nFATAL ERROR: no user logged in, so user can be deleted\n\n");

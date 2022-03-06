@@ -100,7 +100,7 @@ import {
   IonItem,
   IonCardHeader,
   IonCardTitle,
-  IonCardContent, toastController,
+  IonCardContent, toastController, loadingController,
 } from "@ionic/vue";
 
 import router from "@/router";
@@ -117,7 +117,6 @@ import RecordingData from '@/scripts/RecordingData';
 import {UploadToFirebase} from "@/scripts/RecordingUpload";
 import RegionData from "@/scripts/editing/RegionData";
 import RecordingPlayer from "@/scripts/recording/RecordingPlayer";
-import {loadingController} from "@ionic/vue";
 
 export default {
   name: "Recording",

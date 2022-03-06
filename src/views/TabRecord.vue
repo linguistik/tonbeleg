@@ -176,6 +176,8 @@ import {
   setRecordingEntryName,
   getRecordingEntry,
   setRecordingLicense,
+    insertRecordingEntry,
+    removeRecordingEntry,
 } from "@/scripts/RecordingStorage";
 import { onIonViewDidEnter, toastController} from "@ionic/vue";
 import {UploadToFirebase} from "@/scripts/RecordingUpload";
@@ -214,12 +216,11 @@ import firebase from "@/backend/firebase-config";
 import {
   Filesystem,
   Directory,
+    Encoding,
 } from "@capacitor/filesystem";
-import { insertRecordingEntry, removeRecordingEntry } from "@/scripts/RecordingStorage";
 import RecordingData from "@/scripts/RecordingData";
-import {getLicense, getFirstLanguage, setLicense} from "@/scripts/UserSettingsStorage";
-import { Encoding } from "@capacitor/filesystem";
-import {loadUserSettings} from "@/scripts/UserSettingsStorage";
+import {getLicense, getFirstLanguage, setLicense, loadUserSettings} from "@/scripts/UserSettingsStorage";
+
 import {
   isSharingAllowed,
   isSharingAllowedDeactivated,
@@ -233,7 +234,6 @@ import {
   evaluateButtonSettingsFromLicense,
   evaluateLicenseAndDeactivations,
   optionChangedForPopUp,
-  restoreDefaultSettings,
   licensePopUp,
 } from "@/scripts/LicenseSettings";
 

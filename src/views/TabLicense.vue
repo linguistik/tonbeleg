@@ -113,7 +113,7 @@ disabled
 
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { defineComponent} from 'vue';
 import { useI18n } from 'vue-i18n';
 import PageHeader from '@/components/layout/PageHeader.vue';
 
@@ -127,29 +127,20 @@ import {
   IonLabel,
   IonItem,
   IonToggle,
-  toastController,
-  onIonViewDidEnter, onIonViewWillEnter,
+  onIonViewDidEnter,
 } from '@ionic/vue';
 
-import firebase from "@/backend/firebase-config";
-//mport 'firebase/firestore';
 import '@firebase/firestore'
 import {
-
   getLicense,
-  loadUserSettings,
-  setDialect,
-  setFirstLanguage,
-  setJob,
-  setLicense, setSecondLanguage, setZipCode
 } from "@/scripts/UserSettingsStorage";
 import 'firebase/firestore';
-import {evaluateLicenseAndDeactivations, evaluateButtonSettingsFromLicense,
-        saveLocalData, uploadLicense,exportedLicensePTR, downloadLicense,
-        loadLocalData, options, isComerciallyUseAllowed, isComerciallyUseAllowedDeactivated,
+import {evaluateButtonSettingsFromLicense,
+  uploadLicense,exportedLicensePTR,
+        loadLocalData, isComerciallyUseAllowed, isComerciallyUseAllowedDeactivated,
         isMentioningActivated, isMentioningActivatedDeactivated, isRemixingAllowedDeactivated,
         isRemixingAllowed, isSharingAllowed, isSharingAllowedDeactivated, optionChanged, licenseLicenseTab} from "@/scripts/LicenseSettings";
-import {UploadToFirebase} from "@/scripts/RecordingUpload";
+
 export default defineComponent({
   name: "TabLicense",
 
