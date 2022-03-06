@@ -31,19 +31,18 @@ read example.spec.ts first
 import {defineComponent, ref, Ref} from "vue";
 import { useI18n } from "vue-i18n";
 import PageHeader from "@/components/layout/PageHeader.vue";
-import {UploadToFirebase, deleteAllFromUploadArray, deleteUploadedRecordsFromDevice, RecordingUploadArray} from "@/scripts/RecordingUpload";
+import {UploadToFirebase} from "@/scripts/RecordingUpload";
 import {
   IonPage,
   IonHeader,
   IonToolbar,
   IonTitle,
   IonContent,
-  IonList, alertController,
+  IonList,
 } from "@ionic/vue";
 import Recording from "@/components/Recording.vue";
 import {loadRecordings, safeRecordings, getRecordings } from "@/scripts/RecordingStorage";
 import RecordingData from "@/scripts/RecordingData";
-import router from "@/router";
 export default defineComponent({
   name: "TabSaved",
   components: {

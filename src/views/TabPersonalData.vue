@@ -103,7 +103,8 @@
 import { defineComponent, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import PageHeader from '@/components/layout/PageHeader.vue';
-import {loadUserSettings, setBirthday, setJob,setFirstLanguage,setSecondLanguage,setDialect,setZipCode, getBirthday,getJob,getFirstLanguage,getSecondLanguage,getDialect,getZipCode} from "@/scripts/UserSettingsStorage";
+import {loadUserSettings, setBirthday, setJob,setFirstLanguage,setSecondLanguage,
+  setDialect,setZipCode, getBirthday,getJob,getFirstLanguage,getSecondLanguage,getDialect,getZipCode} from "@/scripts/UserSettingsStorage";
 import {
   IonPage,
   IonHeader,
@@ -131,7 +132,8 @@ export default defineComponent({
   name: "TabPersonalData",
   components: { 
     PageHeader, 
-    IonHeader, IonToolbar, IonTitle, IonContent, IonPage, IonList, IonItem, IonListHeader, IonLabel, IonInput, IonButton, IonSelect,IonSelectOption,    MultipleElementsParent
+    IonHeader, IonToolbar, IonTitle, IonContent, IonPage, IonList, IonItem,
+    IonListHeader, IonLabel, IonInput, IonButton, IonSelect,IonSelectOption, MultipleElementsParent
   },
   methods: {
     /**

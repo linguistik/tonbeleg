@@ -1,6 +1,6 @@
 import {ref} from "vue";
 import firebase from "@/backend/firebase-config";
-import {getLicense, loadUserSettings, setLicense, userSettings} from "@/scripts/UserSettingsStorage";
+import {getLicense, loadUserSettings, setLicense} from "@/scripts/UserSettingsStorage";
 import {toastController} from "@ionic/vue";
 
 /**
@@ -125,26 +125,6 @@ export const uploadLicense = ()=>{
         license: exportedLicensePTR.value
     },{merge: true});
     console.log("wrote to database");
-}
-
-export const restoreDefaultSettings = ()=>{
-    isMentioningActivated.value = false;
-    isComerciallyUseAllowed.value = true;
-    isRemixingAllowed.value = true;
-    isSharingAllowed.value = true;
-
-    isMentioningActivatedDeactivated.value = false;
-    isComerciallyUseAllowedDeactivated.value = true;
-    isRemixingAllowedDeactivated.value = true;
-    isSharingAllowedDeactivated.value = true;
-
-    options.set("isMentioningActivated", false);
-    options.set("isComerciallyUseAllowed", true);
-    options.set("isRemixingAllowed", true);
-    options.set("isSharingAllowed", true);
-
-    exportedLicensePTR.value = userSettings.license;
-    evaluateButtonSettingsFromLicense();
 }
 
 /**
