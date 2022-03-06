@@ -1,9 +1,9 @@
 <template>
-  <ion-page slot>
+  <ion-page slot :key="updateKey">
     <PageHeader v-bind:title="t('general.appname')" />
 
-    <ion-content :fullscreen="true">
-      <ion-card-modal v-show="openModal" scrollable="false"><!---brauch eig nen modal das kann man nicht wegklicken--->
+    <ion-content :fullscreen="true" scrollable="false">
+      <ion-card-modal v-show="openModal" ><!---brauch eig nen modal das kann man nicht wegklicken--->
         <ion-content fullscreen>
             <ion-item>
           <ion-label>Name:</ion-label>
@@ -217,7 +217,7 @@ import {
 } from "@capacitor/filesystem";
 import { insertRecordingEntry, removeRecordingEntry } from "@/scripts/RecordingStorage";
 import RecordingData from "@/scripts/RecordingData";
-import {getLicense, getFirstLanguage} from "@/scripts/UserSettingsStorage";
+import {getLicense, getFirstLanguage, setLicense} from "@/scripts/UserSettingsStorage";
 import { Encoding } from "@capacitor/filesystem";
 import {loadUserSettings} from "@/scripts/UserSettingsStorage";
 import {
@@ -234,7 +234,7 @@ import {
   evaluateLicenseAndDeactivations,
   optionChangedForPopUp,
   restoreDefaultSettings,
-    licensePopUp,
+  licensePopUp,
 } from "@/scripts/LicenseSettings";
 
 export default defineComponent({
@@ -279,6 +279,12 @@ export default defineComponent({
     const timerString = ref(timer.value.toISOString().substr(11, 8));
 
     const languages: string[][]=[];
+
+    const updateKey = ref(0);
+    const forceUpdate = ()=>{
+      updateKey.value += 1;
+    }
+
 
     //https://expertcodeblog.wordpress.com/2018/07/05/typescript-sleep-a-thread/
     //const delay = (ms: number)=>{return new Promise(resolve =>setTimeout(resolve,ms));};
@@ -499,7 +505,6 @@ export default defineComponent({
       openLicenseModal.value = false;
       await loadUserSettings();
       exportedLicensePTR.value = getLicense();
-      restoreDefaultSettings();
       await evaluateButtonSettingsFromLicense();
       lastRecording.value = getRecordingEntry(timestamp);
       timer.value = new Date(0);
@@ -521,7 +526,6 @@ export default defineComponent({
       newLanguage.value = [""];
       newLicense.value = "";
       firstModalOpen.value = true;
-      restoreDefaultSettings()
     };
 
     /**
@@ -530,6 +534,8 @@ export default defineComponent({
     const deleteLastRecording = async () => {
       removeRecordingEntry(lastRecording.value);
       await clearVariables();
+      exportedLicensePTR.value = getLicense();
+      evaluateButtonSettingsFromLicense();
       openModal.value = !openModal.value;
       openLicenseModal.value = !openLicenseModal.value;
       const toast = await toastController
@@ -571,7 +577,11 @@ export default defineComponent({
      */
     const selectNewLicense = async() =>{
       openLicenseModal.value=!openLicenseModal.value;
+      setLicense(getLicense());
+      exportedLicensePTR.value = getLicense();
+      licensePopUp.value = getLicense();
       evaluateButtonSettingsFromLicense();
+      forceUpdate();
     }
 
     /**
@@ -579,7 +589,7 @@ export default defineComponent({
      */
     const evaluateNewLicense = () =>{
       openLicenseModal.value=!openLicenseModal.value;
-      evaluateLicenseAndDeactivations()
+      evaluateLicenseAndDeactivations();
       newLicense.value = exportedLicensePTR.value;
     }
 
@@ -669,6 +679,7 @@ export default defineComponent({
       isRemixingAllowedDeactivated,
       isSharingAllowedDeactivated,
       licensePopUp,
+      updateKey,
     };
   },
 });

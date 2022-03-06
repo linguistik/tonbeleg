@@ -239,3 +239,5 @@ export const optionChangedForPopUp = (event: any)=>{
     evaluateLicenseAndDeactivations();
     licensePopUp.value = exportedLicensePTR.value;
 }
+
+

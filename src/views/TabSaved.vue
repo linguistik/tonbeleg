@@ -18,9 +18,7 @@
   <div id="container" v-else>
     <p>Du hast auf diesem Gerät noch keine gespeicherten Aufnahmen </p>
   </div>
-
     </ion-content>
-
   </ion-page>
 </template>
 
