@@ -101,6 +101,9 @@ export default defineComponent({
       setWifi(wifiOnlyActivated.value);
     };
 
+    /**
+     *log the user out and send him to the login page
+     */
     const logOut = () => {
       firebase.auth().signOut();
       router.push("/");
@@ -124,7 +127,7 @@ export default defineComponent({
         }
         catch{
           let provider ;
-          //await currentUser.delete();
+
           const result = await currentUser.getIdTokenResult(false).then((res)=>res.signInProvider);
           if(result==null){
             return
@@ -157,21 +160,21 @@ export default defineComponent({
             await toast.present();
             logOut();
           }
-
         }
       }
+    }
 
-      }
-
+    /**
+     * actually deletes the recordings, the users data and the account in firebase
+     */
     const yesDeleteAcc = () =>{
       console.log("deletingRecordings")
-      removeAllRecordingEntry(); //ich glaube es ist wichtig dass das zuerst passiert
+      removeAllRecordingEntry(); //delete all recordings on the device
       //console.log("delete user settings")
-      //eleteUserSettings()
+      //deleteUserSettings()     //delete the usersettings
       console.log("delete acc in database")
       deleteAccInDatabase();
     }
-
 
     /**
      * creates an alert asking the user if he really wants to delete his account
@@ -208,7 +211,7 @@ export default defineComponent({
         }, {
           text: 'OK',
           handler: () =>{
-            removeAllRecordingEntry();
+            removeAllRecordingEntry(); //deletes all recordings
           },
         }],
       });

@@ -84,7 +84,6 @@
         v-bind:disabled="isSharingAllowedDeactivated"
         ></ion-toggle>
       </ion-item>
-      
 
     </ion-list>
           <div id="container">
@@ -103,13 +102,6 @@
   </ion-page>
 </template>
 
-<!-- 
-ion-toggle:
-@ionChange=""
-value
-:checked
-disabled
--->
 
 
 <script lang="ts">
@@ -149,6 +141,7 @@ export default defineComponent({
     IonHeader, IonToolbar, IonTitle, IonContent, IonPage, IonList, IonLabel, IonItem,IonToggle,
     
   },
+
   setup(){
     // multi-lingual support
     const { t } = useI18n();
@@ -156,10 +149,14 @@ export default defineComponent({
     loadLocalData();
     uploadLicense();//überschreibt datenbank
 
+    /**
+     * when the license is entered the license chosen
+     * by the user is loaded
+     */
     onIonViewDidEnter(async () => { //e
       console.log('Entering license tab');
-      exportedLicensePTR.value = getLicense();
-      evaluateButtonSettingsFromLicense();
+      exportedLicensePTR.value = getLicense(); //fetching license from usersettings
+      evaluateButtonSettingsFromLicense();     //setting toggles according to license
     });
 
 

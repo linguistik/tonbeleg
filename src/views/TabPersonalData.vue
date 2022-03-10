@@ -53,14 +53,14 @@
               placeholder="Ihr Dialekt"
               @input = "justAddedDialect = false"
               @ionBlur="safe()"></ion-input>
-          <ion-button v-show="( justAddedDialect==false) && dialect != '' && getFiveItems(dialect)[0] != dialect" @click="safeNewDialect()"
+          <ion-button v-show="( justAddedDialect==false) && dialect != '' && suggestDialects(dialect)[0] != dialect" @click="safeNewDialect()"
           >Dialekt Hinzufügen</ion-button
           >
         </ion-item>
-        <ion-item v-if="dialect != '' && getFiveItems(dialect)[0] != dialect && getFiveItems(dialect).length != 0">
-          <ion-list v-show="getFiveItems(dialect).length > 0">
+        <ion-item v-if="dialect != '' && suggestDialects(dialect)[0] != dialect && suggestDialects(dialect).length != 0">
+          <ion-list v-show="suggestDialects(dialect).length > 0">
             <ion-item
-              v-for="item in getFiveItems(dialect)"
+              v-for="item in suggestDialects(dialect)"
               :key="item"
               button
               @click="fillDialect(item)"
@@ -72,10 +72,6 @@
           </ion-list>
 
         </ion-item>
-
-        <!--<ion-list-header>
-          <ion-label> Wohnorte </ion-label>
-        </ion-list-header>-->
 
         <ion-item>
           <ion-label> Postleitzahl: </ion-label>
@@ -136,8 +132,9 @@ export default defineComponent({
     IonListHeader, IonLabel, IonInput, IonButton, IonSelect,IonSelectOption, MultipleElementsParent
   },
   methods: {
+
     /**
-     * laods saved languages and sets entrys in child components
+     * loads saved languages and sets entrys in child components
      */
     async setupLanguages() {
       await loadUserSettings(); //läd user settinmg
@@ -199,10 +196,8 @@ export default defineComponent({
       } else {
         shownZipCode.value = zipCode.value.toString();
       }
-      //const store = firebase.firestore();
-      //const ref = firebase.database();
-      //console.log(ref);
     };
+
     /**
      * upload userdata on database
      */
@@ -227,6 +222,7 @@ export default defineComponent({
       );
       console.log("wrote to database");
     };
+
     /**
      * saves userdata local in usersettings.json and upload to firebase
      */
@@ -236,17 +232,15 @@ export default defineComponent({
 
       if (currentUser == null) return;
 
-      if (
-        isNaN(parseInt(shownZipCode.value)) ||
-        parseInt(shownZipCode.value) < 0
-      ) {
-        //zip code legaler wert?
-        if (zipCode.value < 0) shownZipCode.value = "";
-        //else shownZipCode.value = zipCode.value.toString(); //reset des alten wertes außer -1 da ungültiger wert
-        console.log("ungültiger zipcode");
-      } else {
-        setZipCode(parseInt(shownZipCode.value));
-        zipCode.value = parseInt(shownZipCode.value);
+      if (isNaN(parseInt(shownZipCode.value)) || parseInt(shownZipCode.value) < 0) { //checks wether the entered zip code has a valid value
+        if (zipCode.value < 0) {
+          shownZipCode.value = ""; //reset zip code in case it is invalid
+        }
+        console.log("invalid zipcode");
+      }
+      else {
+        setZipCode(parseInt(shownZipCode.value));     //if zip ist valid enter
+        zipCode.value = parseInt(shownZipCode.value); //
       }
 
       setBirthday(birthday.value);
@@ -285,7 +279,6 @@ export default defineComponent({
       const db = firebase.firestore();
       const snapshot = await db.collection("data").doc("languages").get();
       for(let i=0;i<18;i++){
-        
         languages[i]=snapshot.get(i.toString())
       }
       console.log(languages)
@@ -314,6 +307,7 @@ export default defineComponent({
       firstLanguage.value = languages;
       setFirstLanguage(languages);
     };
+
     /**
      * second language childcomponents call this method when their language is changed,
      * @param languages, list with all languges from all child compontents with updated entrys
@@ -325,7 +319,12 @@ export default defineComponent({
     };
 
     let items = dialects;
-    function getFiveItems(input: string) {
+
+    /**
+     * checks wether a dialect entered by the user already exists and suggests it to the user
+     * @param input the name of the dialect entered by the user
+     */
+    function suggestDialects(input: string) {
       const val = input;
       items = dialects;
       if (val.trim() != "") {
@@ -336,7 +335,7 @@ export default defineComponent({
         items.splice(0,);
       }
       let retItems: string[]=[];
-      if (items.length>5){
+      if (items.length>5){      //shorten the list of possible dialects to suggest to 5 dialects
         for(let i=0; i<5;i++){
           retItems[i]=items[i]
         } 
@@ -347,21 +346,28 @@ export default defineComponent({
       return retItems;
     }
 
-
+    /**
+     * if a user selects one of the suggested dialects
+     * @param item one of the dialects suggested to the user
+     */
     function fillDialect(item: string) {
       dialect.value = item;
       console.log("filling Dialect");
     }
 
+    /**
+     * if a user enters a dialect that doesn't exist already
+     * it is added to the database
+     */
     async function safeNewDialect() {
       items = dialects;
       let isDialectNew = true;
-      items.forEach((item) => {
+      items.forEach((item) => {   //each existing dialect is compared to the one entered by the user
         if(item == dialect.value){
-          isDialectNew = false;
+          isDialectNew = false;   //if it already exists tell the user
         }
       });
-      if(isDialectNew){
+      if(isDialectNew){                 //if the dialect already exists
         const db = firebase.firestore();
         justAddedDialect.value = true;
         dialects[dialects.length] = dialect.value;
@@ -377,8 +383,9 @@ export default defineComponent({
               duration: 1500
             })
         return toast.present();
-      }else{
-        const toast = await toastController
+      }
+      else{
+        const toast = await toastController //tells the user that his dialect already exists
             .create({
               message: 'Der Dialekt ist bereits vorhanden',
               duration: 1500
@@ -401,7 +408,7 @@ export default defineComponent({
       birthday,
       updateFirstLanguages,
       updateSecondLanguages,
-      getFiveItems,
+      suggestDialects,
       fillDialect,
       safeNewDialect,
       items,

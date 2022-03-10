@@ -184,6 +184,10 @@ export default {
       isOpen.value = !isOpen.value;
     };
 
+
+    /**
+     * returns the date and time a recording was recorded
+     */
     const getRecordingDate = () => {
       const date = new Date(parseInt(props.recording.timestamp));
       let day = date.getDate().toString();
@@ -205,7 +209,6 @@ export default {
         day = "0" + day;
       }
 
-
       return day + "." + month + "." + year + ", " + hours + ":" + minutes;
     }; //method: getRecordingDate
 
@@ -213,6 +216,9 @@ export default {
       router.push("/edit/" + props.recording.timestamp);
     };
 
+    /**
+     * changes the license of the recording
+     */
     const changeLicense = async () => {
       const alert = await alertController.create({
         message: "Select a License for this recording.",
@@ -238,19 +244,22 @@ export default {
      * actual delete of the entry
      */
     const actualDelete = async () => {
-      removeRecordingEntry(props.recording);
-      context.emit("refreshEmit");
-      exists.value = false;
-      forceUpdate();
+      removeRecordingEntry(props.recording);//remvoe the recording
+      context.emit("refreshEmit");          //trigger a refresh
+      exists.value = false;                 //indicate that the recording doesnt exist anymore
+      forceUpdate();                        //refresh the whole page to make sure the recording isnt displayed anymore
     }; //method: deleteFolder
 
+    /**
+     * upload recording to firebase
+     */
     const upload = async () => {
       const currentUser = firebase.auth().currentUser;
-      if (currentUser == null) return;
+      if (currentUser == null) return; //user needs to be online and signed in to upload
       selectedForUpload.value = !selectedForUpload.value;
-      setSelectedForUpload(props.recording.timestamp, selectedForUpload.value);
-      await UploadToFirebase();
-      if (props.recording.upload) {
+      setSelectedForUpload(props.recording.timestamp, selectedForUpload.value);//remember to upload this recording in case you are offline right now
+      await UploadToFirebase();//actually uploading to firebase
+      if (props.recording.upload) { //if the recording was uploaded
           const loading = await loadingController
               .create({
                 message: 'Please wait...',
@@ -258,8 +267,8 @@ export default {
               });
 
           await loading.present();
-          await actualDelete();
-        const toast = await toastController
+          await actualDelete(); //delete it
+        const toast = await toastController //and tell the user is was uploaded
             .create({
               message: 'Tonbeleg erfolgreich hochgeladen!',
               position:'bottom',
@@ -332,6 +341,9 @@ export default {
       }
     }
 
+    /**
+     *play the selected the of the recording
+     */
     const playRegion = (i: number)=>{
       if(playingPartsRef.value[i]){
         //we are already playing!
@@ -343,6 +355,9 @@ export default {
       }
     }
 
+    /**
+     *play the whole recording
+     */
     const playRec = async () => {
       if(playing.value){
         recObj.stopPlaying();
@@ -359,11 +374,11 @@ export default {
       //props.recording is just a copy of the real object
       setRecordingEntryName(props.recording.timestamp, name);
       displayName.value = name;
-      //context.emit("refreshEmit");
       forceUpdate();
-    }; //method: actualRename
+    };
+
     /**
-     * opens rename message box for entry
+     * opens a message box to enter the new name
      */
     const rename = async () => {
       //TODO
@@ -434,7 +449,7 @@ export default {
         ],
       });
       await alert.present();
-    }; //method: deleteRecording
+    };
 
     return {
       t,
@@ -470,12 +485,16 @@ export default {
       playRegion,
       playingPartsRef,
       stop,
-    }; //return
-  }, //setup
-}; //export default
+    };
+  },
+};
+
 </script>
+
 <style scoped>
-ion-icon {
+
+  ion-icon {
   margin: 5px;
-}
+  }
+
 </style>

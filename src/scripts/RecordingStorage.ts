@@ -17,7 +17,7 @@ export let recordings: RecordingData[] = [];
 /**
  * save the recordings on the device
  */
-export function safeRecordings() {//call this function on closing or on every change
+export function saveRecordings() {//call this function on closing or on every change
     const dataString = JSON.stringify(recordings);  //create a string from the recording array
     const currentUser = firebase.auth().currentUser; //confirm the users identify in firebase
     if (currentUser == null) {
@@ -72,9 +72,8 @@ export function getRecordings(): RecordingData[] {
 
 export function insertRecordingEntry(recording: RecordingData) {
     recordings.push(recording);
-    safeRecordings();
+    saveRecordings();
 }
-
 
 export function getRecordingEntry(timestamp: number): RecordingData{
     for(const recording of recordings){
@@ -88,13 +87,13 @@ export function getRecordingEntry(timestamp: number): RecordingData{
 export function setRecordingEntryLanguage(timestamp: number, languages: string[]){
     const data = getRecordingEntry(timestamp);
     data.languages = languages;
-    safeRecordings();
+    saveRecordings();
 }
 
 export function setRecordingEntryName(timestamp: number, newName: string){
     const data = getRecordingEntry(timestamp);
     data.name = newName;
-    safeRecordings();
+    saveRecordings();
 }
 
 export function getRecordingEntryLanguage(timestamp: number): string[]{
@@ -105,25 +104,25 @@ export function getRecordingEntryLanguage(timestamp: number): string[]{
 export function setSelectedForUpload(timestamp: number, newBool: boolean){
     const data = getRecordingEntry(timestamp);
     data.selectedForUpload = newBool;
-    safeRecordings();
+    saveRecordings();
 }
 
 export function setRecordingLicense(timestamp: number, newLicense: string){
     const data = getRecordingEntry(timestamp);
     data.license = newLicense;
-    safeRecordings();
+    saveRecordings();
 }
 
 export function setRecordingEntryUploadBoolean(timestamp: number, uploadBoolean: boolean){
     const data = getRecordingEntry(timestamp);
     data.upload = uploadBoolean;
-    safeRecordings();
+    saveRecordings();
 }
 
 export function setRecordingEntryTranscription(timestamp: number, transcription: string){
     const data = getRecordingEntry(timestamp);
     data.transcription = transcription;
-    safeRecordings();
+    saveRecordings();
 }
 
 export function getRecordingEntryTranscription(timestmap: number): string{
@@ -170,7 +169,7 @@ export function removeRecordingEntry(recording: RecordingData) {
         directory: Directory.Data,
         recursive: true
     })
-    safeRecordings();
+    saveRecordings();
 }
 
 /**
@@ -190,7 +189,7 @@ export function removeAllRecordingEntry() {
         directory: Directory.Data,
         recursive: true
     })
-    safeRecordings();
+    saveRecordings();
 }
 
 
@@ -231,7 +230,7 @@ export function callUpdateFunction(id: number){
 export function setRecordingEntryRegionDataArray(recordingId: number, regionArray: Region[], idToNameMap: Map<string,string>){
     const recordingEntry = getRecordingEntry(recordingId);
     recordingEntry.parts = convertToRegionDataArray(regionArray,idToNameMap);
-    safeRecordings();
+    saveRecordings();
     callUpdateFunction(recordingId);
 }
 /**
