@@ -41,7 +41,7 @@ import {
   IonList,
 } from "@ionic/vue";
 import Recording from "@/components/Recording.vue";
-import {loadRecordings, safeRecordings, getRecordings } from "@/scripts/RecordingStorage";
+import {loadRecordings, saveRecordings, getRecordings } from "@/scripts/RecordingStorage";
 import RecordingData from "@/scripts/RecordingData";
 export default defineComponent({
   name: "TabSaved",
@@ -80,8 +80,11 @@ export default defineComponent({
       }
     }
 
+    /**
+     * save everything, check firebase and reload the page
+     */
     const loadEverythingPls = async () => {
-      await safeRecordings();
+      await saveRecordings();
       await UploadToFirebase();
       await refresh();
     }
@@ -94,7 +97,7 @@ export default defineComponent({
     recordingsRef, 
     refreshAfterTimeout, 
     refresh,
-    safeRecordings,
+    saveRecordings,
     loadRecordings,
     updateKey, UploadToFirebase,
       loadEverythingPls,

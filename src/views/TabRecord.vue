@@ -333,6 +333,9 @@ export default defineComponent({
     // Start & Stop Recoding
     const recordingStatus = ref(recordingStatusEnums.NOT_RECORDING);
 
+    /**
+     * pause recording
+     */
     const pauseRecordingTrigger = async () => {
       await VoiceRecorder.pauseRecording()
         .then(() => {
@@ -346,6 +349,9 @@ export default defineComponent({
         });
     };
 
+    /**
+     * continue recording
+     */
     const continueRecordingTrigger = async () => {
       await VoiceRecorder.resumeRecording()
         .then(() => {
@@ -521,6 +527,9 @@ export default defineComponent({
       }
     };
 
+    /**
+     * reset all the values the user might have changed before saving the recording
+     */
     const clearVariables = async () => {
       newName.value = "";
       newLanguage.value = [""];
@@ -532,10 +541,10 @@ export default defineComponent({
      * deletes the last recording in case the user doesnt want it
      */
     const deleteLastRecording = async () => {
-      removeRecordingEntry(lastRecording.value);
+      removeRecordingEntry(lastRecording.value); //deletes the last recording
       await clearVariables();
-      exportedLicensePTR.value = getLicense();
-      evaluateButtonSettingsFromLicense();
+      exportedLicensePTR.value = getLicense();  //reset the license value to the global license
+      evaluateButtonSettingsFromLicense();      //set the toggles accordingly
       openModal.value = !openModal.value;
       openLicenseModal.value = !openLicenseModal.value;
       const toast = await toastController
