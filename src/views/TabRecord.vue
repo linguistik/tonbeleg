@@ -1,10 +1,10 @@
 <template>
-  <ion-page slot :key="updateKey">
+  <ion-page :key="updateKey">
     <PageHeader v-bind:title="t('general.appname')" />
 
-    <ion-content :fullscreen="true" scrollable="false">
+    <ion-content :fullscreen="true" slot="fixed">
       <ion-card-modal v-show="openModal" ><!---brauch eig nen modal das kann man nicht wegklicken--->
-        <ion-content fullscreen>
+        <ion-content fullscreen slot="fixed">
             <ion-item>
           <ion-label>Name:</ion-label>
           <ion-input

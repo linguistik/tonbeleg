@@ -55,7 +55,7 @@
         ></ion-icon>
         <ion-icon
           :icon="help"
-          @click="changeLicense()"
+          @click="licenseAlert = true"
           v-if="provideFunctionality"
         ></ion-icon>
 
@@ -150,6 +150,8 @@ export default {
     const selectedForUpload = ref(props.recording.selectedForUpload);
     const alreadyUploaded = ref(props.recording.upload);
 
+    const licenseAlert = ref(false);
+
     const updateKey = ref(0);
     const forceUpdate = () => {
       updateKey.value += 1;
@@ -222,6 +224,8 @@ export default {
     const changeLicense = async () => {
       const alert = await alertController.create({
         message: "Select a License for this recording.",
+        inputs:[
+        ],
         buttons: [
           {
             text: "Cancel",
@@ -485,6 +489,7 @@ export default {
       playRegion,
       playingPartsRef,
       stop,
+      licenseAlert,
     };
   },
 };
