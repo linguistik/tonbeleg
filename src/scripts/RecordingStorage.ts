@@ -64,7 +64,6 @@ export async function loadRecordings() {
         console.log("reading error: ", error);
     }
     console.log(recordings);
-    //document.addEventListener('beforeunload', safeRecordings);//does not work
 }
 export function getRecordings(): RecordingData[] {
     return recordings;
@@ -216,13 +215,10 @@ export function callUpdateFunction(id: number){
     }
 }
 
-
-
-
 /**
  * converts the regionArray to an array of regionData using RegionDataUtils
  * assigns the regionData array to the specified recording
- * saves the recordings to the filesystem @see safeRecordings
+ * saves the recordings to the filesystem @see saveRecordings
  * @param {number} recordingId 
  * @param {Region[]} regionArray 
  * @param {Map<string,string>} idToNameMap 

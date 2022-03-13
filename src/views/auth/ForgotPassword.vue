@@ -108,9 +108,12 @@ export default defineComponent({
     const password = ref("");
     const errorMessage = ref("");
 
+    /**
+     * if the user has forgot his password
+     */
     const onSubmit = ()=>{
         console.log(email.value);
-        firebase.auth().sendPasswordResetEmail(email.value).then(()=>{
+        firebase.auth().sendPasswordResetEmail(email.value).then(()=>{ //let firebase send a email to reset his password via email
             console.log("reset password");
             router.back();
         }).catch((err)=>{

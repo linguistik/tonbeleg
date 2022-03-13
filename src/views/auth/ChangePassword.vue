@@ -127,30 +127,33 @@ export default defineComponent({
     const newPassword2 = ref("");
     const errorMessage = ref("");
 
+    /**
+     * when user submits his data to change his password
+     */
     const onSubmit =()=>{
-        if(newPassword1.value == ""){
+        if(newPassword1.value == ""){   //when the user hasn't entered a new password
             errorMessage.value = "Bitte gib ein neues Passwort ein";
             return; 
         }
-        if(newPassword2.value == ""){
+        if(newPassword2.value == ""){  //when the user hasn't repeated the new password
             errorMessage.value = "Bitte bestätige dein neues Passwort";
             return;
         }
-        if(newPassword1.value != newPassword2.value){
+        if(newPassword1.value != newPassword2.value){ //if the new password and the repeated new password dont match
             errorMessage.value = "Passwörter stimmen nicht überein."
             return;
         }
-        firebase
+        firebase                                     //if the new password and the repeated new password match
             .auth()
-            .signInWithEmailAndPassword(email.value, oldPassword.value)
+            .signInWithEmailAndPassword(email.value, oldPassword.value) //sign in with the old password
             .then(() => {
-                const currentUser = firebase.auth().currentUser;
+                const currentUser = firebase.auth().currentUser;        //check if the sign in was successful
                 if( currentUser == null){
                     return;
                 }
-                currentUser.updatePassword(newPassword1.value);
-                firebase.auth().signOut();
-                router.push("/");
+                currentUser.updatePassword(newPassword1.value);         //update the password
+                firebase.auth().signOut();                              //log out the user
+                router.push("/");                                       //send user to login page
             })
             .catch((err) => {
                 errorMessage.value = err.message;

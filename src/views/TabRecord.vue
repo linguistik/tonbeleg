@@ -25,7 +25,7 @@
 
         <ion-item>
           <ion-label>Lizenz bestimmen</ion-label>
-          <ion-textarea v-show="!openLicenseModal" zeigv-model="newLicense" v-model:value="exportedLicensePTR" v-model:placeholder="exportedLicensePTR" :disabled="true"></ion-textarea>
+          <ion-textarea v-show="!openLicenseModal" v-model="newLicense" v-model:value="exportedLicensePTR" v-model:placeholder="exportedLicensePTR" :disabled="true"></ion-textarea>
           <ion-button v-show="!openLicenseModal" @click="selectNewLicense()" v-model:name="exportedLicensePTR">Ändern</ion-button>
             <ion-card-modal v-show="openLicenseModal" :fullscreen="true">
               <ion-list slot="end">
@@ -394,19 +394,6 @@ export default defineComponent({
         recordingStatus.value = recordingStatusEnums.IS_RECORDING;
       }
     };
-
-    /*let audioRef = new Audio();
-    const stopRecordingTrigger = async () =>{
-      let recordingData;
-      VoiceRecorder.stopRecording()
-          .then((result: RecordingData) => {
-            console.log(result.value);
-            audioRef = new Audio(result.value.recordDataBase64)
-            audioRef.oncanplaythrough = () => audioRef.play()
-            audioRef.load()
-          })
-          .catch(error => console.log(error))
-    };*/
 
     /**
      * stop the recording and save it
