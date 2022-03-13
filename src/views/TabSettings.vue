@@ -26,7 +26,7 @@
             slot="end"
             name="RecordingWifi"
             v-bind:checked="wifiOnlyActivated"
-            @IonChange="optionChanged($event)"
+            @IonChange="optionChanged()"
           ></ion-toggle>
         </ion-item>
 
@@ -40,10 +40,9 @@
 
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import PageHeader from "@/components/layout/PageHeader.vue";
-import { ref } from "vue";
 import {
   IonPage,
   IonHeader,
@@ -96,7 +95,7 @@ export default defineComponent({
     /**
      *triggered when the user changes his upload via wifi settings
      */
-    const optionChanged = (event: any) => {
+    const optionChanged = () => {
       wifiOnlyActivated.value = !wifiOnlyActivated.value;
       setWifi(wifiOnlyActivated.value);
     };
@@ -171,7 +170,7 @@ export default defineComponent({
       console.log("deletingRecordings")
       removeAllRecordingEntry(); //delete all recordings on the device
       //console.log("delete user settings")
-      //deleteUserSettings()     //delete the usersettings
+      deleteUserSettings()     //delete the usersettings
       console.log("delete acc in database")
       deleteAccInDatabase();
     }

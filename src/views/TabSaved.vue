@@ -99,7 +99,7 @@ export default defineComponent({
     refresh,
     saveRecordings,
     loadRecordings,
-    updateKey, UploadToFirebase,
+    updateKey,
       loadEverythingPls,
     };
 

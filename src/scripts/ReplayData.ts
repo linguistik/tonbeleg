@@ -46,19 +46,19 @@ export async function getAudioString(timestamp: string, userID: string){
  * @param {(AudioBuffer) => void} callback - this function will be called with the {@link AudioBuffer} as parameter
  */
 export async function getAudioData(recordingId: number, fileName: string, callback: Function){
-    const currentUser = firebase.auth().currentUser;
+    const currentUser = firebase.auth().currentUser;  //authenticate user with firebase
     if (currentUser == null) {
         console.error("FATAL ERROR. Currently no user logged in");
         return;//empty buffer
     }
     const currentUserUID = currentUser.uid;
 
-    const audioRef: any = await Filesystem.readFile({
+    const audioRef: any = await Filesystem.readFile({           //read the recordings data
         path: "/" + currentUserUID + "/" + recordingId + "/" + fileName,
         directory: Directory.Data,
         encoding: Encoding.UTF8,
     });
-    const wavesurfer = WaveSurfer.create({
+    const wavesurfer = WaveSurfer.create({                  //create a new wafesurfer element
         container: document.createElement('div'),
         plugins: [
           ExportAudioPlugin.create(),
@@ -72,7 +72,7 @@ export async function getAudioData(recordingId: number, fileName: string, callba
       });
 
 
-      wavesurfer.load(new Audio(audioRef.data));
+      wavesurfer.load(new Audio(audioRef.data));  //load the recording data to a audio format with wavesurfer
 }
 
 
