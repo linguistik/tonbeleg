@@ -30,8 +30,24 @@
           ></ion-toggle>
         </ion-item>
 
-      <ion-button expand="block" @click="deleteAcc()">Account löschen</ion-button>
-      <ion-button expand="block" @click="deleteData()">Alle Aufnahmen löschen</ion-button>
+        <div  style="margin-left: 10%;margin-right: 10%;">
+          <ion-button  expand="block"
+                     color="primary"
+                     class="ion-margin-top"
+                     @click="onChangePassword()">  Passwort ändern</ion-button>
+
+          <ion-button  expand="block"
+                   color="clear"
+                   class="ion-margin-top"
+
+                   @click="deleteData()"> <p style="color:red"> Alle Aufnahmen löschen </p></ion-button>
+
+          <ion-button  expand="block"
+                       color="clear"
+                       class="ion-margin-top"
+
+                       @click="deleteAcc()"> <p style="color:red"> Account löschen </p> </ion-button>
+          </div>
         
       </ion-list>
     </ion-content>
@@ -217,6 +233,10 @@ export default defineComponent({
       await alert.present();
     }
 
+    const onChangePassword = ()=>{
+      router.push("/changePassword");
+    }
+
     return { t,
     optionChanged,
       wifiOnlyActivated,
@@ -224,6 +244,7 @@ export default defineComponent({
       deleteData,
       mail, logOut, removeAllRecordingEntry, deleteUserSettings,
       yesDeleteAcc,
+      onChangePassword,
     }
   }
 })

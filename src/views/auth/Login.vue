@@ -36,6 +36,20 @@
               }}</ion-label>
               <ion-input v-model="password" type="password"></ion-input>
             </ion-item>
+
+            <form @submit.prevent="onForgotPassword">
+              <ion-button
+                  type="submit"
+                  fill="clear"
+                  color="blue"
+                  size="small"
+                  style="font-size: 8px;"
+              >
+               Passwort vergessen
+              </ion-button>
+            </form>
+
+
             <ion-button
               expand="block"
               color="primary"
@@ -48,16 +62,17 @@
         </ion-card-content>
 
         <ion-card-content>
-          <form @submit.prevent="onForgotPassword">
+          <form @submit.prevent="onGoogleLogin">
             <ion-button
-              expand="block"
-              class="ion-margin-top"
-              type="submit"
+                expand="block"
+                color="primary"
+                class="ion-margin-top"
+                type="submit"
             >
-              Password vergessen?
+              Google Login
             </ion-button>
-          </form></ion-card-content
-        >
+          </form>
+        </ion-card-content>
 
         <ion-card-content>
           <form @submit.prevent="onRegister">
@@ -67,36 +82,10 @@
               class="ion-margin-top"
               type="submit"
             >
-              Neues Konto erstellen
+              Registrieren
             </ion-button>
           </form></ion-card-content
         >
-
-        <ion-card-content>
-          <form @submit.prevent="onGoogleLogin">
-            <ion-button
-              expand="block"
-              color="primary"
-              class="ion-margin-top"
-              type="submit"
-            >
-              Google Login
-            </ion-button>
-          </form>
-        </ion-card-content>
-
-        <ion-card-content>
-          <form @submit.prevent="onChangePassword">
-            <ion-button
-              expand="block"
-              color="primary"
-              class="ion-margin-top"
-              type="submit"
-            >
-              Password ändern
-            </ion-button>
-          </form>
-        </ion-card-content>
 
         <ion-card-content>
           <ion-checkbox @ionChange="changeRememberMe"> </ion-checkbox>
