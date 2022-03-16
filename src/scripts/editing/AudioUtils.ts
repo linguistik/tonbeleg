@@ -4,11 +4,10 @@ import toWav from "audiobuffer-to-wav"; //MIT ok
 import RegionData from "./RegionData";
 import { resample } from 'wave-resampler';
 
-//import * as lame from "@suldashi/lame";
-//import audioEncoder from "audio-encoder";
 import lamejs from "lamejs";
 
-const SAMPLE_RATE = 441000;//18000;
+const SAMPLE_RATE = 441000;//select sample rate
+
 /**
  * downsamples the audio to @see SAMPLE_RATE samples
  * NOTE: uses sinc downsampling. that is the slowest and may be too slow for large data
@@ -39,7 +38,7 @@ export function playArrayBuffer(buf: ArrayBuffer) {
         source.connect(context.destination);
         source.start();
     });
-} //play array buffer
+}
 
 
 /**
@@ -52,7 +51,7 @@ export function playAudioBuffer(buf: AudioBuffer) {
     source.buffer = buf;
     source.connect(context.destination);
     source.start();
-} //play audio buffer
+}
 
 //https://github.com/zhuker/lamejs/issues/55
 function floatArray2Int16 (floatbuffer) {

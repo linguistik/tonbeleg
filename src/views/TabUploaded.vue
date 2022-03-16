@@ -93,6 +93,9 @@ export default defineComponent({
     if (currentUser == null) return;
     const userUID = currentUser.uid;
 
+    /**
+     * loads information about uploaded data from firebase
+     */
     const loadRecordingsFromDatabase = async () => {
       try{
         const networkStatus: ConnectionStatus = await Network.getStatus();
@@ -101,10 +104,7 @@ export default defineComponent({
           return;
         }
 
-
       const buffer: RecordingData[] = [];
-
-      //await delay(10000);
       const collection = await db
         .collection("users")
         .doc(userUID)
@@ -150,6 +150,11 @@ export default defineComponent({
           errorMessage.value = "Verbindung zur Datenbank konnte nicht aufgebaut werden. Möglicherweise bist du nicht mir dem Internet verbunden";
       }
     };
+
+    /**
+     * refrehs loaded data from database
+     * @param event
+     */
     const refresh = async (event: any) => {
       await loadRecordingsFromDatabase();
       await event.target.complete();
@@ -185,7 +190,7 @@ export default defineComponent({
 
     /* eslint-disable @typescript-eslint/camelcase */
     FileSelector.addListener("onFilesSelected", async (data) => {
-      //bei einem doppelklick kann es passieren, dass der eventhandler 2 mal aufgerufen wird!!!
+      //on doubleclick, eventhandler gets called two times resulting in uploading same recording twice
       for (let i = 0; i < data.length; i++) {
         const blob = new Blob([data.item(i)], { type: data.item(i).type });
         const buf = await blob.arrayBuffer();
@@ -227,6 +232,9 @@ export default defineComponent({
       }
     });
 
+    /**
+     *uploads external data to database
+     */
     const uploadExternal = async () => {
       let ext = ["audios"];
       ext = ext.map((v) => v.toLowerCase());
@@ -239,6 +247,9 @@ export default defineComponent({
 
     loadRecordingsFromDatabase();
 
+    /**
+     * initialize data on entering page
+     */
     onIonViewWillEnter(async () => {
       if(newUploads.value) {
         console.log('Loading recordings on entering');

@@ -96,15 +96,4 @@ router.beforeEach((to: RouteLocationNormalized,
   }
 });
 
-
-/** Call `getRedirectResult` when app starts
- * see views/auth/Login.vue, onGoogleLogin/signInWithRedirect
- */
-// firebase.auth().getRedirectResult()
-// .then((results) => {
-//   console.log(results.user)
-//   router.push("/tabs/record");
-// });
-
-
 export default router;

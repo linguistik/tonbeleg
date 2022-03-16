@@ -3,13 +3,13 @@
     <PageHeader v-bind:title="t('general.appname')" />
 
     <ion-content :fullscreen="true" slot="fixed">
-      <ion-card-modal v-show="openModal" ><!---brauch eig nen modal das kann man nicht wegklicken--->
+      <ion-card-modal v-show="openModal" >
         <ion-content fullscreen slot="fixed">
             <ion-item>
           <ion-label>Name:</ion-label>
           <ion-input
             v-model="newName"
-            placeholder="such einen Namen aus"
+            placeholder="wähle einen Namen"
             maxlength="20"
             minlength="1"
             v-model:inputmode="text"
@@ -116,7 +116,7 @@
           <ion-title size="large">Aufnehmen</ion-title>
         </ion-toolbar>
       </ion-header>
-      <!--  Hier ist der Button in der Mitte  -->
+
       <ion-fab v-show="!openModal" vertical="center" horizontal="center" slot="fixed">
         <ion-fab-button
           v-if="recordingStatus == recordingStatusEnums.NOT_RECORDING"
@@ -259,8 +259,7 @@ export default defineComponent({
   setup() {
     // multi-lingual support
     const { t } = useI18n();
-    //const timer =ref( 0);
-    //PopUpValuesForRecording
+
     const lastRecording = ref(
       new RecordingData(0, "", [], 0, false, false, "", "", [])
     );
@@ -287,22 +286,21 @@ export default defineComponent({
 
 
     //https://expertcodeblog.wordpress.com/2018/07/05/typescript-sleep-a-thread/
-    //const delay = (ms: number)=>{return new Promise(resolve =>setTimeout(resolve,ms));};
 
-    // Alles von hier: https://github.com/tchvu3/capacitor-voice-recorder#usage
+
+    // sources for voice recorder: https://github.com/tchvu3/capacitor-voice-recorder#usage
     try {
-      // Überprüfe ob ein Mic existiert.
-      // z.B. Zeige eine Nachricht in der App an, dass ein Mic angeschlossen werden muss.
+      // checks if microphone exists otherwise messages user
+
       VoiceRecorder.canDeviceVoiceRecord()
         .then((result: GenericResponse) => {
           console.log(`Gibt es ein Mic? ${result.value}`);
         })
         .catch((error) => {
           console.log(error);
-        }); //Do remove the .catch block. The test won't like that
+        });
 
-      // Der Browser fragt den Benutzer ob das Mikrofon aktiviert werden darf.
-      // Das ist so ein kleines PopUp-Fenster im Browser.
+      // browser asks user for microphone permissions in popup window
       VoiceRecorder.requestAudioRecordingPermission()
         .then((result: GenericResponse) => {
           console.log(`Ist das Mic eingeschaltet? ${result.value}`);
@@ -310,16 +308,16 @@ export default defineComponent({
         })
         .catch((error) => {
           console.log(error);
-        }); //Do remove the .catch block. The test won't like that
+        });
 
-      //
+
       VoiceRecorder.hasAudioRecordingPermission()
         .then((result: GenericResponse) => {
           console.log(`Darf die App aufzeichnen? ${result.value}`);
         })
         .catch((error) => {
           console.log(error);
-        }); //Do remove the .catch block. The test won't like that
+        });
     } catch (error) {
       console.log(error);
     }
@@ -327,9 +325,10 @@ export default defineComponent({
     const recordingStatusEnums = {
       NOT_RECORDING: 0,
       IS_RECORDING: 1,
-      RECORDING_PAUSED: 3,
-      DOING_SMT: 4,
+      RECORDING_PAUSED: 2,
+      DOING_SMT: 3,
     };
+
     // Start & Stop Recoding
     const recordingStatus = ref(recordingStatusEnums.NOT_RECORDING);
 
@@ -344,7 +343,6 @@ export default defineComponent({
         })
         .catch((error) => {
           recordingStatus.value = recordingStatusEnums.NOT_RECORDING;
-          // "MISSING_PERMISSION", "ALREADY_RECORDING", "MICROPHONE_BEING_USED", "DEVICE_CANNOT_VOICE_RECORD", or "FAILED_TO_RECORD"
           console.log(error);
         });
     };
@@ -360,7 +358,6 @@ export default defineComponent({
         })
         .catch((error) => {
           recordingStatus.value = recordingStatusEnums.NOT_RECORDING;
-          // "MISSING_PERMISSION", "ALREADY_RECORDING", "MICROPHONE_BEING_USED", "DEVICE_CANNOT_VOICE_RECORD", or "FAILED_TO_RECORD"
           console.log(error);
         });
     };
@@ -388,7 +385,6 @@ export default defineComponent({
             })
             .catch((error) => {
               recordingStatus.value = recordingStatusEnums.NOT_RECORDING;
-              // "MISSING_PERMISSION", "ALREADY_RECORDING", "MICROPHONE_BEING_USED", "DEVICE_CANNOT_VOICE_RECORD", or "FAILED_TO_RECORD"
               console.log(error);
             });
         recordingStatus.value = recordingStatusEnums.IS_RECORDING;
@@ -409,7 +405,6 @@ export default defineComponent({
         console.log(recordingData.value);
       } catch (error) {
         recordingStatus.value = recordingStatusEnums.NOT_RECORDING;
-        // "RECORDING_HAS_NOT_STARTED" or "FAILED_TO_FETCH_RECORDING"
         console.log(error);
 
         //TODO error handling
@@ -423,7 +418,7 @@ export default defineComponent({
       //create timestamp
       const timestamp = Date.now();
 
-      //create folder for the specific user and safe to Directory.Data if it does not exist already
+      //create folder for the specific user and save to "Directory.Data" if it does not exist already
       try {
         await Filesystem.mkdir({
           path: "/" + userUID,
@@ -431,8 +426,7 @@ export default defineComponent({
         });
       } catch (error) {
         if (error.message == "Current directory does already exist.") {
-          //do nothing
-          console.log("ahh yes the file is already created :D");
+          console.log("file exists already");
         } else {
           console.log(error);
         }
@@ -479,7 +473,7 @@ export default defineComponent({
         (dateObject.getMinutes() <= 9
           ? +"0" + dateObject.getMinutes().toString()
           : +dateObject.getMinutes().toString());
-      //create Entry in RecordingStorage //evtl über alert
+      //create Entry in RecordingStorage
       insertRecordingEntry(
         new RecordingData(
           timestamp,
@@ -502,15 +496,16 @@ export default defineComponent({
       lastRecording.value = getRecordingEntry(timestamp);
       timer.value = new Date(0);
       timerString.value = timer.value.toISOString().substr(11, 8);
-    }; //method: stopRecordingTrigger
+    };
 
-    //Timer
 
+    /**
+     * handles timer
+     */
     const timerHandler = async () => {
       if (recordingStatus.value == recordingStatusEnums.IS_RECORDING) {
         timer.value.setSeconds(timer.value.getSeconds() + 1);
         timerString.value = timer.value.toISOString().substr(11, 8);
-        console.log(timer.value);
       }
     };
 
@@ -544,20 +539,18 @@ export default defineComponent({
     };
 
     setInterval(() => {
-      timerHandler(); // Now the "this" still references the component
+      timerHandler();
     }, 1000);
 
-    // Abspielen: https://github.com/tchvu3/capacitor-voice-recorder#playback
+
 
     /**
-     * Sprachen für Pop-up Fenster aus DB laden;
-     * Scheint zu funktionieren
+     * load languages for pop up window from database;
      */
     const loadLanguages = async () => {
       const db = firebase.firestore();
       const snapshot = await db.collection("data").doc("languages").get();
       for(let i=0;i<18;i++){
-        
         languages[i]=snapshot.get(i.toString())
       }
       console.log(languages)
@@ -569,7 +562,7 @@ export default defineComponent({
     initData();
 
     /**
-     * effectively  closes the licenses modal in the popUp
+     * closes the licenses modal in the popUp
      */
     const selectNewLicense = async() =>{
       openLicenseModal.value=!openLicenseModal.value;
@@ -593,7 +586,7 @@ export default defineComponent({
      * saves the changes the users makes to a recordings standard values just after recording(in the popUp)
      */
     const saveChanges = async () => {
-      //TODO
+
       if (newName.value != "") {
         setRecordingEntryName(lastRecording.value.timestamp, newName.value);
       }
@@ -602,9 +595,7 @@ export default defineComponent({
           newLanguage.value
         );
       }
-      //console.log(lastRecording.value.languages[0])
       if (newLicense.value != "") {
-        //console.log("changingLicense")
         await evaluateLicenseAndDeactivations();
         newLicense.value = exportedLicensePTR.value;
         setRecordingLicense(lastRecording.value.timestamp, newLicense.value);
@@ -628,7 +619,7 @@ export default defineComponent({
      * happens also at each application start since RecordTab is the starting tab
      */
     onIonViewDidEnter(async () => {
-      console.log('Home page will be left');
+      console.log('entering record page, uploading to firebase');
       await UploadToFirebase();
     });
 

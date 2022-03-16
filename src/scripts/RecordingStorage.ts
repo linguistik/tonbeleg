@@ -7,8 +7,6 @@ import {getLicense} from "@/scripts/UserSettingsStorage";
 import { Region } from "wavesurfer.js/src/plugin/regions"
 import {convertToRegionDataArray} from "@/scripts/editing/RegionDataUtils";
 
-
-//const r = new RecordingData(1,"a", ["a","b"],22);
 /**
  * an array of all recordings
  */

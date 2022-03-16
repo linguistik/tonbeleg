@@ -1,10 +1,4 @@
-
-
 //https://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid
-
-
-
-
 export function generateUUID(): string {
     // Public Domain/MIT
     let d = new Date().getTime(); //Timestamp

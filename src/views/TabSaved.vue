@@ -22,10 +22,6 @@
   </ion-page>
 </template>
 
-<!--
-If u are trying to fix a bug that occured on a test,
-read example.spec.ts first
--->
 
 <script lang="ts">
 import {defineComponent, ref, Ref} from "vue";
@@ -61,6 +57,9 @@ export default defineComponent({
     const { t } = useI18n();
 
     const recordingsRef: Ref<RecordingData[]> = ref([]);
+    /**
+     * initializes recordings
+     */
     const initialize = async () => {
       await loadRecordings().then(()=>{recordingsRef.value =  getRecordings();});
     }
@@ -89,17 +88,21 @@ export default defineComponent({
       await refresh();
     }
 
+    /**
+     * refreshes recordings after 100ms
+     */
     const refreshAfterTimeout = async () => {
       window.setTimeout(refresh,100);
     }
 
-    return { t, 
-    recordingsRef, 
-    refreshAfterTimeout, 
-    refresh,
-    saveRecordings,
-    loadRecordings,
-    updateKey,
+    return {
+      t,
+      recordingsRef,
+      refreshAfterTimeout,
+      refresh,
+      saveRecordings,
+      loadRecordings,
+      updateKey,
       loadEverythingPls,
     };
 
@@ -109,6 +112,7 @@ export default defineComponent({
 
 );
 </script>
+
 <style scoped>
 #container {
   text-align: center;

@@ -1,5 +1,4 @@
 import firebase from "@/backend/firebase-config";
-//import {setAlreadyUploadedArray, setUploadArray, setInUploadArrayIdent} from "@/scripts/UserSettingsStorage";
 import {
     setRecordingEntryUploadBoolean,
     getRecordings,
@@ -57,8 +56,6 @@ export async function UploadToFirebase() {
     if (currentUser == null) return;
 
     const RecordingDataArr = await getRecordings();
-    //const RecordingUserID = [];
-    //const RecordingID = [];
     for (i = 0; i < RecordingDataArr.length; i = i + 1) {
         if (RecordingDataArr[i].upload == false && RecordingDataArr[i].selectedForUpload == true) {//selects the recordings that are not uploaded, but selected for upload
             newUploads.value = true;
@@ -73,7 +70,6 @@ export async function UploadToFirebase() {
 
             const recordingDataI = RecordingDataArr[i];
             await getAudioData(RecordingDataArr[i].timestamp, "0.raw", async (completeAudioBuffer) => {
-                //playAudioBuffer(completeAudioBuffer);
                 if (recordingDataI.parts.length > 0) { //if the recording has been split into parts
                     for (let j = 0; j < recordingDataI.parts.length; j++) { //upload each part to firebase
                         const part = recordingDataI.parts[j];

@@ -34,21 +34,27 @@
           <ion-button  expand="block"
                      color="primary"
                      class="ion-margin-top"
-                     @click="onChangePassword()">  Passwort ändern</ion-button>
+                     @click="onChangePassword()">  Passwort ändern
+          </ion-button>
 
           <ion-button  expand="block"
                    color="clear"
                    class="ion-margin-top"
-
-                   @click="deleteData()"> <p style="color:red"> Alle Aufnahmen löschen </p></ion-button>
+                   @click="deleteData()">
+            <p style="color:red">
+              Alle Aufnahmen löschen
+            </p>
+          </ion-button>
 
           <ion-button  expand="block"
                        color="clear"
                        class="ion-margin-top"
-
-                       @click="deleteAcc()"> <p style="color:red"> Account löschen </p> </ion-button>
+                       @click="deleteAcc()">
+            <p style="color:red">
+              Account löschen
+            </p>
+          </ion-button>
           </div>
-        
       </ion-list>
     </ion-content>
   </ion-page>
@@ -109,7 +115,7 @@ export default defineComponent({
     }
 
     /**
-     *triggered when the user changes his upload via wifi settings
+     *triggered when the user changes "only upload via wifi" settings
      */
     const optionChanged = () => {
       wifiOnlyActivated.value = !wifiOnlyActivated.value;
@@ -117,7 +123,7 @@ export default defineComponent({
     };
 
     /**
-     *log the user out and send him to the login page
+     *log the user out and redirects him to the login page
      */
     const logOut = () => {
       firebase.auth().signOut();
@@ -125,7 +131,7 @@ export default defineComponent({
     };
 
     /**
-     * deletes the users acc in teh database
+     * deletes the users account in the database
      */
     const deleteAccInDatabase = async () =>{
       //TODO
@@ -157,7 +163,6 @@ export default defineComponent({
               console.log("credential null")
               return
             }
-            console.log("popUpDone")
             await currentUser.reauthenticateWithCredential(credential.credential);
             console.log("authenticated")
             await currentUser.delete();
@@ -165,10 +170,10 @@ export default defineComponent({
             await router.push("/");
           }
           if(result.includes("password")){
-            console.log("password, so pls sign in again")
+            console.log("password, so please sign in again")
             const toast = await toastController
                 .create({
-                  message: 'Your have not signed in lately, pls sign in again',
+                  message: 'Your have not signed in lately, please sign in again',
                   position: 'middle',
                   duration: 1200
                 })
@@ -180,12 +185,11 @@ export default defineComponent({
     }
 
     /**
-     * actually deletes the recordings, the users data and the account in firebase
+     *deletes the recordings, the users data and the account in firebase
      */
     const yesDeleteAcc = () =>{
       console.log("deletingRecordings")
       removeAllRecordingEntry(); //delete all recordings on the device
-      //console.log("delete user settings")
       deleteUserSettings()     //delete the usersettings
       console.log("delete acc in database")
       deleteAccInDatabase();
@@ -232,7 +236,9 @@ export default defineComponent({
       });
       await alert.present();
     }
-
+    /**
+     * redirects user to change password page
+     */
     const onChangePassword = ()=>{
       router.push("/changePassword");
     }

@@ -1,6 +1,6 @@
 
 import RegionData from "./editing/RegionData";
-
+//collection of recordings properties
 export default class RecordingData{
     timestamp: number;
     name: string;

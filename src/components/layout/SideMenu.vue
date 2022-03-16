@@ -74,21 +74,30 @@ export default defineComponent({
 
   setup() {
 
+    /**
+     * redirects user to given path
+     * @param path, path user is redirected to
+     */
     const toPage = async(path: string) => {
       console.log("from sidemenu move to ", path )
       menuController.close('sidemenu');
       router.push(path);
     }
 
+    /**
+     * closes sidemenu
+     */
     const close = ()=>{
       menuController.close('sidemenu');
     }
 
+    /**
+     * opens the sidemenu
+     */
     const openSidemenu = async() => {
       await menuController.enable(true, 'sidemenu');
       await menuController.open('sidemenu');
     }
-    // menuController.close('sidemenu');
 
     const {toggleSwipeMenu} = useMenuSettings();
     return {
@@ -96,8 +105,10 @@ export default defineComponent({
       toPage,
       close,
       toggleSwipeMenu,
-      // icons
-      settingsOutline, personOutline, documentLockOutline, bookOutline
+      settingsOutline,
+      personOutline,
+      documentLockOutline,
+      bookOutline
     }
   }
 });

@@ -3,7 +3,7 @@ import UserSettings from "./UserSettings"
 import firebase from "@/backend/firebase-config";
 import { Directory, Encoding, Filesystem } from "@capacitor/filesystem";
 import router from "@/router";
-//const r = new RecordingData(1,"a", ["a","b"],22);
+
 
 export let userSettings: UserSettings = new UserSettings("","",[],[],"",-1, "", false);
 
@@ -57,7 +57,7 @@ export async function loadUserSettings() {
         console.log("reading error: ", error);
     }
     console.log(userSettings);
-    //document.addEventListener('beforeunload', safeRecordings);//does not work
+
 }
 
 /**

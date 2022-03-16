@@ -164,6 +164,9 @@ export default defineComponent({
       rememberMe = event.detail.checked;
     };
 
+    /**
+     * sends user to license page on first login
+     */
     const routeToTabs = async () => {
       const db = firebase.firestore();
       const currentUser = firebase.auth().currentUser;
@@ -191,6 +194,8 @@ export default defineComponent({
     };
 
     const waitingForRedirectResult = ref(true);
+
+    //waits for firebase authentification result
     firebase
       .auth()
       .getRedirectResult()
@@ -200,14 +205,14 @@ export default defineComponent({
         routeToTabs();
       });
 
-    // other variables
-    const debugVerbose = ref(true);
-
     // declare reactive variables
     const email = ref("");
     const password = ref("");
     const errorMessage = ref("");
 
+    /**
+     * logs in with email and password
+     */
     const onEmailLogin = async () => {
       try {
         await firebase
@@ -228,16 +233,17 @@ export default defineComponent({
                 errorMessage.value = err.message;
               });
           });
-        //if(debugVerbose.value){console.log(username);}
+
       } catch (err) {
         errorMessage.value = err.message;
         console.log("error", errorMessage.value);
-        if (debugVerbose.value) {
-          console.log(err);
-        }
+
       }
     };
 
+    /**
+     * logs in with google account
+     */
     const onGoogleLogin = async () => {
       await firebase
         .auth()
@@ -255,14 +261,23 @@ export default defineComponent({
         });
     };
 
+    /**
+     * redirects to signup page
+     */
     const onRegister = async () => {
       router.push("/signup");
     };
 
+    /**
+     * redirects to forgotPassword page
+     */
     const onForgotPassword = ()=>{
       router.push("/forgotPassword");
-    }
+    };
 
+    /**
+     * redirects to changePassword page
+     */
     const onChangePassword = ()=>{
       router.push("/changePassword");
     }

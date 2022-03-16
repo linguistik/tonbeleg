@@ -1,5 +1,3 @@
-//import Meyda from "meyda";
-
 export default class VoiceActivityDetector{
     private windowSize = 60;//ms
     private threshhold = 1;
@@ -24,7 +22,6 @@ export default class VoiceActivityDetector{
         this. windowBufferSize = Math.pow(2, Math.floor(Math.log(this.msToIndex(this.windowSize))/Math.log(2)));
         console.log(this.windowBufferSize);
 
-        //Meyda.bufferSize = this.windowBufferSize;
     }
 
     /**
@@ -60,11 +57,6 @@ export default class VoiceActivityDetector{
         for(let end = this.windowSize; end<this.audio.duration * 1000; end += this.windowSize){
             const start = end - this.windowSize;
             const energy = this.computeEnergy(this.msToIndex(start), this.msToIndex(end));
-            //const features = Meyda.extract(["mfcc"], this.data.slice(this.msToIndex(end) - this.windowBufferSize,this.msToIndex(end)));
-            
-
-            
-
             if(regionStarted && energy<this.threshhold){
                 //region end
                 regionStarted = false;

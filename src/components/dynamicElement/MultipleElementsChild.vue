@@ -61,7 +61,11 @@ export default defineComponent({
   setup(props: any, context: any) {
     const languages: string[][]=[];
     const input = ref("");
-    let tempLang = " ";
+    let tempLanguage = " ";
+
+    /**
+     * läd mega scheiße progreamiert alle hardcoded languages
+     */
     const loadLanguages = async() => {
       const db = firebase.firestore();
       const snapshot = await db.collection("data").doc("languages").get();
@@ -69,16 +73,26 @@ export default defineComponent({
         languages[i]=snapshot.get(i.toString())
       }
     }
+
+    /**
+     *initializes child component with empty name and laods all languages
+     */
     const initData = async () => {
       await loadLanguages();
-      input.value=tempLang;
-      // context.emit("change", input.value, props.id);
+      input.value=tempLanguage;
     };
     initData();
-    
+
+    /**
+     * emits deletion of this child to parent element
+     */
     const removeFromParent = () => {
       context.emit("remove", props.id);
     };
+
+    /**
+     * emits a changed input value of this child to parent element
+     */
     const inputChanged = () => {
       context.emit("change", input.value, props.id);
     };
@@ -89,13 +103,20 @@ export default defineComponent({
      * @param index, index of child elements to make sure, correct child element gets the name
      */
     const initName = (name: string, index: number) => {
-
-      if(props.id != index){console.log("hier is5t was schief gegangen")}
-      tempLang=name;
-
+      if(props.id != index){console.log("err: shouldn`t exist")}
+      tempLanguage=name;
     };
-    return { removeCircle, removeFromParent, inputChanged, input, initName, 
-         languages, initData, loadLanguages
+
+
+    return {
+      removeCircle,
+      removeFromParent,
+      inputChanged,
+      input,
+      initName,
+      languages,
+      initData,
+      loadLanguages
     };
   },
 });

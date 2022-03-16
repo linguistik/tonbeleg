@@ -75,6 +75,9 @@ export default defineComponent({
     const data = new Map<number, string>();
     let lastIndex = 0;
 
+    /**
+     * adds child component
+     */
     const addChildElement = () => {
       data.set(lastIndex, "");
       children.value.push(lastIndex++);
@@ -82,6 +85,9 @@ export default defineComponent({
 
     addChildElement();
 
+    /**
+     * emits change in child component to parent class
+     */
     const emitChange = ()=>{
         const ret: string[] = [];
         data.forEach((value)=>{
@@ -92,6 +98,10 @@ export default defineComponent({
         context.emit("valuesChanged", ret);
     }
 
+    /**
+     * removes child component
+     * @param id, child component with this id gets removed
+     */
     const remove = (id: number) => {
       const index = children.value.indexOf(id);
       if (index > -1) {
@@ -102,7 +112,11 @@ export default defineComponent({
       }
     };
 
-
+    /**
+     * updates value of child
+     * @param childData, new value for child
+     * @param id, id of the child to be changed
+     */
     const childChanged = (childData: string, id: number)=>{
         if(data.get(id)==childData){
             return;
