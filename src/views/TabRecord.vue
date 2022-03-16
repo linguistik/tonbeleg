@@ -12,7 +12,7 @@
             placeholder="wähle einen Namen"
             maxlength="20"
             minlength="1"
-            v-model:inputmode="text"
+            inputmode="text"
             v-model:value="lastRecording.name"
           ></ion-input>
         </ion-item>

@@ -113,7 +113,7 @@ import {
   IonButton,
   IonSelect,
   IonSelectOption,
-  toastController,
+  toastController, onIonViewWillEnter, onIonViewDidEnter,
 } from '@ionic/vue';
 
 
@@ -121,6 +121,7 @@ import firebase from '@/backend/firebase-config';
 
 import 'firebase/firestore';
 import MultipleElementsParent from '@/components/dynamicElement/MultipleElementsParent.vue';
+import {UploadToFirebase} from "@/scripts/RecordingUpload";
 
 export default defineComponent({
   name: "TabPersonalData",
@@ -330,6 +331,9 @@ export default defineComponent({
      * @param input the name of the dialect entered by the user
      */
     function suggestDialects(input: string) {
+      if(items.length == 0 ){
+        return;
+      }
       const val = input;
       items = dialects;
       if (val.trim() != "") {

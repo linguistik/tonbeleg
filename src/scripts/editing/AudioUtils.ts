@@ -67,7 +67,7 @@ function floatArray2Int16 (floatbuffer) {
     return int16Buffer;
   }
 
-const KBPS = 16;
+const KBPS = 128;
 /**
  * encodes an AudioBuffer to an mp3 ArrayBuffer with {@link KBPS} kbit/s
  * @param {AudioBuffer} buf 
