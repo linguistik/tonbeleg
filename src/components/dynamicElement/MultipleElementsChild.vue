@@ -34,7 +34,7 @@
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 
-import { IonIcon, IonItem, IonSelect, IonGrid, IonRow, IonCol, IonSelectOption } from "@ionic/vue";
+import { IonIcon, IonItem, IonSelect, IonGrid, IonRow, IonCol, IonSelectOption, IonLabel } from "@ionic/vue";
 
 import { removeCircle } from "ionicons/icons";
 import firebase from '@/backend/firebase-config';
@@ -49,7 +49,7 @@ export default defineComponent({
     IonGrid,
     IonRow,
     IonCol,
-    IonSelectOption,
+    IonSelectOption, IonLabel,
 
   },
 

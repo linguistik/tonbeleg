@@ -1,7 +1,8 @@
 import {ref} from "vue";
 import firebase from "@/backend/firebase-config";
 import {getLicense, loadUserSettings, setLicense} from "@/scripts/UserSettingsStorage";
-import {toastController} from "@ionic/vue";
+import {alertController, toastController} from "@ionic/vue";
+import {setRecordingLicense} from "@/scripts/RecordingStorage";
 
 /**
  * the current license value when configuring the license
@@ -127,38 +128,6 @@ export const uploadLicense = ()=>{
     console.log("wrote to database");
 }
 
-/**
- * download the license from firebase
- */
-export const downloadLicense = () =>{
-    const db = firebase.firestore();
-    const currentUser = firebase.auth().currentUser;
-    if (currentUser == null) return;
-    const userUID = currentUser.uid;
-
-    db.collection("users").doc(userUID).get().then((doc)=>{
-        console.log(doc.get('license'));
-        const license = doc.get('license');
-        if(license == "CC0 1.0"){
-            return;//leave everything default
-        }
-        options.set("isMentioningActivated", true);
-        isMentioningActivated.value = true;
-        if(license.includes("NC")){
-            options.set("isComerciallyUseAllowed", false);
-            isComerciallyUseAllowed.value = false;
-        }
-        if(license.includes("SA")){
-            options.set("isSharingAllowed", false);
-            isSharingAllowed.value = false;
-        }
-        if(license.includes("ND")){
-            options.set("isRemixingAllowed", false);
-            isRemixingAllowed.value = false;
-        }
-        evaluateLicenseAndDeactivations();
-    });
-}
 
 /**
  * load the usersettings saved on the device and set the toggles according to that saved license
@@ -210,5 +179,138 @@ export const optionChangedForPopUp = (event: any)=>{
     evaluateLicenseAndDeactivations();
     licensePopUp.value = exportedLicensePTR.value;
 }
+
+/**
+ * called when one of the toggles in the popUp after a recording is stopped is triggered
+ * @param event the event from the toggle that was clicked
+ */
+export const optionChangedForPopUpSavedTab= (name: any, checked: any)=>{
+    options.set(name, checked);
+    evaluateLicenseAndDeactivations();
+    licensePopUp.value = exportedLicensePTR.value;
+}
+
+/**
+ * changes the license of the recording
+ */
+export const changeLicense = async () => {
+    await loadUserSettings();
+    //exportedLicensePTR.value = props.recording.license;
+    //licensePopUp.value = props.recording.license;
+    //console.log(props.recording.license);
+    evaluateButtonSettingsFromLicense();
+    const alert = await alertController.create({
+        message: licensePopUp.value,
+        inputs:[{
+            type: "checkbox",
+            name: "isMentioningActivated",
+            id: "checkbox1",
+            label: "Namensnennung",
+            checked: isMentioningActivated.value,
+            disabled: isMentioningActivatedDeactivated.value,
+            handler: async (event)=>{
+                optionChangedForPopUpSavedTab(event.name, event.checked);
+                evaluateButtonSettingsFromLicense();
+                alert.message = licensePopUp.value;
+                alert.inputs[0].checked = isMentioningActivated.value;
+                alert.inputs[0].disabled = isMentioningActivatedDeactivated.value;
+                alert.inputs[1].checked = isComerciallyUseAllowed.value;
+                alert.inputs[1].disabled = isComerciallyUseAllowedDeactivated.value;
+                alert.inputs[2].checked = isRemixingAllowed.value;
+                alert.inputs[2].disabled = isRemixingAllowedDeactivated.value;
+                alert.inputs[3].checked = isSharingAllowed.value;
+                alert.inputs[3].disabled = isSharingAllowedDeactivated.value;
+                await alert.present();
+            }
+        },
+            {
+                type: "checkbox",
+                name: "isComerciallyUseAllowed",
+                id: "checkbox2",
+                label: "commercialUse",
+                checked: isComerciallyUseAllowed.value,
+                disabled: isComerciallyUseAllowedDeactivated.value,
+                handler: async (event)=>{
+                    optionChangedForPopUpSavedTab(event.name, event.checked);
+                    evaluateButtonSettingsFromLicense();
+                    alert.message = licensePopUp.value;
+                    alert.inputs[0].checked = isMentioningActivated.value;
+                    alert.inputs[0].disabled = isMentioningActivatedDeactivated.value;
+                    alert.inputs[1].checked = isComerciallyUseAllowed.value;
+                    alert.inputs[1].disabled = isComerciallyUseAllowedDeactivated.value;
+                    alert.inputs[2].checked = isRemixingAllowed.value;
+                    alert.inputs[2].disabled = isRemixingAllowedDeactivated.value;
+                    alert.inputs[3].checked = isSharingAllowed.value;
+                    alert.inputs[3].disabled = isSharingAllowedDeactivated.value;
+                    await alert.present();
+                }
+            },
+            {
+                type: "checkbox",
+                name: "isRemixingAllowed",
+                id: "checkbox3",
+                label: "editing",
+                checked: isRemixingAllowed.value,
+                disabled: isRemixingAllowedDeactivated.value,
+                handler: async (event)=>{
+                    optionChangedForPopUpSavedTab(event.name, event.checked);
+                    evaluateButtonSettingsFromLicense();
+                    console.log(licensePopUp.value);
+                    alert.message = licensePopUp.value;
+                    alert.inputs[0].checked = isMentioningActivated.value;
+                    alert.inputs[0].disabled = isMentioningActivatedDeactivated.value;
+                    alert.inputs[1].checked = isComerciallyUseAllowed.value;
+                    alert.inputs[1].disabled = isComerciallyUseAllowedDeactivated.value;
+                    alert.inputs[2].checked = isRemixingAllowed.value;
+                    alert.inputs[2].disabled = isRemixingAllowedDeactivated.value;
+                    alert.inputs[3].checked = isSharingAllowed.value;
+                    alert.inputs[3].disabled = isSharingAllowedDeactivated.value;
+                    await alert.present();
+                }
+            },
+            {
+                type: "checkbox",
+                name: "isSharingAllowed",
+                id: "checkbox4",
+                label: "anyLicense",
+                checked: isSharingAllowed.value,
+                disabled: isSharingAllowedDeactivated.value,
+                handler: async (event)=>{
+                    optionChangedForPopUpSavedTab(event.name, event.checked);
+                    evaluateButtonSettingsFromLicense();
+                    alert.message = licensePopUp.value;
+                    alert.inputs[0].checked = isMentioningActivated.value;
+                    alert.inputs[0].disabled = isMentioningActivatedDeactivated.value;
+                    alert.inputs[1].checked = isComerciallyUseAllowed.value;
+                    alert.inputs[1].disabled = isComerciallyUseAllowedDeactivated.value;
+                    alert.inputs[2].checked = isRemixingAllowed.value;
+                    alert.inputs[2].disabled = isRemixingAllowedDeactivated.value;
+                    alert.inputs[3].checked = isSharingAllowed.value;
+                    alert.inputs[3].disabled = isSharingAllowedDeactivated.value;
+                    await alert.present();
+                }
+            },
+        ],
+        buttons: [
+            {
+                text: "Cancel",
+                handler: () => {
+                    console.log("confirm Cancel");
+                    exportedLicensePTR.value = getLicense();
+                    evaluateButtonSettingsFromLicense();
+                },
+            },
+            {
+                text: "OK",
+                handler: () => {
+                    //setRecordingLicense(props.recording.timestamp, licensePopUp.value);
+                    exportedLicensePTR.value = getLicense();
+                    evaluateButtonSettingsFromLicense();
+                },
+            },
+        ],
+    });
+    await alert.present();
+};
 
 

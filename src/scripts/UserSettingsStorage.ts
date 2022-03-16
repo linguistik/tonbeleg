@@ -10,7 +10,7 @@ export let userSettings: UserSettings = new UserSettings("","",[],[],"",-1, "", 
 /**
  * saves user settings local in usersettings.json
  */
-export async function safeUserSettings() {//call this function on closing or on every change
+export async function saveUserSettings() {//call this function on closing or on every change
     const dataString = JSON.stringify(userSettings);
     const currentUser = firebase.auth().currentUser;
     if (currentUser == null) {
@@ -89,7 +89,7 @@ export async function deleteUserSettings() {
  */
 export function setBirthday(newBirthday: string){
     userSettings.birthday=newBirthday;
-    safeUserSettings();
+    saveUserSettings();
 }
 
 /**
@@ -98,7 +98,7 @@ export function setBirthday(newBirthday: string){
  */
 export function setJob(newJob: string){
     userSettings.job=newJob;
-    safeUserSettings();
+    saveUserSettings();
 }
 
 /**
@@ -107,7 +107,7 @@ export function setJob(newJob: string){
  */
 export function setFirstLanguage(newFirstLanguage: string[]){
     userSettings.firstLanguage=newFirstLanguage;
-    safeUserSettings();
+    saveUserSettings();
 }
 
 /**
@@ -116,7 +116,7 @@ export function setFirstLanguage(newFirstLanguage: string[]){
  */
 export function setSecondLanguage(newSecondLanguage: string[]){
     userSettings.secondLanguage=newSecondLanguage;
-    safeUserSettings();
+    saveUserSettings();
 }
 
 /**
@@ -125,7 +125,7 @@ export function setSecondLanguage(newSecondLanguage: string[]){
  */
 export function setDialect(newDialect: string){
     userSettings.dialect=newDialect;
-    safeUserSettings();
+    saveUserSettings();
 }
 
 /**
@@ -134,7 +134,7 @@ export function setDialect(newDialect: string){
  */
 export function setZipCode(newZipCode: number){
     userSettings.zipCode=newZipCode;
-    safeUserSettings();
+    saveUserSettings();
 }
 
 /**
@@ -143,7 +143,7 @@ export function setZipCode(newZipCode: number){
  */
 export function setLicense(newLicense: string){
     userSettings.license=newLicense;
-    safeUserSettings();
+    saveUserSettings();
 }
 
 /**
@@ -152,7 +152,16 @@ export function setLicense(newLicense: string){
  */
 export function setWifi(newWifi: boolean){
     userSettings.wifi=newWifi;
-    safeUserSettings();
+    saveUserSettings();
+}
+
+export function setPersonalData(birthday: string,job: string, firstLanguage: string[], secondLanguage: string[], dialect: string){
+    userSettings.birthday = birthday;
+    userSettings.job = job;
+    userSettings.firstLanguage = firstLanguage;
+    userSettings.secondLanguage = secondLanguage;
+    userSettings.dialect = dialect;
+    saveUserSettings();
 }
 
 /**

@@ -123,13 +123,13 @@ import ExportAudioPlugin from "wavesurfer-export-audio-plugin"; //MIT ok
 
 import toWav from "audiobuffer-to-wav"; //MIT ok
 
-import { replayAudioData, getAudioData } from "@/scripts/ReplayData";
+
+import { replayAudioData} from "@/scripts/ReplayData";
 import { Region } from "wavesurfer.js/src/plugin/regions";
 import {
   setRecordingEntryRegionDataArray,
   getRecordingEntryRegionDataArray,
 } from "@/scripts/RecordingStorage";
-import {UploadToFirebase} from "@/scripts/RecordingUpload";
 import {onIonViewWillLeave, onIonViewDidEnter} from "@ionic/vue";
 import { useMenuSettings } from "@/scripts/ionicVueSettings/menuSettings";
 
@@ -180,7 +180,6 @@ export default defineComponent({
     //https://www.npmjs.com/package/wavesurfer-export-audio-plugin
 
     let wavesurfer: WaveSurfer;
-    let regionID: string;
 
     let changesApplied = false;
     const regionIdsRef: Ref<string[]> = ref([]);
@@ -190,7 +189,6 @@ export default defineComponent({
     if (currentUser == null) return;
     const currentUserUID = currentUser.uid;
 
-    const clickcounter = ref(0);
 
     /**
      * this is used to force an update of the name/id labels on the page to display the new name after being set
@@ -263,7 +261,6 @@ export default defineComponent({
               const x = data.textField;
               console.log(x);
               if (!(x.length === 0) && x.length <= 35) {
-                //nur kleine und nicht leere eingaben
                 idToNameMap.set(id, x);
                 forceUpdate();
               } else {
@@ -271,8 +268,8 @@ export default defineComponent({
               }
             },
           },
-        ], //buttons
-      }); //create alert
+        ],
+      });
       await alert.present();
     };
 
@@ -300,7 +297,6 @@ export default defineComponent({
           }),
         ],
       });
-      //TODO for all parts
 
       const audio = await replayAudioData(props.folderName, currentUserUID);
 
@@ -309,7 +305,6 @@ export default defineComponent({
       wavesurfer.on("ready", async () => {
         console.log("ready", wavesurfer.getDuration());
         wavesurfer.enableDragSelection({});
-        //importRegions(wavesurfer, idToNameMap, props.folderName);
         const regionArrayData = getRecordingEntryRegionDataArray(
           props.folderName
         );
@@ -351,7 +346,7 @@ export default defineComponent({
         playing.value = true;
         console.log(playing.value);
       });
-    }; //load
+    };
 
     const loadAfterTimeout = async () => {
       window.setTimeout(load, 100);
@@ -365,20 +360,8 @@ export default defineComponent({
         idToNameMap
       );
 
-      //this is still useful code!!!
-      /*for (const region of regionsRef.value) {
-        const wavFileData = trimAudio(region);
-        await Filesystem.writeFile({
-          path:
-            "/" + currentUserUID + "/" + props.folderName + "/" + region.id +".wav",
-          data: wavFileData,
-          directory: Directory.Data,
-          encoding: Encoding.UTF8,
-        });
-      }*/
-      //playAudioBuffer(await getAudioData(props.folderName, "export.wav"));
       router.back();
-    }; //finish
+    };
 
     const playPauseEventHandler = () => {
       wavesurfer.playPause();
@@ -396,7 +379,7 @@ export default defineComponent({
           buttons: [
             {
               text: "Ja",
-              handler: () => {
+              handler: () => { //return to TabSaved
                 router.back();
                 wavesurfer.destroy();
               },
@@ -416,13 +399,12 @@ export default defineComponent({
       }
     };
 
-
     const mergeRegionsEventHandler=()=>{
       changesApplied = true;
       let changeApplied = false;
       do{
         changeApplied = false;
-        //go throught all regions
+        //go through all regions
         outerLoop:
         for(const outerRegionId in wavesurfer.regions.list){
           const outerRegion: Region = wavesurfer.regions.list[outerRegionId];

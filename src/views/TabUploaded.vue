@@ -12,7 +12,7 @@
         <ion-refresher-content> </ion-refresher-content>
       </ion-refresher>
 
-      <ion-button expand="block" @click="uploadExternal()">
+      <ion-button expand="block" @mousedown="uploadExternal()">
         Externe Aufnahme hochladen</ion-button
       >
 
@@ -47,7 +47,7 @@ import {
   IonRefresher,
   IonRefresherContent,
   IonList,
-  IonButton, onIonViewWillEnter, onIonViewDidEnter,
+  IonButton, onIonViewWillEnter, loadingController,
 } from "@ionic/vue";
 
 import RecordingData from "@/scripts/RecordingData";
@@ -60,7 +60,7 @@ import { convertToMp3 } from "@/scripts/editing/AudioUtils";
 import { arrayBufferToBase64String } from "@/scripts/Base64Utils";
 import { ConnectionStatus, Network } from "@capacitor/network";
 import {getLicense} from "@/scripts/UserSettingsStorage";
-import {newUploads, UploadToFirebase} from "@/scripts/RecordingUpload";
+import {newUploads} from "@/scripts/RecordingUpload";
 
 export default defineComponent({
   name: "TabUploaded",
@@ -253,7 +253,14 @@ export default defineComponent({
     onIonViewWillEnter(async () => {
       if(newUploads.value) {
         console.log('Loading recordings on entering');
+        const loading = await loadingController
+            .create({
+              message: 'Please wait...',
+            });
+
+        await loading.present();
         await loadRecordingsFromDatabase();
+        loading.remove();
         newUploads.value = false;
       }
     });
