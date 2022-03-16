@@ -117,14 +117,14 @@ export default defineComponent({
     };
 
 
-    // other variables
-    const debugVerbose = ref(true);
-
     // declare reactive variables
     const email = ref("");
     const password = ref("");
     const errorMessage = ref("");
 
+    /**
+     * creats a new user with email and password + gives user possibility to change license
+     */
     const onEmailSignUp = async () => {
       try {
         await firebase
@@ -137,9 +137,7 @@ export default defineComponent({
         const username = await firebase
           .auth()
           .createUserWithEmailAndPassword(email.value, password.value);
-        if (debugVerbose.value) {
-          console.log(username);
-        }
+
         //if a new user is created there is obviously no license set
         const alert = await alertController.create({
               message: "Bitte stelle deine Lizenz ein.",
@@ -153,9 +151,7 @@ export default defineComponent({
             router.push("/tabs/tabdataprotection");
       } catch (err) {
         errorMessage.value = err.message;
-        if (debugVerbose.value) {
-          console.log(err);
-        }
+
       }
     };
 

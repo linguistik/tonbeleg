@@ -130,21 +130,12 @@ export const uploadLicense = ()=>{
 /**
  * download the license from firebase
  */
-export const downloadLicense = () =>{ //nicht mehr benötigt eigentlich im moment, kann aber vielleicht noch sinnvoll werden
-    //wird sehr wohl noch verwendet. wenn man lokal keine daten hat, muss man die von der datenbank nehmen
+export const downloadLicense = () =>{
     const db = firebase.firestore();
     const currentUser = firebase.auth().currentUser;
     if (currentUser == null) return;
     const userUID = currentUser.uid;
 
-    /*  const options = new Map<string, boolean>([
-        ["isMentioningActivated", false],
-        ["isComerciallyUseAllowed", true],
-        ["isRemixingAllowed", true],
-        ["isSharingAllowed", true],
-      ]);
-
-      */
     db.collection("users").doc(userUID).get().then((doc)=>{
         console.log(doc.get('license'));
         const license = doc.get('license');

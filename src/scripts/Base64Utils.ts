@@ -1,5 +1,9 @@
 
 //https://stackoverflow.com/questions/9267899/arraybuffer-to-base64-encoded-string
+/**
+ * return array buffer as base64String
+ * @param arrayBuffer
+ */
 export function arrayBufferToBase64String(arrayBuffer: ArrayBuffer){
     let binary = "";
     const bytes = new Uint8Array(arrayBuffer);
@@ -10,7 +14,12 @@ export function arrayBufferToBase64String(arrayBuffer: ArrayBuffer){
     const base64String = btoa(binary);
     return base64String;
 }
+
 //https://stackoverflow.com/questions/21797299/convert-base64-string-to-arraybuffer
+/**
+ * returns base64String as array buffer
+ * @param base64String
+ */
 export function base64StringToArrayBuffer(base64String: string){
     const binaryString = atob(base64String);
     const len = binaryString.length;

@@ -19,7 +19,7 @@
           <ion-input
             v-model:type="dateType"
             v-model="birthday"
-            @ionBlur="safe()"
+            @ionBlur="save()"
           ></ion-input>
         </ion-item>
 
@@ -27,19 +27,17 @@
           <ion-label> Beruf: </ion-label>
           <ion-input
               v-model="job"
-              @ionBlur="safe()"
+              @ionBlur="save()"
               placeholder="ihr Beruf"></ion-input>
         </ion-item>
 
-        <!--<ion-list-header>
-          <ion-label> Sprachen </ion-label>
-        </ion-list-header>-->
+
 
         <ion-item>
           <ion-label>
             Erstsprache wählen
           </ion-label>
-           <ion-select v-model="firstLanguage" @ionChange="safe()">
+           <ion-select v-model="firstLanguage" @ionChange="save()">
               <ion-select-option v-for="[short,language] in languages" v-bind:key="short" v-bind:value="short">{{language}}</ion-select-option>
             </ion-select>
         </ion-item>
@@ -52,8 +50,8 @@
               v-model="dialect"
               placeholder="Ihr Dialekt"
               @input = "justAddedDialect = false"
-              @ionBlur="safe()"></ion-input>
-          <ion-button v-show="( justAddedDialect==false) && dialect != '' && suggestDialects(dialect)[0] != dialect" @click="safeNewDialect()"
+              @ionBlur="save()"></ion-input>
+          <ion-button v-show="( justAddedDialect==false) && dialect != '' && suggestDialects(dialect)[0] != dialect" @click="saveNewDialect()"
           >Dialekt Hinzufügen</ion-button
           >
         </ion-item>
@@ -80,13 +78,13 @@
             v-model:inputmode="numberType"
             maxlength="3"
             placeholder="000"
-            @ionBlur="safe()"
+            @ionBlur="save()"
           ></ion-input>
         </ion-item>
 
 
         <ion-item>
-          <ion-button @click="safe()">Speichern</ion-button>
+          <ion-button @click="save()">Speichern</ion-button>
         </ion-item>
       </ion-list>
     </ion-content>
@@ -137,20 +135,19 @@ export default defineComponent({
      * loads saved languages and sets entrys in child components
      */
     async setupLanguages() {
-      await loadUserSettings(); //läd user settinmg
-      await this.$refs.lng2.onInit(getSecondLanguage()); //erstellt kinder zweite Sprache
-      this.$refs.lng2.itemRefs.forEach((entrys: any, index: number) =>{ //füllt bei kinder die geladenen namen ein
+      await loadUserSettings(); //loads user settings
+      await this.$refs.lng2.onInit(getSecondLanguage()); //creates child components for second language
+      this.$refs.lng2.itemRefs.forEach((entrys: any, index: number) =>{ //sets names for child components
         entrys.initName(getSecondLanguage()[index],index);
-        console.log(index);
       })
     }
   },
 
   mounted() {
-    //kinder erst nach setup laden
+    //load child components after setup
     this.setupLanguages();
   },
-  //TODO upload data
+
 
   setup() {
     // multi-lingual support
@@ -224,9 +221,9 @@ export default defineComponent({
     };
 
     /**
-     * saves userdata local in usersettings.json and upload to firebase
+     * saves userdata local in usersettings.json and uploads data to firebase
      */
-    const safe = async ()=>{
+    const save = async ()=>{
       console.log(birthday.value)
       console.log(firstLanguage.value)
 
@@ -237,15 +234,23 @@ export default defineComponent({
           shownZipCode.value = ""; //reset zip code in case it is invalid
         }
         console.log("invalid zipcode");
+        const toast = await toastController
+            .create({
+              message: 'Invalid zip code',
+              duration: 1500
+            })
+        return toast.present();
+
+
       }
       else {
-        setZipCode(parseInt(shownZipCode.value));     //if zip ist valid enter
-        zipCode.value = parseInt(shownZipCode.value); //
+        setZipCode(parseInt(shownZipCode.value));     //saves zip code if valid
+        zipCode.value = parseInt(shownZipCode.value);
       }
 
       setBirthday(birthday.value);
       setJob(job.value);
-      setFirstLanguage(firstLanguage.value); //redundant wird eigentlich automatisch gemacht aber zu testzwecken noch hier
+      setFirstLanguage(firstLanguage.value);
       setSecondLanguage(secondLanguage.value);
       setDialect(dialect.value);
       uploadUserSettings();
@@ -264,7 +269,7 @@ export default defineComponent({
     };
 
     /**
-     * loads the dialects from firebase
+     * loads dialects from firebase
      */
     const loadDialects = async () => {
       const db = firebase.firestore();
@@ -273,13 +278,14 @@ export default defineComponent({
     };
 
     /**
-     * loads the languages from firebase
+     * loads languages from firebase
      */
     const loadLanguages = async () => {
       const db = firebase.firestore();
       const snapshot = await db.collection("data").doc("languages").get();
       for(let i=0;i<18;i++){
         languages[i]=snapshot.get(i.toString())
+
       }
       console.log(languages)
     };
@@ -292,14 +298,13 @@ export default defineComponent({
       await loadLanguages();
       await loadData();
 
-      // console.log("Languages in method call: " + languages)
       
       uploadUserSettings();
     };
     initData();
 
     /**
-     * first language childcomponents call this method when their language is changed,
+     * first language childcomponents call this method when their language is changed
      * @param languages, list with all languges from all child compontents with updated entrys
      */
     const updateFirstLanguages = (languages: string[]) => {
@@ -335,7 +340,7 @@ export default defineComponent({
         items.splice(0,);
       }
       let retItems: string[]=[];
-      if (items.length>5){      //shorten the list of possible dialects to suggest to 5 dialects
+      if (items.length>5){      //shorten the list of possible dialects to suggest 5 dialects only
         for(let i=0; i<5;i++){
           retItems[i]=items[i]
         } 
@@ -348,7 +353,7 @@ export default defineComponent({
 
     /**
      * if a user selects one of the suggested dialects
-     * @param item one of the dialects suggested to the user
+     * @param item is one of the dialects suggested to the user
      */
     function fillDialect(item: string) {
       dialect.value = item;
@@ -359,15 +364,15 @@ export default defineComponent({
      * if a user enters a dialect that doesn't exist already
      * it is added to the database
      */
-    async function safeNewDialect() {
+    async function saveNewDialect() {
       items = dialects;
       let isDialectNew = true;
       items.forEach((item) => {   //each existing dialect is compared to the one entered by the user
         if(item == dialect.value){
-          isDialectNew = false;   //if it already exists tell the user
+          isDialectNew = false;   //if entry already exists message user
         }
       });
-      if(isDialectNew){                 //if the dialect already exists
+      if(isDialectNew){                 //if dialect already exists
         const db = firebase.firestore();
         justAddedDialect.value = true;
         dialects[dialects.length] = dialect.value;
@@ -385,7 +390,7 @@ export default defineComponent({
         return toast.present();
       }
       else{
-        const toast = await toastController //tells the user that his dialect already exists
+        const toast = await toastController //informs user that dialect already exists
             .create({
               message: 'Der Dialekt ist bereits vorhanden',
               duration: 1500
@@ -396,7 +401,7 @@ export default defineComponent({
 
     return {
       t,
-      safe,
+      save,
       job,
       firstLanguage,
       secondLanguage,
@@ -410,7 +415,7 @@ export default defineComponent({
       updateSecondLanguages,
       suggestDialects,
       fillDialect,
-      safeNewDialect,
+      saveNewDialect,
       items,
       dialects,
       languages,

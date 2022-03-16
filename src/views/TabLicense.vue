@@ -72,7 +72,7 @@
             Weitergabe unter beliebigen Bedingungen
           </h2>
           <p>
-            Wenn du willst, dass deine Daten unter einer beliebigen Lizenz, dann aktiviere diese Einstellung.
+            Wenn du willst, dass deine Daten unter einer beliebigen Lizenz verwendet werden dürfen, dann aktiviere diese Einstellung.
             Wenn du diese Option ausschaltest, werden deine Daten unter der von dir konfigurierten Lizenz weitergegeben.
           </p>
         </ion-label>
@@ -88,9 +88,7 @@
     </ion-list>
           <div id="container">
         <ion-label text-wrap>
-          <h2>
-            Deine Lizenz
-          </h2>
+
           <p>
             Durch die obigen Angaben werden deine Daten unter der folgenden Lizenz gespeichert:
             <strong>{{licenseLicenseTab}}</strong>
@@ -147,11 +145,10 @@ export default defineComponent({
     const { t } = useI18n();
 
     loadLocalData();
-    uploadLicense();//überschreibt datenbank
+    uploadLicense();//overrides database
 
     /**
-     * when the license is entered the license chosen
-     * by the user is loaded
+     * when the license page is entered the license chosen by the user is loaded
      */
     onIonViewDidEnter(async () => { //e
       console.log('Entering license tab');

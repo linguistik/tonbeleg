@@ -100,9 +100,6 @@ export default defineComponent({
     onIonViewDidEnter(()=>toggleSwipeMenu.value = false);
 
 
-    // other variables
-    const debugVerbose = ref(true);
-
     // declare reactive variables
     const email = ref("");
     const password = ref("");

@@ -25,7 +25,6 @@
           @click="playRec()"
           v-if="provideFunctionality"
         ></ion-icon>
-        <!---<ion-alert-controller></ion-alert-controller> hat das irgendeinen Sinn?-->
         <ion-icon
           :color="
             alreadyUploaded
@@ -58,7 +57,6 @@
           @click="licenseAlert = true"
           v-if="provideFunctionality"
         ></ion-icon>
-
         <ion-icon
           :icon="chevronUpOutline"
           @click="toggleOpen()"
@@ -138,7 +136,6 @@ export default {
       default: true,
     },
   },
-  //methods & mounted glaube doch nicht
 
   setup(props: any, context: any) {
     // multi-lingual support
@@ -166,7 +163,10 @@ export default {
     }
 
     const partsRef: Ref<RegionData[]> = ref(props.recording.parts);
-    //const partsRef: Ref<RegionData[]> = ref([props.recording.parts]);
+
+    /**
+     * updates properties of the recording
+     */
     insertUpdateFunction(props.recording.timestamp, (editedEntry: RecordingData)=>{
       displayPartsLength.value = editedEntry.parts.length;
       selectedForUpload.value = editedEntry.selectedForUpload;
@@ -212,8 +212,11 @@ export default {
       }
 
       return day + "." + month + "." + year + ", " + hours + ":" + minutes;
-    }; //method: getRecordingDate
+    };
 
+    /**
+     * redirects user to edit recording page to edit this recording
+     */
     const edit = () => {
       router.push("/edit/" + props.recording.timestamp);
     };
@@ -252,7 +255,7 @@ export default {
       context.emit("refreshEmit");          //trigger a refresh
       exists.value = false;                 //indicate that the recording doesnt exist anymore
       forceUpdate();                        //refresh the whole page to make sure the recording isnt displayed anymore
-    }; //method: deleteFolder
+    };
 
     /**
      * upload recording to firebase
@@ -280,7 +283,7 @@ export default {
             })
         return toast.present();
       }
-      console.log("upload this thing", props.recording.upload);
+      console.log("upload this recording", props.recording.upload);
     };
 
     /**
@@ -354,7 +357,6 @@ export default {
         //pause/stop it
         recObj.stopPlaying();
       }else{
-        //playingPartsRef.value [i]= true;
         recObj.playRegionByIdInPartsArray(i);
       }
     }
@@ -375,7 +377,6 @@ export default {
      * @param name, new name for the entry
      */
     const actualRename = (name: string) => {
-      //props.recording is just a copy of the real object
       setRecordingEntryName(props.recording.timestamp, name);
       displayName.value = name;
       forceUpdate();
@@ -385,7 +386,6 @@ export default {
      * opens a message box to enter the new name
      */
     const rename = async () => {
-      //TODO
       const alert = await alertController.create({  //create an alert
         message: "Choose a name",
         inputs: [
@@ -401,7 +401,7 @@ export default {
               value: displayName.value,
             },
             handler: () => {
-              console.log("texteingabe erfolgt"); //is this handler really necessary? For some reason it is^^
+              console.log("texteingabe erfolgt");
             },
           },
         ], //inputs
@@ -418,7 +418,6 @@ export default {
               const x = data.textField;
               console.log(x);
               if (!(x.length === 0) && x.length <= 35) {
-                //nur kleine und nicht leere eingaben
                 actualRename(x);
               } else {
                 console.log("not a valid name");
@@ -434,7 +433,6 @@ export default {
      * opens message box to confirm delete of the entry
      */
     const deleteRecording = async () => {
-      //TODO delete entry in outsourced
       const alert = await alertController.create({
         message: "Do you really want to delete this file?",
         buttons: [
