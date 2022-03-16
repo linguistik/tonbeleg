@@ -127,7 +127,6 @@ export function setDialect(newDialect: string){
     userSettings.dialect=newDialect;
     saveUserSettings();
 }
-
 /**
  * saves the users zip code
  * @param newZipCode the users zip code(its just 3 digits for the area)
