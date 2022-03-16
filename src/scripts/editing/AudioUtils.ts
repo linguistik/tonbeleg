@@ -1,6 +1,3 @@
-
-import { Region } from "wavesurfer.js/src/plugin/regions";
-import toWav from "audiobuffer-to-wav"; //MIT ok
 import RegionData from "./RegionData";
 import { resample } from 'wave-resampler';
 
@@ -54,6 +51,10 @@ export function playAudioBuffer(buf: AudioBuffer) {
 }
 
 //https://github.com/zhuker/lamejs/issues/55
+/**
+ * returns floats as 16-bit signed integers
+ * @param floatbuffer, the buffer containing the float values
+ */
 function floatArray2Int16 (floatbuffer) {
     const int16Buffer = new Int16Array(floatbuffer.length);
     for (let i = 0, len = floatbuffer.length; i < len; i++) {
@@ -63,11 +64,11 @@ function floatArray2Int16 (floatbuffer) {
             int16Buffer[i] = 0x7FFF * floatbuffer[i];
         }
     }
-    
     return int16Buffer;
   }
 
 const KBPS = 128;
+
 /**
  * encodes an AudioBuffer to an mp3 ArrayBuffer with {@link KBPS} kbit/s
  * @param {AudioBuffer} buf 
@@ -104,16 +105,6 @@ export function convertToMp3(buf: AudioBuffer): ArrayBuffer {
         mergedArray.set(item, offset);
         offset += item.length;
     });
-    //https://jsfiddle.net/koldev/cW7W5/
-    /*const blob = new Blob([mergedArray], {type: "audio/mp3"});
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    document.body.appendChild(a);
-    //a.style = "display: none";
-    a.href = url;
-    a.download = "download.mp3";
-    a.click();window.URL.revokeObjectURL(url);
-    */
     return mergedArray.buffer;
 }
 
@@ -138,6 +129,7 @@ export function trimAudio(region: RegionData, audioBuffer: AudioBuffer): ArrayBu
         audioBufferLength,
         audioBuffer.sampleRate
     );
+
     //copy channel data
     trimmedAudio.copyToChannel(
         audioBuffer.getChannelData(0).slice(startPoint, endPoint),
@@ -146,4 +138,4 @@ export function trimAudio(region: RegionData, audioBuffer: AudioBuffer): ArrayBu
 
     const wav = convertToMp3(trimmedAudio);
     return wav;
-} //trimAudio
+}

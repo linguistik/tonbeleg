@@ -270,11 +270,11 @@ export default {
           const loading = await loadingController
               .create({
                 message: 'Please wait...',
-                duration: 800,
               });
 
           await loading.present();
           await actualDelete(); //delete it
+          loading.remove();
         const toast = await toastController //and tell the user is was uploaded
             .create({
               message: 'Tonbeleg erfolgreich hochgeladen!',

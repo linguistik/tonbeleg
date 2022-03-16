@@ -440,8 +440,12 @@ export default defineComponent({
       } catch (error) {
         console.log(error);
         //if that folder does already exist or cannot be created, we stop here. The data will be lost
-        //TODO fix this
-        return;
+        const toast = await toastController
+            .create({
+              message: 'Die Datei konnte nicht gespeichert werden, überprüfen sie gegebenenfalls die Berechtigungen der Anwendung',
+              duration: 1500
+            })
+        return toast.present();
       }
 
       console.log(

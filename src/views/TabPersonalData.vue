@@ -31,8 +31,6 @@
               placeholder="ihr Beruf"></ion-input>
         </ion-item>
 
-
-
         <ion-item>
           <ion-label>
             Erstsprache wählen
@@ -51,10 +49,10 @@
               placeholder="Ihr Dialekt"
               @input = "justAddedDialect = false"
               @ionBlur="save()"></ion-input>
-          <ion-button v-show="( justAddedDialect==false) && dialect != '' && suggestDialects(dialect)[0] != dialect" @click="saveNewDialect()"
-          >Dialekt Hinzufügen</ion-button
-          >
+          <ion-button v-show="(justAddedDialect==false) && dialect != '' && suggestDialects(dialect)[0] != dialect" @click="saveNewDialect()"
+          >Dialekt Hinzufügen</ion-button>
         </ion-item>
+
         <ion-item v-if="dialect != '' && suggestDialects(dialect)[0] != dialect && suggestDialects(dialect).length != 0">
           <ion-list v-show="suggestDialects(dialect).length > 0">
             <ion-item
@@ -97,8 +95,8 @@
 import { defineComponent, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import PageHeader from '@/components/layout/PageHeader.vue';
-import {loadUserSettings, setBirthday, setJob,setFirstLanguage,setSecondLanguage,
-  setDialect,setZipCode, getBirthday,getJob,getFirstLanguage,getSecondLanguage,getDialect,getZipCode} from "@/scripts/UserSettingsStorage";
+import {loadUserSettings,setFirstLanguage,setSecondLanguage,setZipCode, getBirthday,getJob,
+  getFirstLanguage,getSecondLanguage,getDialect,getZipCode, setPersonalData} from "@/scripts/UserSettingsStorage";
 import {
   IonPage,
   IonHeader,
@@ -113,7 +111,7 @@ import {
   IonButton,
   IonSelect,
   IonSelectOption,
-  toastController, onIonViewWillEnter, onIonViewDidEnter,
+  toastController,
 } from '@ionic/vue';
 
 
@@ -121,7 +119,6 @@ import firebase from '@/backend/firebase-config';
 
 import 'firebase/firestore';
 import MultipleElementsParent from '@/components/dynamicElement/MultipleElementsParent.vue';
-import {UploadToFirebase} from "@/scripts/RecordingUpload";
 
 export default defineComponent({
   name: "TabPersonalData",
@@ -234,26 +231,22 @@ export default defineComponent({
         if (zipCode.value < 0) {
           shownZipCode.value = ""; //reset zip code in case it is invalid
         }
-        console.log("invalid zipcode");
-        const toast = await toastController
-            .create({
-              message: 'Invalid zip code',
-              duration: 1500
-            })
-        return toast.present();
-
-
+        if(shownZipCode.value != "") {
+          console.log("invalid zipcode");
+          const toast = await toastController
+              .create({
+                message: 'Invalid zip code',
+                duration: 1500
+              })
+          return toast.present();
+        }
       }
       else {
         setZipCode(parseInt(shownZipCode.value));     //saves zip code if valid
         zipCode.value = parseInt(shownZipCode.value);
       }
 
-      setBirthday(birthday.value);
-      setJob(job.value);
-      setFirstLanguage(firstLanguage.value);
-      setSecondLanguage(secondLanguage.value);
-      setDialect(dialect.value);
+      setPersonalData(birthday.value, job.value, firstLanguage.value, secondLanguage.value, dialect.value);
       uploadUserSettings();
 
       if(firstVisit.value==false) {
@@ -331,13 +324,16 @@ export default defineComponent({
      * @param input the name of the dialect entered by the user
      */
     function suggestDialects(input: string) {
-      if(items.length == 0 ){
-        return;
+      if(items == null ){
+        return [];
       }
       const val = input;
       items = dialects;
       if (val.trim() != "") {
         items = items.filter((item) => {
+          if(item.toLowerCase()==dialect.value.toLowerCase()){
+            return false;
+          }
           return item.toLowerCase().indexOf(val.toLowerCase()) > -1;
         });
       } else {
@@ -361,6 +357,7 @@ export default defineComponent({
      */
     function fillDialect(item: string) {
       dialect.value = item;
+      justAddedDialect.value = true;
       console.log("filling Dialect");
     }
 
@@ -371,15 +368,23 @@ export default defineComponent({
     async function saveNewDialect() {
       items = dialects;
       let isDialectNew = true;
-      items.forEach((item) => {   //each existing dialect is compared to the one entered by the user
-        if(item == dialect.value){
-          isDialectNew = false;   //if entry already exists message user
-        }
-      });
+      if (items != null) {           //checks wether there are dialects already existing, checks for null instead of undefined but seems to work
+        items.forEach((item) => {   //each existing dialect is compared to the one entered by the user
+          if (item == dialect.value) {
+            isDialectNew = false;   //if entry already exists message user
+          }
+        });
+      }
       if(isDialectNew){                 //if dialect already exists
         const db = firebase.firestore();
         justAddedDialect.value = true;
-        dialects[dialects.length] = dialect.value;
+        if(dialects != null) {
+          dialects[dialects.length] = dialect.value;
+        }
+        else{
+          dialects = [];
+          dialects[0] = dialect.value;
+        }
         db.collection("data").doc("dialects").set(
           {
             dialects: dialects,
@@ -394,9 +399,10 @@ export default defineComponent({
         return toast.present();
       }
       else{
+        justAddedDialect.value = true;
         const toast = await toastController //informs user that dialect already exists
             .create({
-              message: 'Der Dialekt ist bereits vorhanden',
+              message: 'Der Dialekt ist bereits vorhanden und wurde gespeichert',
               duration: 1500
             })
         return toast.present();
