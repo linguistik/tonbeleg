@@ -3,17 +3,16 @@
 
 
 # Datenspende-App für Tonbelege
-
+This app collects data to preserve dialects and languages and make them available for studies.
 ## Problem Analysis (UX)
+This "Datenspende-App" offers the user the possibility to record, edit and release sound recordings for further use. The focus is on the preservation of rare languages and dialects. Users can provide precise information about their personal data for better sorting of the sound recordings. The licensing conditions can also be customised. There is also an interface for uploading external files into the database.
 
-### Persona
-
-### User Story
+### Usage
+This project is primarily intended to be used by people who speak a rare language or dialect in order to preserve it. The entry of personal data is recommended in order to simplify subsequent filtering of the data. Registration can be done with an email address in the app or with the help of an account previously registered with Google. 
 
 ### Selling Point
+The current status of the app ensures a smooth recording of the audio documents. A view of the uploaded files with a suitable interface for uploading external audio files is also available. The local files are displayed in an extra view, where you can also cut, rename, delete and play back the audio slips.
 
-
-## Getting Started
 
 
 ### Firebase Credentials
@@ -91,12 +90,4 @@ yarn serve
 - `capacitor.config.ts` 
 
 
-## Tips & Tricks
 
-### Force Cache Refresh
-Bump the `pwa.assetVersion` value up in `./vue.config.js`.
-
-### Changing the App Name
-- `./vue.config.js`: `pwa.name` value
-- `./public/index.html`: `<title>` tag
-- `./public/index.html`: `<meta name="apple-mobile-web-app-title" content="My app name">`
