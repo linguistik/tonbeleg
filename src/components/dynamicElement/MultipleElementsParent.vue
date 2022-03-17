@@ -83,7 +83,7 @@ export default defineComponent({
       children.value.push(lastIndex++);
     };
 
-    addChildElement();
+    //addChildElement();
 
     /**
      * emits change in child component to parent class
@@ -138,8 +138,6 @@ export default defineComponent({
         data.set(index, value);
       });
       console.log(data);
-
-
     };
 
 

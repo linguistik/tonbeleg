@@ -200,14 +200,16 @@ export default defineComponent({
 
     let index = 0; //this is the index for determining the next color
     const usefulColorMap = new Map<string, string>([
-      ["rgba(255,0,0,0.5)", "red"],
-      ["rgba(38,255,0,0.5)", "green"],
-      ["rgba(0,0,255,0.5)", "blue"],
-      ["rgba(255,0,230,0.5)", "pink"],
-      ["rgba(255,242,0,0.5)", "yellow"],
-      ["rgba(0,255,200,0.5)", "cyan"],
-      ["rgba(119,0,255,0.5)", "purple"],
-      ["rgba(0,0,0,0.5)", "black"],
+
+
+      ["rgba(255,215,0, 0.5)", "gold"],
+      ["rgba(0,250,154, 0.5)", "mediumspringgreen"],
+      ["rgba(128,128,128,0.5)", "gray"],
+      ["rgba(135,206,235,0.5)", "skyblue"],
+      ["rgba(240,230,140,0.5)", "khaki"],
+      ["rgba(188,143,143,0.5)", "rosybrown"],
+      ["rgba(216,191,216,0.5)", "thistle"],
+      ["rgba(255,105,180,0.5)", "hotpink"],
     ]);
 
     const usefulColorMapRef = ref(usefulColorMap);

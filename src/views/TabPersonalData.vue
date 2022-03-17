@@ -36,7 +36,7 @@
             Erstsprache wählen
           </ion-label>
            <ion-select v-model="firstLanguage" @ionChange="save()">
-              <ion-select-option v-for="[short,language] in languages" v-bind:key="short" v-bind:value="short">{{language}}</ion-select-option>
+              <ion-select-option v-for="[short,language] in languagesGlobal" v-bind:key="short" v-bind:value="short">{{language}}</ion-select-option>
             </ion-select>
         </ion-item>
 
@@ -49,14 +49,14 @@
               placeholder="Ihr Dialekt"
               @input = "justAddedDialect = false"
               @ionBlur="save()"></ion-input>
-          <ion-button v-show="(justAddedDialect==false) && dialect != '' && suggestDialects(dialect)[0] != dialect" @click="saveNewDialect()"
-          >Dialekt Hinzufügen</ion-button>
+          <ion-button v-bind:disabled="!((justAddedDialect==false) && (dialect != '') && (suggestDialects(dialect).returnArray[0]!= dialect) && suggestDialects(dialect).dialectExistsAlready.value==false)" @click="saveNewDialect()"
+          >Dialekt hinzufügen</ion-button>
         </ion-item>
 
-        <ion-item v-if="dialect != '' && suggestDialects(dialect)[0] != dialect && suggestDialects(dialect).length != 0">
-          <ion-list v-show="suggestDialects(dialect).length > 0">
+        <ion-item v-if="dialect != '' && suggestDialects(dialect).returnArray[0] != dialect && suggestDialects(dialect).returnArray.length!= 0 && justAddedDialect == false">
+          <ion-list v-show="suggestDialects(dialect).returnArray.length > 0">
             <ion-item
-              v-for="item in suggestDialects(dialect)"
+              v-for="item in suggestDialects(dialect).returnArray"
               :key="item"
               button
               @click="fillDialect(item)"
@@ -95,7 +95,7 @@
 import { defineComponent, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import PageHeader from '@/components/layout/PageHeader.vue';
-import {loadUserSettings,setFirstLanguage,setSecondLanguage,setZipCode, getBirthday,getJob,
+import {loadUserSettings,setSecondLanguage,setZipCode, getBirthday,getJob,
   getFirstLanguage,getSecondLanguage,getDialect,getZipCode, setPersonalData} from "@/scripts/UserSettingsStorage";
 import {
   IonPage,
@@ -111,14 +111,15 @@ import {
   IonButton,
   IonSelect,
   IonSelectOption,
-  toastController,
+  toastController, onIonViewWillEnter, onIonViewDidEnter,
 } from '@ionic/vue';
 
 
 import firebase from '@/backend/firebase-config';
-
+import {loadLanguagesFromFirebase, loadDialectsFromFirebase, languagesGlobal, dialectsGlobal} from "@/scripts/loadingFromDataBase";
 import 'firebase/firestore';
 import MultipleElementsParent from '@/components/dynamicElement/MultipleElementsParent.vue';
+import {UploadToFirebase} from "@/scripts/RecordingUpload";
 
 export default defineComponent({
   name: "TabPersonalData",
@@ -137,6 +138,7 @@ export default defineComponent({
       await this.$refs.lng2.onInit(getSecondLanguage()); //creates child components for second language
       this.$refs.lng2.itemRefs.forEach((entrys: any, index: number) =>{ //sets names for child components
         entrys.initName(getSecondLanguage()[index],index);
+
       })
     }
   },
@@ -150,7 +152,6 @@ export default defineComponent({
   setup() {
     // multi-lingual support
     const { t } = useI18n();
-
     const currentUser = firebase.auth().currentUser;
 
     const birthday = ref("");
@@ -166,7 +167,7 @@ export default defineComponent({
     const dateType = ref("date");
 
     let dialects: string[] = [];
-    const languages: string[][]=[];
+    //let languages: string[][]=[];
 
     const firstVisit = ref(true);
 
@@ -191,6 +192,9 @@ export default defineComponent({
       } else {
         shownZipCode.value = zipCode.value.toString();
       }
+      await loadDialectsFromFirebase();
+      dialects = dialectsGlobal;
+      await loadLanguagesFromFirebase();
     };
 
     /**
@@ -222,9 +226,6 @@ export default defineComponent({
      * saves userdata local in usersettings.json and uploads data to firebase
      */
     const save = async ()=>{
-      console.log(birthday.value)
-      console.log(firstLanguage.value)
-
       if (currentUser == null) return;
 
       if (isNaN(parseInt(shownZipCode.value)) || parseInt(shownZipCode.value) < 0) { //checks wether the entered zip code has a valid value
@@ -263,49 +264,17 @@ export default defineComponent({
     };
 
     /**
-     * loads dialects from firebase
-     */
-    const loadDialects = async () => {
-      const db = firebase.firestore();
-      const snapshot = await db.collection("data").doc("dialects").get();
-      dialects = snapshot.get("dialects");
-    };
-
-    /**
-     * loads languages from firebase
-     */
-    const loadLanguages = async () => {
-      const db = firebase.firestore();
-      const snapshot = await db.collection("data").doc("languages").get();
-      for(let i=0;i<18;i++){
-        languages[i]=snapshot.get(i.toString())
-
-      }
-      console.log(languages)
-    };
-
-    /**
      * loads user settings initially when tab is first opened
      */
     const initData = async () => {
-      await loadDialects();
-      await loadLanguages();
+      await loadLanguagesFromFirebase();
+      await loadDialectsFromFirebase();
+      dialects = dialectsGlobal;
       await loadData();
-
-      
       uploadUserSettings();
     };
     initData();
 
-    /**
-     * first language childcomponents call this method when their language is changed
-     * @param languages, list with all languges from all child compontents with updated entrys
-     */
-    const updateFirstLanguages = (languages: string[]) => {
-      console.log(languages);
-      firstLanguage.value = languages;
-      setFirstLanguage(languages);
-    };
 
     /**
      * second language childcomponents call this method when their language is changed,
@@ -329,9 +298,11 @@ export default defineComponent({
       }
       const val = input;
       items = dialects;
+      const dialectExists = ref(false);
       if (val.trim() != "") {
         items = items.filter((item) => {
           if(item.toLowerCase()==dialect.value.toLowerCase()){
+            dialectExists.value = true;
             return false;
           }
           return item.toLowerCase().indexOf(val.toLowerCase()) > -1;
@@ -348,7 +319,7 @@ export default defineComponent({
       else{
         retItems=items
       }
-      return retItems;
+      return {returnArray: retItems, dialectExistsAlready: dialectExists};
     }
 
     /**
@@ -358,6 +329,7 @@ export default defineComponent({
     function fillDialect(item: string) {
       dialect.value = item;
       justAddedDialect.value = true;
+      save();
       console.log("filling Dialect");
     }
 
@@ -409,6 +381,10 @@ export default defineComponent({
       } 
     }
 
+    onIonViewDidEnter(async () => {
+      justAddedDialect.value = true;
+    });
+
     return {
       t,
       save,
@@ -421,16 +397,15 @@ export default defineComponent({
       shownZipCode,
       dateType,
       birthday,
-      updateFirstLanguages,
       updateSecondLanguages,
       suggestDialects,
       fillDialect,
       saveNewDialect,
       items,
       dialects,
-      languages,
       firstVisit,
       justAddedDialect,
+      languagesGlobal
     };
   },
 });
