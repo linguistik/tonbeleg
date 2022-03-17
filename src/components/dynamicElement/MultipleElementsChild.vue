@@ -18,7 +18,7 @@
           </ion-label>
       <ion-select v-model="input" @ionChange="inputChanged()" >
         <ion-select-option 
-            v-for="[short,language] in languages" 
+            v-for="[short,language] in languagesGlobal"
             v-bind:key="short" 
             v-bind:value="short">
           {{language}}
@@ -33,7 +33,7 @@
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
-
+import {loadLanguagesFromFirebase,languagesGlobal} from "@/scripts/loadingFromDataBase";
 import { IonIcon, IonItem, IonSelect, IonGrid, IonRow, IonCol, IonSelectOption, IonLabel } from "@ionic/vue";
 
 import { removeCircle } from "ionicons/icons";
@@ -59,13 +59,10 @@ export default defineComponent({
 
 
   setup(props: any, context: any) {
-    const languages: string[][]=[];
     const input = ref("");
-    let tempLanguage = " ";
+    const tempLanguage = " ";
 
-    /**
-     * läd mega scheiße progreamiert alle hardcoded languages
-     */
+    /*
     const loadLanguages = async() => {
       const db = firebase.firestore();
       const snapshot = await db.collection("data").doc("languages").get();
@@ -74,12 +71,13 @@ export default defineComponent({
         languages[i]=snapshot.get(i.toString())
       }
     }
+    */
 
     /**
      *initializes child component with empty name and laods all languages
      */
     const initData = async () => {
-      await loadLanguages();
+      loadLanguagesFromFirebase();
       input.value=tempLanguage;
     };
     initData();
@@ -105,9 +103,9 @@ export default defineComponent({
      */
     const initName = (name: string, index: number) => {
       if(props.id != index){console.log("err: shouldn`t exist")}
-      tempLanguage=name;
-    };
+      input.value=name;
 
+    };
 
     return {
       removeCircle,
@@ -115,9 +113,9 @@ export default defineComponent({
       inputChanged,
       input,
       initName,
-      languages,
       initData,
-      loadLanguages
+      languagesGlobal,
+
     };
   },
 });

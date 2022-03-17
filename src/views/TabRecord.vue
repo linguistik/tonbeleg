@@ -19,7 +19,7 @@
         <ion-item>
           <ion-label>Sprache festlegen</ion-label>
           <ion-select v-model="newLanguage">
-            <ion-select-option v-for="[short, language] in languages" v-bind:key="short" v-bind:value="short">{{language}}</ion-select-option>
+            <ion-select-option v-for="[short, language] in languagesGlobal" v-bind:key="short" v-bind:value="short">{{language}}</ion-select-option>
           </ion-select>
         </ion-item>
 
@@ -181,6 +181,7 @@ import {
 } from "@/scripts/RecordingStorage";
 import { onIonViewDidEnter, toastController} from "@ionic/vue";
 import {UploadToFirebase} from "@/scripts/RecordingUpload";
+import {languagesGlobal, loadLanguagesFromFirebase} from "@/scripts/loadingFromDataBase";
 import {
   IonPage,
   IonHeader,
@@ -199,9 +200,6 @@ import {
 import {
   VoiceRecorder,
   GenericResponse,
-  //RecordingData,
-  // VoiceRecorderPlugin,
-  // CurrentRecordingStatus
 } from "capacitor-voice-recorder";
 
 import {
@@ -550,7 +548,7 @@ export default defineComponent({
 
     /**
      * load languages for pop up window from database;
-     */
+     *//*
     const loadLanguages = async () => {
       const db = firebase.firestore();
       const snapshot = await db.collection("data").doc("languages").get();
@@ -560,10 +558,12 @@ export default defineComponent({
       }
       console.log(languages)
     };
-    
+    */
+
     const initData = async () => {
-      await loadLanguages();
+      await loadLanguagesFromFirebase();
     }
+
     initData();
 
     /**
@@ -672,6 +672,7 @@ export default defineComponent({
       isSharingAllowedDeactivated,
       licensePopUp,
       updateKey,
+      languagesGlobal
     };
   },
 });

@@ -36,7 +36,7 @@
             Erstsprache wählen
           </ion-label>
            <ion-select v-model="firstLanguage" @ionChange="save()">
-              <ion-select-option v-for="[short,language] in languages" v-bind:key="short" v-bind:value="short">{{language}}</ion-select-option>
+              <ion-select-option v-for="[short,language] in languagesGlobal" v-bind:key="short" v-bind:value="short">{{language}}</ion-select-option>
             </ion-select>
         </ion-item>
 
@@ -137,6 +137,7 @@ export default defineComponent({
       await this.$refs.lng2.onInit(getSecondLanguage()); //creates child components for second language
       this.$refs.lng2.itemRefs.forEach((entrys: any, index: number) =>{ //sets names for child components
         entrys.initName(getSecondLanguage()[index],index);
+
       })
     }
   },
@@ -150,7 +151,6 @@ export default defineComponent({
   setup() {
     // multi-lingual support
     const { t } = useI18n();
-
     const currentUser = firebase.auth().currentUser;
 
     const birthday = ref("");
@@ -166,7 +166,7 @@ export default defineComponent({
     const dateType = ref("date");
 
     let dialects: string[] = [];
-    let languages: string[][]=[];
+    //let languages: string[][]=[];
 
     const firstVisit = ref(true);
 
@@ -194,7 +194,7 @@ export default defineComponent({
       await loadDialectsFromFirebase();
       dialects = dialectsGlobal;
       await loadLanguagesFromFirebase();
-      languages = languagesGlobal;
+      //languages = languagesGlobal;
     };
 
     /**
@@ -275,7 +275,7 @@ export default defineComponent({
 
     /**
      * loads languages from firebase
-     */
+     *//*/
     const loadLanguages = async () => {
       const db = firebase.firestore();
       const snapshot = await db.collection("data").doc("languages").get();
@@ -285,33 +285,31 @@ export default defineComponent({
       }
       console.log(languages)
     };
+    */
 
     /**
      * loads user settings initially when tab is first opened
      */
     const initData = async () => {
-      /*await loadLanguagesFromFirebase();
-      languages = languagesGlobal;
+      await loadLanguagesFromFirebase();
       await loadDialectsFromFirebase();
       dialects = dialectsGlobal;
-      console.log("languageArray", languages);*/
-      await loadLanguages();
-      await loadDialects();
-      console.log("languageArray", languages);
       await loadData();
       uploadUserSettings();
     };
     initData();
 
+
+
     /**
      * first language childcomponents call this method when their language is changed
      * @param languages, list with all languges from all child compontents with updated entrys
-     */
+     *//*
     const updateFirstLanguages = (languages: string[]) => {
       console.log(languages);
       firstLanguage.value = languages;
       setFirstLanguage(languages);
-    };
+    };*/
 
     /**
      * second language childcomponents call this method when their language is changed,
@@ -427,16 +425,16 @@ export default defineComponent({
       shownZipCode,
       dateType,
       birthday,
-      updateFirstLanguages,
+      //updateFirstLanguages,
       updateSecondLanguages,
       suggestDialects,
       fillDialect,
       saveNewDialect,
       items,
       dialects,
-      languages,
       firstVisit,
       justAddedDialect,
+      languagesGlobal
     };
   },
 });

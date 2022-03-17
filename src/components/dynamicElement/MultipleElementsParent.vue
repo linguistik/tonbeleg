@@ -83,7 +83,7 @@ export default defineComponent({
       children.value.push(lastIndex++);
     };
 
-    addChildElement();
+    //addChildElement();
 
     /**
      * emits change in child component to parent class
