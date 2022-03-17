@@ -1,3 +1,4 @@
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6365096.svg)](https://doi.org/10.5281/zenodo.6365096)
 [![Join the chat at https://gitter.im/linguistik/community](https://badges.gitter.im/linguistik/community.svg)](https://gitter.im/linguistik/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 
