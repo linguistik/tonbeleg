@@ -300,6 +300,7 @@ export default defineComponent({
         ],
       });
 
+
       const audio = await replayAudioData(props.folderName, currentUserUID);
 
       wavesurfer.load(audio);
