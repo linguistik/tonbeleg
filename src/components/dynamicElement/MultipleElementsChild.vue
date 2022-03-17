@@ -37,7 +37,6 @@ import {loadLanguagesFromFirebase,languagesGlobal} from "@/scripts/loadingFromDa
 import { IonIcon, IonItem, IonSelect, IonGrid, IonRow, IonCol, IonSelectOption, IonLabel } from "@ionic/vue";
 
 import { removeCircle } from "ionicons/icons";
-import firebase from '@/backend/firebase-config';
 import 'firebase/firestore';
 
 export default defineComponent({
@@ -62,22 +61,12 @@ export default defineComponent({
     const input = ref("");
     const tempLanguage = " ";
 
-    /*
-    const loadLanguages = async() => {
-      const db = firebase.firestore();
-      const snapshot = await db.collection("data").doc("languages").get();
-      const size = (await db.collection("data").doc("languages").get()).get("NoLanguages");
-      for(let i=0;i<size;i++){
-        languages[i]=snapshot.get(i.toString())
-      }
-    }
-    */
 
     /**
      *initializes child component with empty name and laods all languages
      */
     const initData = async () => {
-      loadLanguagesFromFirebase();
+      await loadLanguagesFromFirebase();
       input.value=tempLanguage;
     };
     initData();
