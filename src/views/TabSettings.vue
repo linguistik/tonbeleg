@@ -149,13 +149,13 @@ export default defineComponent({
         catch{
           let provider ;
 
-          const result = await currentUser.getIdTokenResult(false).then((res)=>res.signInProvider);
+          const result = await currentUser.getIdTokenResult(false).then((res)=>res.signInProvider); //get the registration method via the sign in provider
           if(result==null){
             return
           }
           console.log("authenticating");
           let credential;
-          if(result.includes("google.com")){
+          if(result.includes("google.com")){                                                                  //registration via google
             provider = new firebase.auth.GoogleAuthProvider();
             credential = await currentUser.reauthenticateWithPopup(provider);
 
@@ -163,22 +163,22 @@ export default defineComponent({
               console.log("credential null")
               return
             }
-            await currentUser.reauthenticateWithCredential(credential.credential);
+            await currentUser.reauthenticateWithCredential(credential.credential);                              //reauthenticate user in order to be able to delete the account
             console.log("authenticated")
             await currentUser.delete();
             console.log("deleted")
             await router.push("/");
           }
-          if(result.includes("password")){
+          if(result.includes("password")){                                                                    //registration via email & password
             console.log("password, so please sign in again")
             const toast = await toastController
                 .create({
-                  message: 'Your have not signed in lately, please sign in again',
+                  message: 'Your have not signed in lately, please sign in and try again',                            //if the user hasnt signed in lately he needs to sign in again
                   position: 'middle',
                   duration: 1200
                 })
             await toast.present();
-            logOut();
+            logOut();                                                                                         //log user out and make him sign in again
           }
         }
       }
@@ -192,7 +192,7 @@ export default defineComponent({
       removeAllRecordingEntry(); //delete all recordings on the device
       deleteUserSettings()     //delete the usersettings
       console.log("delete acc in database")
-      deleteAccInDatabase();
+      deleteAccInDatabase();    //delete the account in firebase
     }
 
     /**
