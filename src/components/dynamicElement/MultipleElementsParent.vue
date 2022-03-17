@@ -138,8 +138,6 @@ export default defineComponent({
         data.set(index, value);
       });
       console.log(data);
-
-
     };
 
 

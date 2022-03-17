@@ -554,7 +554,8 @@ export default defineComponent({
     const loadLanguages = async () => {
       const db = firebase.firestore();
       const snapshot = await db.collection("data").doc("languages").get();
-      for(let i=0;i<18;i++){
+      const size = (await db.collection("data").doc("languages").get()).get("NoLanguages");
+      for(let i=0;i<size;i++){
         languages[i]=snapshot.get(i.toString())
       }
       console.log(languages)

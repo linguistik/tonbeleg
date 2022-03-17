@@ -116,7 +116,7 @@ import {
 
 
 import firebase from '@/backend/firebase-config';
-
+import {loadLanguagesFromFirebase, loadDialectsFromFirebase, languagesGlobal, dialectsGlobal} from "@/scripts/loadingFromDataBase";
 import 'firebase/firestore';
 import MultipleElementsParent from '@/components/dynamicElement/MultipleElementsParent.vue';
 
@@ -166,7 +166,7 @@ export default defineComponent({
     const dateType = ref("date");
 
     let dialects: string[] = [];
-    const languages: string[][]=[];
+    let languages: string[][]=[];
 
     const firstVisit = ref(true);
 
@@ -191,6 +191,10 @@ export default defineComponent({
       } else {
         shownZipCode.value = zipCode.value.toString();
       }
+      await loadDialectsFromFirebase();
+      dialects = dialectsGlobal;
+      await loadLanguagesFromFirebase();
+      languages = languagesGlobal;
     };
 
     /**
@@ -222,9 +226,6 @@ export default defineComponent({
      * saves userdata local in usersettings.json and uploads data to firebase
      */
     const save = async ()=>{
-      console.log(birthday.value)
-      console.log(firstLanguage.value)
-
       if (currentUser == null) return;
 
       if (isNaN(parseInt(shownZipCode.value)) || parseInt(shownZipCode.value) < 0) { //checks wether the entered zip code has a valid value
@@ -271,15 +272,16 @@ export default defineComponent({
       dialects = snapshot.get("dialects");
     };
 
+
     /**
      * loads languages from firebase
      */
     const loadLanguages = async () => {
       const db = firebase.firestore();
       const snapshot = await db.collection("data").doc("languages").get();
-      for(let i=0;i<18;i++){
-        languages[i]=snapshot.get(i.toString())
-
+      const size = (await db.collection("data").doc("languages").get()).get("NoLanguages");
+      for(let i=0;i<size;i++){
+          languages[i] = snapshot.get(i.toString())
       }
       console.log(languages)
     };
@@ -288,11 +290,15 @@ export default defineComponent({
      * loads user settings initially when tab is first opened
      */
     const initData = async () => {
-      await loadDialects();
+      /*await loadLanguagesFromFirebase();
+      languages = languagesGlobal;
+      await loadDialectsFromFirebase();
+      dialects = dialectsGlobal;
+      console.log("languageArray", languages);*/
       await loadLanguages();
+      await loadDialects();
+      console.log("languageArray", languages);
       await loadData();
-
-      
       uploadUserSettings();
     };
     initData();
