@@ -545,21 +545,6 @@ export default defineComponent({
     }, 1000);
 
 
-
-    /**
-     * load languages for pop up window from database;
-     *//*
-    const loadLanguages = async () => {
-      const db = firebase.firestore();
-      const snapshot = await db.collection("data").doc("languages").get();
-      const size = (await db.collection("data").doc("languages").get()).get("NoLanguages");
-      for(let i=0;i<size;i++){
-        languages[i]=snapshot.get(i.toString())
-      }
-      console.log(languages)
-    };
-    */
-
     const initData = async () => {
       await loadLanguagesFromFirebase();
     }
