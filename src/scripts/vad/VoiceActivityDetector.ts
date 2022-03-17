@@ -21,11 +21,10 @@ export default class VoiceActivityDetector{
         
         this. windowBufferSize = Math.pow(2, Math.floor(Math.log(this.msToIndex(this.windowSize))/Math.log(2)));
         console.log(this.windowBufferSize);
-
     }
 
     /**
-     * 
+     * returns an index for a point of time in a recording
      * @param {number} time in milliseconds (ms) 
      * @returns {number} the index 
      */
@@ -34,10 +33,10 @@ export default class VoiceActivityDetector{
     }
 
     /**
-     * 
-     * @param {number} start index
-     * @param {number} end index
-     * @returns {number} energy
+     * compute the energy of a region
+     * @param {number} start index, the beginning of a region
+     * @param {number} end index, the end of a region
+     * @returns {number} energy, the energy of the region
      */
     private computeEnergy(start: number, end: number): number{
         let sum =0;

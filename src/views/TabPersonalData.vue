@@ -111,7 +111,7 @@ import {
   IonButton,
   IonSelect,
   IonSelectOption,
-  toastController, onIonViewWillEnter, onIonViewDidEnter,
+  toastController, onIonViewDidEnter,
 } from '@ionic/vue';
 
 
@@ -119,7 +119,6 @@ import firebase from '@/backend/firebase-config';
 import {loadLanguagesFromFirebase, loadDialectsFromFirebase, languagesGlobal, dialectsGlobal} from "@/scripts/loadingFromDataBase";
 import 'firebase/firestore';
 import MultipleElementsParent from '@/components/dynamicElement/MultipleElementsParent.vue';
-import {UploadToFirebase} from "@/scripts/RecordingUpload";
 
 export default defineComponent({
   name: "TabPersonalData",

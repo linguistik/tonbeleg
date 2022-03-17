@@ -350,29 +350,43 @@ export default defineComponent({
       });
     };
 
+    /**
+     * load the audio data after a timeout of 100ms
+     */
     const loadAfterTimeout = async () => {
       window.setTimeout(load, 100);
     };
     loadAfterTimeout();
 
+    /**
+     * save the data concerning the regions
+     */
     const finishAndSaveEventHandler = async () => {
       setRecordingEntryRegionDataArray(
         props.folderName,
         regionsRef.value,
         idToNameMap
       );
-
       router.back();
     };
 
+    /**
+     * pause the recording
+     */
     const playPauseEventHandler = () => {
       wavesurfer.playPause();
     };
 
+    /**
+     * skip forwards or backwards in the recording (10s)
+     */
     const skipEventHandler = (amt: number) => {
       wavesurfer.skip(amt);
     };
 
+    /**
+     * creates an alert asking the user if he wants to leave the edit view without saving
+     */
     const finishWithoutSaving = async () => {
       if (changesApplied) {
         //ask user if he wants to leave without saving
@@ -401,6 +415,9 @@ export default defineComponent({
       }
     };
 
+    /**
+     * merge overlapping regions in the edit view
+     */
     const mergeRegionsEventHandler=()=>{
       changesApplied = true;
       let changeApplied = false;
@@ -409,21 +426,17 @@ export default defineComponent({
         //go through all regions
         outerLoop:
         for(const outerRegionId in wavesurfer.regions.list){
-          const outerRegion: Region = wavesurfer.regions.list[outerRegionId];
-          //compare end with start of all other regions
+          const outerRegion: Region = wavesurfer.regions.list[outerRegionId];    //compare end with start of all other regions
           for(const innerRegionId in wavesurfer.regions.list){
             if(innerRegionId == outerRegionId){
               continue;
             }
             const innerRegion = wavesurfer.regions.list[innerRegionId];
             if(outerRegion.start<=innerRegion.start && outerRegion.end>=innerRegion.start){
-              //merge
               console.log("merge");
-              //outerRegion starts first
-              //correct name
-              let newName = "";
-              if(idToNameMap.has(outerRegionId)){
-                newName += idToNameMap.get(outerRegionId);
+              let newName = "";                                           //merge
+              if(idToNameMap.has(outerRegionId)){                         //outerRegion starts first
+                newName += idToNameMap.get(outerRegionId);                //correct name
               }
               if(idToNameMap.has(outerRegionId) && idToNameMap.has(innerRegionId)){
                 newName += " + "
@@ -434,8 +447,8 @@ export default defineComponent({
               if(newName!=""){
                 idToNameMap.set(outerRegionId, newName);
               }
-              //set ending of outer region if it is bigger than current ending
-              if(outerRegion.end<innerRegion.end){
+
+              if(outerRegion.end<innerRegion.end){                         //set ending of outer region if it is bigger than current ending
                 outerRegion.update({
                   id: outerRegion.id,
                   start:outerRegion.start,
@@ -443,17 +456,19 @@ export default defineComponent({
                   color: outerRegion.color
                 })
               }
-              //remove inner region from wavesurfer
-              innerRegion.remove();
+              innerRegion.remove();                                        //remove inner region from wavesurfer
               changeApplied = true;
               break outerLoop;
             }
           }
         }
-        
       }while(changeApplied);
     }
 
+    /**
+     * called when the voice detection button is clicked
+     * highlights regions with voice activity
+     */
     const vadEventHandler =()=>{
       const vad = new VoiceActivityDetector(renderedBuffer,(_start, _end)=>{
         changesApplied = true;
