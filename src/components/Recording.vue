@@ -52,11 +52,7 @@
           @click="edit()"
           v-if="provideFunctionality"
         ></ion-icon>
-        <ion-icon
-          :icon="help"
-          @click="licenseAlert = true"
-          v-if="provideFunctionality"
-        ></ion-icon>
+
         <ion-icon
           :icon="chevronUpOutline"
           @click="toggleOpen()"
@@ -103,9 +99,8 @@ import {
 
 import router from "@/router";
 import firebase from "@/backend/firebase-config";
-import { replayAudioData, audioDaten } from "@/scripts/ReplayData";
+import {audioDaten } from "@/scripts/ReplayData";
 import {
-  getRecordingEntryUploadBoolean,
   removeRecordingEntry,
   setRecordingEntryName,
   setSelectedForUpload,
@@ -221,31 +216,6 @@ export default {
       router.push("/edit/" + props.recording.timestamp);
     };
 
-    /**
-     * changes the license of the recording
-     */
-    const changeLicense = async () => {
-      const alert = await alertController.create({
-        message: "Select a License for this recording.",
-        inputs:[
-        ],
-        buttons: [
-          {
-            text: "Cancel",
-            handler: () => {
-              console.log("confirm Cancel");
-            },
-          },
-          {
-            text: "OK",
-            handler: () => {
-              //TODO
-            },
-          },
-        ],
-      });
-      await alert.present();
-    };
 
     /**
      * actual delete of the entry
@@ -474,10 +444,7 @@ export default {
       playRec,
       playing,
       selectedForUpload,
-      getRecordingEntryUploadBoolean,
-      changeLicense,
       audioDaten,
-      replayAudioData,
       alreadyUploaded,
       updateKey,
       displayName,
