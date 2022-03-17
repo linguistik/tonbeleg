@@ -1,6 +1,6 @@
 [![Join the chat at https://gitter.im/linguistik/community](https://badges.gitter.im/linguistik/community.svg)](https://gitter.im/linguistik/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-![logo](https://github.com/linguistik/tonbeleg/blob/readme/public/img/icons/android-chrome-512x512.png)
+![logo](https://github.com/linguistik/tonbeleg/blob/main/public/img/icons/android-chrome-512x512.png)
 
 # Datenspende-App für Tonbelege
 This app collects data to preserve dialects and languages and make them available for studies.
