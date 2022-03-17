@@ -12,12 +12,16 @@
     "orcid": "0000-0003-2304-7808"
   },
   {
+    "name": "Manuel Scheurich",
+    "orcid": "0000-0002-4076-9784"
+  },
+  {
     "name": "Jan-Christoph Cramer",
-    "orcid" "0000-0001-6167-0276"
+    "orcid": "0000-0001-6167-0276"
   },
   {
     "name": "Nick Lemke",
-    "orcid" "0000-0003-1507-4566"
+    "orcid": "0000-0003-1507-4566"
   }],
   "title": "tonbeleg",
   "description": "Datenspende-App für Tonbelege.",
