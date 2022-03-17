@@ -5,7 +5,7 @@
 
 
 # Datenspende-App für Tonbelege
-This app collects data to preserve dialects and languages and make them available for studies.
+This app collects data to preserve dialects and languages and provides them to research facilities.
 ## Problem Analysis (UX)
 This "Datenspende-App" offers the user the possibility to record, edit and release sound recordings for further use. The focus is on the preservation of rare languages and dialects. Users can provide precise information about their personal data for better sorting of the voice recordings. The licensing conditions can also be customised. There is also an interface for uploading external files into the database.
 
