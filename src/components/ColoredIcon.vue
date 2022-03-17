@@ -23,28 +23,28 @@ export default {
 </script>
 
 <style scoped>
-.red{
-    color: #ff0000;
+.gold{
+    color: #ffd700;
 }
-.green{
-    color: #26ff00;
+.mediumspringgreen{
+    color: #00fa9a;
 }
-.blue{
-    color: #0000ff;
+.gray{
+    color:  #808080;
 }
-.pink{
-    color: #ff00e6;
+.skyblue{
+    color: #87ceeb;
 }
-.yellow{
-    color: #fff200;
+.khaki{
+    color: #f0e68c;
 }
-.cyan{
-    color: #00ffc8;
+.rosybrown{
+    color: #bc8f8f;
 }
-.purple{
-    color: #7700ff;
+.thistle{
+    color: #d8bfd8;
 }
-.black{
-    color: #000000;
+.hotpink{
+    color: #ff69b4;
 }
 </style>
